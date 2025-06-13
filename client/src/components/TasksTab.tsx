@@ -260,6 +260,7 @@ export default function TasksTab() {
                 <TableHead>Worker ID</TableHead>
                 <TableHead>Profile</TableHead>
                 <TableHead>Script</TableHead>
+                <TableHead>Respond</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -267,7 +268,7 @@ export default function TasksTab() {
             <TableBody>
               {filteredTasks.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-slate-500 py-8">
+                  <TableCell colSpan={8} className="text-center text-slate-500 py-8">
                     {searchTerm || statusFilter !== "all" 
                       ? "No tasks match your filters"
                       : "No tasks created yet. Create your first task to get started."
@@ -284,6 +285,9 @@ export default function TasksTab() {
                     <TableCell>{task.workerId}</TableCell>
                     <TableCell>{task.profile}</TableCell>
                     <TableCell className="font-mono text-sm">{task.script}</TableCell>
+                    <TableCell className="text-slate-600 max-w-xs truncate" title={task.respond || "No response"}>
+                      {task.respond || "—"}
+                    </TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
                     </TableCell>
