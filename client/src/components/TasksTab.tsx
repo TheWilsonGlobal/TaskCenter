@@ -51,6 +51,8 @@ export default function TasksTab() {
       RUNNING: "status-running",
       COMPLETED: "status-completed",
       FAILED: "status-failed",
+      CONFIRMED: "bg-emerald-100 text-emerald-800",
+      REJECTED: "bg-red-100 text-red-800",
     };
     return (
       <Badge className={statusClasses[status as keyof typeof statusClasses] || "bg-blue-100 text-blue-800"}>
@@ -72,6 +74,8 @@ export default function TasksTab() {
       running: stats.RUNNING || 0,
       completed: stats.COMPLETED || 0,
       failed: stats.FAILED || 0,
+      confirmed: stats.CONFIRMED || 0,
+      rejected: stats.REJECTED || 0,
     };
   };
 
@@ -112,7 +116,7 @@ export default function TasksTab() {
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -182,6 +186,34 @@ export default function TasksTab() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Confirmed</p>
+                <p className="text-2xl font-bold text-slate-900">{stats.confirmed}</p>
+              </div>
+              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <Check className="text-emerald-600 text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">Rejected</p>
+                <p className="text-2xl font-bold text-slate-900">{stats.rejected}</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <AlertTriangle className="text-red-600 text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* ListTodo Table */}
@@ -211,6 +243,8 @@ export default function TasksTab() {
                   <SelectItem value="RUNNING">RUNNING</SelectItem>
                   <SelectItem value="COMPLETED">COMPLETED</SelectItem>
                   <SelectItem value="FAILED">FAILED</SelectItem>
+                  <SelectItem value="CONFIRMED">CONFIRMED</SelectItem>
+                  <SelectItem value="REJECTED">REJECTED</SelectItem>
                 </SelectContent>
               </Select>
             </div>
