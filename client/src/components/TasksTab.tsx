@@ -309,14 +309,16 @@ export default function TasksTab() {
                             <Eye className="h-4 w-4" />
                           </Button>
                         )}
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          title="Edit"
-                          onClick={() => handleEditTask(task)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        {task.status === "NEW" && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            title="Edit"
+                            onClick={() => handleEditTask(task)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button 
                           variant="ghost" 
                           size="sm" 
