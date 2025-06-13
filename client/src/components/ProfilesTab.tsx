@@ -256,7 +256,7 @@ export default function ProfilesTab() {
                         <div>
                           <h4 className="font-medium text-slate-900">{profile.filename}</h4>
                           <p className="text-sm text-slate-500">
-                            {getDeviceType(profile)} • {profile.browser} • {profile.width}x{profile.height}
+                            {getDeviceType(profile)} • {profile.userAgent || 'chrome-linux'} • {profile.viewportWidth}x{profile.viewportHeight}
                           </p>
                           <p className="text-sm text-slate-400">
                             Modified {formatDate(profile.updatedAt)}
@@ -313,70 +313,159 @@ export default function ProfilesTab() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Browser</label>
-                <Select value={browser} onValueChange={setBrowser}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Chrome">Chrome</SelectItem>
-                    <SelectItem value="Firefox">Firefox</SelectItem>
-                    <SelectItem value="Safari">Safari</SelectItem>
-                    <SelectItem value="Edge">Edge</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Display Name</label>
+                <Input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Custom Profile"
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Width</label>
-                  <Input
-                    type="number"
-                    value={width}
-                    onChange={(e) => setWidth(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Height</label>
-                  <Input
-                    type="number"
-                    value={height}
-                    onChange={(e) => setHeight(e.target.value)}
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                <Input
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="New browser profile"
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">User Agent</label>
+                <Select value={userAgent} onValueChange={setUserAgent}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="chrome-linux">Chrome Linux</SelectItem>
+                    <SelectItem value="chrome-windows">Chrome Windows</SelectItem>
+                    <SelectItem value="firefox-linux">Firefox Linux</SelectItem>
+                    <SelectItem value="safari-mac">Safari Mac</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Custom User Agent</label>
                 <Textarea
-                  value={userAgent}
-                  onChange={(e) => setUserAgent(e.target.value)}
-                  className="h-20"
+                  value={customUserAgent}
+                  onChange={(e) => setCustomUserAgent(e.target.value)}
+                  placeholder="Optional custom user agent string"
+                  className="h-16"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Viewport Width</label>
+                  <Input
+                    type="number"
+                    value={viewportWidth}
+                    onChange={(e) => setViewportWidth(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Viewport Height</label>
+                  <Input
+                    type="number"
+                    value={viewportHeight}
+                    onChange={(e) => setViewportHeight(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Timezone</label>
+                  <Input
+                    type="text"
+                    value={timezone}
+                    onChange={(e) => setTimezone(e.target.value)}
+                    placeholder="America/New_York"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
+                  <Input
+                    type="text"
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    placeholder="en-US"
+                  />
+                </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="headless"
-                    checked={headless}
-                    onCheckedChange={(checked) => setHeadless(checked as boolean)}
+                    id="useProxy"
+                    checked={useProxy}
+                    onCheckedChange={(checked) => setUseProxy(checked as boolean)}
                   />
-                  <label htmlFor="headless" className="text-sm text-slate-700">
-                    Run in headless mode
+                  <label htmlFor="useProxy" className="text-sm text-slate-700">
+                    Use Proxy
                   </label>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="devtools"
-                    checked={devtools}
-                    onCheckedChange={(checked) => setDevtools(checked as boolean)}
-                  />
-                  <label htmlFor="devtools" className="text-sm text-slate-700">
-                    Open DevTools
-                  </label>
-                </div>
+                {useProxy && (
+                  <div className="space-y-3 ml-6 p-3 bg-slate-50 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Type</label>
+                        <Select value={proxyType} onValueChange={setProxyType}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="http">HTTP</SelectItem>
+                            <SelectItem value="https">HTTPS</SelectItem>
+                            <SelectItem value="socks5">SOCKS5</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Host</label>
+                        <Input
+                          type="text"
+                          value={proxyHost}
+                          onChange={(e) => setProxyHost(e.target.value)}
+                          placeholder="proxy.example.com"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Port</label>
+                        <Input
+                          type="text"
+                          value={proxyPort}
+                          onChange={(e) => setProxyPort(e.target.value)}
+                          placeholder="8080"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
+                        <Input
+                          type="text"
+                          value={proxyUsername}
+                          onChange={(e) => setProxyUsername(e.target.value)}
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                      <Input
+                        type="password"
+                        value={proxyPassword}
+                        onChange={(e) => setProxyPassword(e.target.value)}
+                        placeholder="Optional"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex space-x-3 pt-4">

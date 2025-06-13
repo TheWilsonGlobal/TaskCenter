@@ -90,6 +90,7 @@ The application uses three main database tables:
 
 ## Changelog
 - June 13, 2025. Initial setup
+- June 13, 2025. Updated profile configuration schema to support comprehensive browser automation settings including proxy configuration, viewport settings, timezone, language, and custom scripting options
 
 ## User Preferences
 
