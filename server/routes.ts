@@ -123,16 +123,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       let content: string;
       let filename: string;
+      let description: string = "";
 
       if (req.file) {
         // File upload
         content = req.file.buffer.toString('utf8');
         filename = req.file.originalname;
+        description = req.body.description || "";
       } else {
-        // JSON data
-        const validatedData = insertScriptSchema.parse(req.body);
-        content = validatedData.content;
-        filename = validatedData.filename;
+        // JSON data - validate the body
+        if (!req.body.filename || !req.body.content) {
+          return res.status(400).json({ error: "Filename and content are required" });
+        }
+        content = req.body.content;
+        filename = req.body.filename;
+        description = req.body.description || "";
       }
 
       if (!filename.endsWith('.ts') && !filename.endsWith('.js')) {
@@ -147,15 +152,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const scriptData = {
         filename,
         content,
-        description: req.body.description || "",
+        description,
       };
 
       const script = await storage.createScript(scriptData);
       res.status(201).json(script);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Invalid script data", details: error.errors });
-      }
+      console.error("Script creation error:", error);
       res.status(500).json({ error: "Failed to create script" });
     }
   });
