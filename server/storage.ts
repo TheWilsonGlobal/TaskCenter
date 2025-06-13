@@ -1,0 +1,258 @@
+import { tasks, scripts, profiles, type Task, type InsertTask, type Script, type InsertScript, type Profile, type InsertProfile } from "@shared/schema";
+import fs from "fs/promises";
+import path from "path";
+
+export interface IStorage {
+  // Task methods
+  getAllTasks(): Promise<Task[]>;
+  getTask(id: number): Promise<Task | undefined>;
+  createTask(task: InsertTask): Promise<Task>;
+  updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
+  deleteTask(id: number): Promise<boolean>;
+  
+  // Script methods
+  getAllScripts(): Promise<Script[]>;
+  getScript(id: number): Promise<Script | undefined>;
+  getScriptByFilename(filename: string): Promise<Script | undefined>;
+  createScript(script: InsertScript): Promise<Script>;
+  updateScript(id: number, script: Partial<InsertScript>): Promise<Script | undefined>;
+  deleteScript(id: number): Promise<boolean>;
+  
+  // Profile methods
+  getAllProfiles(): Promise<Profile[]>;
+  getProfile(id: number): Promise<Profile | undefined>;
+  getProfileByFilename(filename: string): Promise<Profile | undefined>;
+  createProfile(profile: InsertProfile): Promise<Profile>;
+  updateProfile(id: number, profile: Partial<InsertProfile>): Promise<Profile | undefined>;
+  deleteProfile(id: number): Promise<boolean>;
+  
+  // File system methods
+  saveScriptFile(filename: string, content: string): Promise<void>;
+  getScriptFile(filename: string): Promise<string>;
+  deleteScriptFile(filename: string): Promise<void>;
+  saveProfileFile(filename: string, content: string): Promise<void>;
+  getProfileFile(filename: string): Promise<string>;
+  deleteProfileFile(filename: string): Promise<void>;
+}
+
+export class MemStorage implements IStorage {
+  private tasks: Map<number, Task>;
+  private scripts: Map<number, Script>;
+  private profiles: Map<number, Profile>;
+  private currentTaskId: number;
+  private currentScriptId: number;
+  private currentProfileId: number;
+  private scriptsDir: string;
+  private profilesDir: string;
+
+  constructor() {
+    this.tasks = new Map();
+    this.scripts = new Map();
+    this.profiles = new Map();
+    this.currentTaskId = 1;
+    this.currentScriptId = 1;
+    this.currentProfileId = 1;
+    this.scriptsDir = path.resolve(process.cwd(), 'scripts');
+    this.profilesDir = path.resolve(process.cwd(), 'profiles');
+    this.initializeDirectories();
+  }
+
+  private async initializeDirectories() {
+    try {
+      await fs.mkdir(this.scriptsDir, { recursive: true });
+      await fs.mkdir(this.profilesDir, { recursive: true });
+    } catch (error) {
+      console.error('Error creating directories:', error);
+    }
+  }
+
+  // Task methods
+  async getAllTasks(): Promise<Task[]> {
+    return Array.from(this.tasks.values());
+  }
+
+  async getTask(id: number): Promise<Task | undefined> {
+    return this.tasks.get(id);
+  }
+
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const id = this.currentTaskId++;
+    const task: Task = {
+      ...insertTask,
+      id,
+      createdAt: new Date().toISOString(),
+    };
+    this.tasks.set(id, task);
+    return task;
+  }
+
+  async updateTask(id: number, updateData: Partial<InsertTask>): Promise<Task | undefined> {
+    const existingTask = this.tasks.get(id);
+    if (!existingTask) return undefined;
+    
+    const updatedTask = { ...existingTask, ...updateData };
+    this.tasks.set(id, updatedTask);
+    return updatedTask;
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    return this.tasks.delete(id);
+  }
+
+  // Script methods
+  async getAllScripts(): Promise<Script[]> {
+    return Array.from(this.scripts.values());
+  }
+
+  async getScript(id: number): Promise<Script | undefined> {
+    return this.scripts.get(id);
+  }
+
+  async getScriptByFilename(filename: string): Promise<Script | undefined> {
+    return Array.from(this.scripts.values()).find(script => script.filename === filename);
+  }
+
+  async createScript(insertScript: InsertScript): Promise<Script> {
+    const id = this.currentScriptId++;
+    const now = new Date().toISOString();
+    const script: Script = {
+      ...insertScript,
+      id,
+      size: insertScript.content.length,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.scripts.set(id, script);
+    
+    // Save to file system
+    await this.saveScriptFile(script.filename, script.content);
+    
+    return script;
+  }
+
+  async updateScript(id: number, updateData: Partial<InsertScript>): Promise<Script | undefined> {
+    const existingScript = this.scripts.get(id);
+    if (!existingScript) return undefined;
+    
+    const updatedScript = {
+      ...existingScript,
+      ...updateData,
+      size: updateData.content ? updateData.content.length : existingScript.size,
+      updatedAt: new Date().toISOString(),
+    };
+    this.scripts.set(id, updatedScript);
+    
+    // Update file system
+    if (updateData.content) {
+      await this.saveScriptFile(updatedScript.filename, updateData.content);
+    }
+    
+    return updatedScript;
+  }
+
+  async deleteScript(id: number): Promise<boolean> {
+    const script = this.scripts.get(id);
+    if (!script) return false;
+    
+    await this.deleteScriptFile(script.filename);
+    return this.scripts.delete(id);
+  }
+
+  // Profile methods
+  async getAllProfiles(): Promise<Profile[]> {
+    return Array.from(this.profiles.values());
+  }
+
+  async getProfile(id: number): Promise<Profile | undefined> {
+    return this.profiles.get(id);
+  }
+
+  async getProfileByFilename(filename: string): Promise<Profile | undefined> {
+    return Array.from(this.profiles.values()).find(profile => profile.filename === filename);
+  }
+
+  async createProfile(insertProfile: InsertProfile): Promise<Profile> {
+    const id = this.currentProfileId++;
+    const now = new Date().toISOString();
+    const profile: Profile = {
+      ...insertProfile,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.profiles.set(id, profile);
+    
+    // Save to file system
+    await this.saveProfileFile(profile.filename, profile.content);
+    
+    return profile;
+  }
+
+  async updateProfile(id: number, updateData: Partial<InsertProfile>): Promise<Profile | undefined> {
+    const existingProfile = this.profiles.get(id);
+    if (!existingProfile) return undefined;
+    
+    const updatedProfile = {
+      ...existingProfile,
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+    this.profiles.set(id, updatedProfile);
+    
+    // Update file system
+    if (updateData.content) {
+      await this.saveProfileFile(updatedProfile.filename, updateData.content);
+    }
+    
+    return updatedProfile;
+  }
+
+  async deleteProfile(id: number): Promise<boolean> {
+    const profile = this.profiles.get(id);
+    if (!profile) return false;
+    
+    await this.deleteProfileFile(profile.filename);
+    return this.profiles.delete(id);
+  }
+
+  // File system methods
+  async saveScriptFile(filename: string, content: string): Promise<void> {
+    const filePath = path.join(this.scriptsDir, filename);
+    await fs.writeFile(filePath, content, 'utf8');
+  }
+
+  async getScriptFile(filename: string): Promise<string> {
+    const filePath = path.join(this.scriptsDir, filename);
+    return await fs.readFile(filePath, 'utf8');
+  }
+
+  async deleteScriptFile(filename: string): Promise<void> {
+    const filePath = path.join(this.scriptsDir, filename);
+    try {
+      await fs.unlink(filePath);
+    } catch (error) {
+      // File might not exist, ignore error
+    }
+  }
+
+  async saveProfileFile(filename: string, content: string): Promise<void> {
+    const filePath = path.join(this.profilesDir, filename);
+    await fs.writeFile(filePath, content, 'utf8');
+  }
+
+  async getProfileFile(filename: string): Promise<string> {
+    const filePath = path.join(this.profilesDir, filename);
+    return await fs.readFile(filePath, 'utf8');
+  }
+
+  async deleteProfileFile(filename: string): Promise<void> {
+    const filePath = path.join(this.profilesDir, filename);
+    try {
+      await fs.unlink(filePath);
+    } catch (error) {
+      // File might not exist, ignore error
+    }
+  }
+}
+
+export const storage = new MemStorage();
