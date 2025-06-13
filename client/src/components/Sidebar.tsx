@@ -106,20 +106,47 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             </Button>
           </li>
         </ul>
+        
+        {/* Collapse/Expand Button */}
+        <div className="mt-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {!isCollapsed && <span className="ml-2">Collapse</span>}
+          </Button>
+        </div>
       </div>
 
       {/* Footer Stats */}
       <div className="p-4 border-t border-slate-200">
-        <div className="text-xs text-slate-500 space-y-1">
-          <div className="flex justify-between">
-            <span>Active Workers:</span>
-            <span className="text-success font-medium">{activeWorkers}</span>
+        {!isCollapsed ? (
+          <div className="text-xs text-slate-500 space-y-1">
+            <div className="flex justify-between">
+              <span>Active Workers:</span>
+              <span className="text-success font-medium">{activeWorkers}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Scripts:</span>
+              <span className="font-medium">{scripts.length}</span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>Total Scripts:</span>
-            <span className="font-medium">{scripts.length}</span>
+        ) : (
+          <div className="flex flex-col items-center space-y-2 text-xs text-slate-500">
+            <div className="flex flex-col items-center">
+              <span className="text-success font-medium">{activeWorkers}</span>
+              <span>Workers</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-medium">{scripts.length}</span>
+              <span>Scripts</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );
