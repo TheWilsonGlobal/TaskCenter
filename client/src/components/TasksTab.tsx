@@ -254,10 +254,28 @@ export default function TasksTab() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm" title="View Details">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" title="Edit">
+                        {task.status === "NEW" ? (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            title="Mark as Ready"
+                            onClick={() => handleMakeReady(task.id)}
+                            disabled={updateTaskStatusMutation.isPending}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            Ready
+                          </Button>
+                        ) : (
+                          <Button variant="ghost" size="sm" title="View Details">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          title="Edit"
+                          onClick={() => handleEditTask(task)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button 
@@ -286,6 +304,12 @@ export default function TasksTab() {
           </div>
         )}
       </Card>
+
+      <EditTaskModal
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        task={editingTask}
+      />
     </div>
   );
 }
