@@ -9,10 +9,13 @@ import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus }
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Task } from "@shared/schema";
+import EditTaskModal from "@/components/EditTaskModal";
 
 export default function TasksTab() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -20,6 +23,14 @@ export default function TasksTab() {
 
   const deleteTaskMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/tasks/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => 
+      apiRequest("PUT", `/api/tasks/${id}`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
@@ -82,6 +93,15 @@ export default function TasksTab() {
     if (confirm("Are you sure you want to delete this task?")) {
       deleteTaskMutation.mutate(id);
     }
+  };
+
+  const handleMakeReady = (id: number) => {
+    updateTaskStatusMutation.mutate({ id, status: "READY" });
+  };
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsEditModalOpen(true);
   };
 
   if (isLoading) {

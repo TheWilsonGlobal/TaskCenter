@@ -274,9 +274,11 @@ export class MemStorage implements IStorage {
             
             const profile: Profile = {
               id: this.currentProfileId++,
+              name: parsedContent.name || file.replace('.json', ''),
               filename: file,
               content: content,
               description: parsedContent.description || `Profile file: ${file}`,
+              profileId: parsedContent.id || `profile_${Date.now()}`,
               userAgent: parsedContent.userAgent || "chrome-linux",
               customUserAgent: parsedContent.customUserAgent || "",
               viewportWidth: parsedContent.viewportWidth || 1920,
@@ -289,7 +291,8 @@ export class MemStorage implements IStorage {
               proxyPort: parsedContent.proxyPort || "",
               proxyUsername: parsedContent.proxyUsername || "",
               proxyPassword: parsedContent.proxyPassword || "",
-              customScripts: parsedContent.customScripts || "",
+              scriptSource: parsedContent.scriptSource || "editor",
+              customScript: parsedContent.customScript || parsedContent.customScripts || "",
               createdAt: stats.birthtime.toISOString(),
               updatedAt: stats.mtime.toISOString(),
             };

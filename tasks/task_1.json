@@ -1,9 +1,0 @@
-{
-  "status": "RUNNING",
-  "workerId": "worker-test-001",
-  "profile": "test-profile.json",
-  "script": "test-script.js",
-  "respond": "Task started successfully",
-  "id": 1,
-  "createdAt": "2025-06-13T08:19:01.252Z"
-}
