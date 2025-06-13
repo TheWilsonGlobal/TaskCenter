@@ -153,7 +153,42 @@ export class MemStorage implements IStorage {
 
   // Script methods
   async getAllScripts(): Promise<Script[]> {
-    return Array.from(this.scripts.values());
+    try {
+      const files = await fs.readdir(this.scriptsDir);
+      const scripts: Script[] = [];
+      
+      for (const file of files) {
+        if (file.endsWith('.js') || file.endsWith('.ts')) {
+          const filePath = path.join(this.scriptsDir, file);
+          const stats = await fs.stat(filePath);
+          const content = await fs.readFile(filePath, 'utf-8');
+          
+          // Check if we have this script in memory, otherwise create a new entry
+          const existingScript = Array.from(this.scripts.values()).find(s => s.filename === file);
+          
+          if (existingScript) {
+            scripts.push(existingScript);
+          } else {
+            const script: Script = {
+              id: this.currentScriptId++,
+              filename: file,
+              content: content,
+              description: `Script file: ${file}`,
+              size: content.length,
+              createdAt: stats.birthtime.toISOString(),
+              updatedAt: stats.mtime.toISOString(),
+            };
+            this.scripts.set(script.id, script);
+            scripts.push(script);
+          }
+        }
+      }
+      
+      return scripts;
+    } catch (error) {
+      console.error('Error reading scripts from folder:', error);
+      return Array.from(this.scripts.values());
+    }
   }
 
   async getScript(id: number): Promise<Script | undefined> {
