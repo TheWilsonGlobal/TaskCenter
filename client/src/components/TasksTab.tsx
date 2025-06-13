@@ -95,8 +95,9 @@ export default function TasksTab() {
     }
   };
 
-  const handleMakeReady = (id: number) => {
-    updateTaskStatusMutation.mutate({ id, status: "READY" });
+  const handleToggleStatus = (id: number, currentStatus: string) => {
+    const newStatus = currentStatus === "NEW" ? "READY" : "NEW";
+    updateTaskStatusMutation.mutate({ id, status: newStatus });
   };
 
   const handleEditTask = (task: Task) => {
@@ -254,16 +255,16 @@ export default function TasksTab() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        {task.status === "NEW" ? (
+                        {(task.status === "NEW" || task.status === "READY") ? (
                           <Button 
-                            variant="ghost" 
+                            variant={task.status === "READY" ? "default" : "secondary"}
                             size="sm" 
-                            title="Mark as Ready"
-                            onClick={() => handleMakeReady(task.id)}
+                            title={task.status === "NEW" ? "Click to Activate (NEW → READY)" : "Click to Deactivate (READY → NEW)"}
+                            onClick={() => handleToggleStatus(task.id, task.status)}
                             disabled={updateTaskStatusMutation.isPending}
-                            className="text-green-600 hover:text-green-700"
+                            className={task.status === "READY" ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                           >
-                            Ready
+                            {task.status === "NEW" ? "Active" : "Inactive"}
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" title="View Details">

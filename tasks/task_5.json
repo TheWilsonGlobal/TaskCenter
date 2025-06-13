@@ -1,0 +1,9 @@
+{
+  "status": "NEW",
+  "workerId": "0000123123",
+  "profile": "Hello.json",
+  "script": "test_script.js",
+  "respond": "",
+  "id": 5,
+  "createdAt": "2025-06-13T08:36:29.782Z"
+}
