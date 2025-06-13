@@ -11,7 +11,7 @@ type TabType = "tasks" | "scripts" | "profiles" | "api";
 
 const tabConfig = {
   tasks: {
-    title: "Task Management",
+    title: "Task Center",
     subtitle: "Manage and monitor your Puppeteer automation tasks",
   },
   scripts: {
@@ -52,7 +52,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      
+
       <main className="flex-1 flex flex-col">
         <Header
           title={currentConfig.title}
@@ -60,10 +60,8 @@ export default function Dashboard() {
           onCreateTask={() => setIsCreateTaskModalOpen(true)}
           showCreateTaskButton={activeTab === "tasks"}
         />
-        
-        <div className="flex-1 p-6 overflow-auto">
-          {renderTabContent()}
-        </div>
+
+        <div className="flex-1 p-6 overflow-auto">{renderTabContent()}</div>
       </main>
 
       <CreateTaskModal
