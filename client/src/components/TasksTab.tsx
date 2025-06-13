@@ -304,6 +304,28 @@ export default function TasksTab() {
                           >
                             {task.status === "NEW" ? "Active" : "Inactive"}
                           </Button>
+                        ) : task.status === "COMPLETED" ? (
+                          <>
+                            <Button 
+                              variant="default"
+                              size="sm" 
+                              title="Confirm Task (COMPLETED → CONFIRMED)"
+                              onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "CONFIRMED" })}
+                              disabled={updateTaskStatusMutation.isPending}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            >
+                              Confirm
+                            </Button>
+                            <Button 
+                              variant="destructive"
+                              size="sm" 
+                              title="Reject Task (COMPLETED → REJECTED)"
+                              onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "REJECTED" })}
+                              disabled={updateTaskStatusMutation.isPending}
+                            >
+                              Reject
+                            </Button>
+                          </>
                         ) : (
                           <Button variant="ghost" size="sm" title="View Details">
                             <Eye className="h-4 w-4" />
