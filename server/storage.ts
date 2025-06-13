@@ -248,7 +248,62 @@ export class MemStorage implements IStorage {
 
   // Profile methods
   async getAllProfiles(): Promise<Profile[]> {
-    return Array.from(this.profiles.values());
+    try {
+      const files = await fs.readdir(this.profilesDir);
+      const profiles: Profile[] = [];
+      
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const filePath = path.join(this.profilesDir, file);
+          const stats = await fs.stat(filePath);
+          const content = await fs.readFile(filePath, 'utf-8');
+          
+          // Check if we have this profile in memory, otherwise create a new entry
+          const existingProfile = Array.from(this.profiles.values()).find(p => p.filename === file);
+          
+          if (existingProfile) {
+            profiles.push(existingProfile);
+          } else {
+            let parsedContent;
+            try {
+              parsedContent = JSON.parse(content);
+            } catch (error) {
+              console.error(`Error parsing profile ${file}:`, error);
+              continue;
+            }
+            
+            const profile: Profile = {
+              id: this.currentProfileId++,
+              filename: file,
+              content: content,
+              description: parsedContent.description || `Profile file: ${file}`,
+              userAgent: parsedContent.userAgent || "chrome-linux",
+              customUserAgent: parsedContent.customUserAgent || "",
+              viewportWidth: parsedContent.viewportWidth || 1920,
+              viewportHeight: parsedContent.viewportHeight || 1080,
+              timezone: parsedContent.timezone || "America/New_York",
+              language: parsedContent.language || "en-US",
+              useProxy: parsedContent.useProxy || false,
+              proxyType: parsedContent.proxyType || "http",
+              proxyHost: parsedContent.proxyHost || "",
+              proxyPort: parsedContent.proxyPort || "",
+              proxyUsername: parsedContent.proxyUsername || "",
+              proxyPassword: parsedContent.proxyPassword || "",
+              customScripts: parsedContent.customScripts || "",
+              createdAt: stats.birthtime.toISOString(),
+              updatedAt: stats.mtime.toISOString(),
+            };
+            this.profiles.set(profile.id, profile);
+            profiles.push(profile);
+          }
+        }
+      }
+      
+      return profiles;
+    } catch (error) {
+      console.error('Error reading profiles from folder:', error);
+      return Array.from(this.profiles.values());
+    }
   }
 
   async getProfile(id: number): Promise<Profile | undefined> {
