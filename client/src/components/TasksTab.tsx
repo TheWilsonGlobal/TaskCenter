@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle } from "lucide-react";
+import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Task } from "@shared/schema";
@@ -35,13 +35,14 @@ export default function TasksTab() {
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {
+      NEW: "bg-blue-100 text-blue-800",
       READY: "status-ready",
       RUNNING: "status-running",
       COMPLETED: "status-completed",
       FAILED: "status-failed",
     };
     return (
-      <Badge className={statusClasses[status as keyof typeof statusClasses] || "status-ready"}>
+      <Badge className={statusClasses[status as keyof typeof statusClasses] || "bg-blue-100 text-blue-800"}>
         {status}
       </Badge>
     );
@@ -55,6 +56,7 @@ export default function TasksTab() {
 
     return {
       total: tasks.length,
+      new: stats.NEW || 0,
       ready: stats.READY || 0,
       running: stats.RUNNING || 0,
       completed: stats.COMPLETED || 0,
@@ -89,16 +91,30 @@ export default function TasksTab() {
   return (
     <div className="space-y-6">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600">Total ListTodo</p>
+                <p className="text-sm font-medium text-slate-600">Total Tasks</p>
                 <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <ListTodo className="text-primary text-xl" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600">New</p>
+                <p className="text-2xl font-bold text-slate-900">{stats.new}</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <ListTodo className="text-blue-600 text-xl" />
               </div>
             </div>
           </CardContent>
@@ -169,6 +185,7 @@ export default function TasksTab() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="NEW">NEW</SelectItem>
                   <SelectItem value="READY">READY</SelectItem>
                   <SelectItem value="RUNNING">RUNNING</SelectItem>
                   <SelectItem value="COMPLETED">COMPLETED</SelectItem>

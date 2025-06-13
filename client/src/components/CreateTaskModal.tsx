@@ -93,7 +93,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
       workerId: workerId.trim(),
       profile,
       script,
-      status: "READY",
+      status: "NEW",
       respond: notes.trim(),
     };
 

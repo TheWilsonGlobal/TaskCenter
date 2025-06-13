@@ -80,7 +80,7 @@ export class MemStorage implements IStorage {
     const task: Task = {
       ...insertTask,
       id,
-      status: insertTask.status || "READY",
+      status: insertTask.status || "NEW",
       respond: insertTask.respond || "",
       createdAt: new Date().toISOString(),
     };
