@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bot, ListTodo, Code, UserCog, Plug } from "lucide-react";
+import { Bot, ListTodo, Code, UserCog, Plug, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Task, Script } from "@shared/schema";
 
 interface SidebarProps {
@@ -10,6 +11,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data: tasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
@@ -25,7 +27,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   ).size;
 
   const getNavItemClass = (tab: string) => {
-    return `flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer w-full text-left ${
+    return `flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 rounded-lg transition-colors cursor-pointer w-full text-left ${
       activeTab === tab
         ? "bg-primary text-white hover:bg-primary hover:text-white"
         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -33,19 +35,21 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   };
 
   return (
-    <nav className="w-64 bg-white shadow-sm border-r border-slate-200 flex flex-col">
+    <nav className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white shadow-sm border-r border-slate-200 flex flex-col transition-all duration-300`}>
       {/* Logo/Brand */}
       <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center space-x-3">
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Bot className="text-white text-sm" />
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-slate-900">
-              Task Center
-            </h1>
-            <p className="text-xs text-slate-500">Task Automation</p>
-          </div>
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-lg font-semibold text-slate-900">
+                Task Center
+              </h1>
+              <p className="text-xs text-slate-500">Task Automation</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -57,10 +61,11 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               variant="ghost"
               className={getNavItemClass("tasks")}
               onClick={() => onTabChange("tasks")}
+              title={isCollapsed ? "Tasks" : ""}
             >
               <ListTodo className="h-5 w-5" />
-              <span>ListTodo</span>
-              {tasks.length > 0 && (
+              {!isCollapsed && <span>Tasks</span>}
+              {!isCollapsed && tasks.length > 0 && (
                 <Badge className="ml-auto bg-primary text-white text-xs">
                   {tasks.length}
                 </Badge>
@@ -72,9 +77,10 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               variant="ghost"
               className={getNavItemClass("scripts")}
               onClick={() => onTabChange("scripts")}
+              title={isCollapsed ? "Scripts" : ""}
             >
               <Code className="h-5 w-5" />
-              <span>Scripts</span>
+              {!isCollapsed && <span>Scripts</span>}
             </Button>
           </li>
           <li>
@@ -82,9 +88,10 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               variant="ghost"
               className={getNavItemClass("profiles")}
               onClick={() => onTabChange("profiles")}
+              title={isCollapsed ? "Profiles" : ""}
             >
               <UserCog className="h-5 w-5" />
-              <span>Profiles</span>
+              {!isCollapsed && <span>Profiles</span>}
             </Button>
           </li>
           <li>
@@ -92,9 +99,10 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               variant="ghost"
               className={getNavItemClass("api")}
               onClick={() => onTabChange("api")}
+              title={isCollapsed ? "API Endpoints" : ""}
             >
               <Plug className="h-5 w-5" />
-              <span>API Endpoints</span>
+              {!isCollapsed && <span>API Endpoints</span>}
             </Button>
           </li>
         </ul>
