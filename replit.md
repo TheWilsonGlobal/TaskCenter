@@ -34,6 +34,7 @@ The application uses three main database tables:
 ### Storage System
 - **Database Storage**: PostgreSQL for structured data using Drizzle ORM
 - **File Storage**: Local file system for script and profile files
+- **Task Storage**: JSON files in dedicated tasks folder for task persistence
 - **Memory Storage**: In-memory fallback implementation for development
 
 ### UI Components
@@ -47,9 +48,10 @@ The application uses three main database tables:
 
 1. **Task Creation**: Users select scripts and profiles to create new automation tasks
 2. **File Management**: Scripts and profiles are uploaded and stored in the file system
-3. **Task Execution**: Tasks are tracked with status updates (READY, RUNNING, COMPLETED, FAILED)
-4. **Real-time Updates**: Frontend automatically refreshes data using React Query
-5. **File System Integration**: Scripts and profiles are managed both in database and file system
+3. **Task Storage**: Tasks are persisted as individual JSON files in the tasks folder
+4. **Task Execution**: Tasks are tracked with NEW → READY → RUNNING → COMPLETED/FAILED status flow
+5. **Real-time Updates**: Frontend automatically refreshes data using React Query
+6. **File System Integration**: Scripts, profiles, and tasks are managed in dedicated folders
 
 ## External Dependencies
 
@@ -91,6 +93,7 @@ The application uses three main database tables:
 ## Changelog
 - June 13, 2025. Initial setup
 - June 13, 2025. Updated profile configuration schema to support comprehensive browser automation settings including proxy configuration, viewport settings, timezone, language, and custom scripting options
+- June 13, 2025. Implemented JSON file-based task storage system with dedicated tasks folder - all tasks now persist as individual JSON files (task_[id].json) with automatic loading on startup
 
 ## User Preferences
 

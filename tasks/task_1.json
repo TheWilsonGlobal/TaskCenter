@@ -1,9 +1,9 @@
 {
-  "status": "NEW",
+  "status": "RUNNING",
   "workerId": "worker-test-001",
   "profile": "test-profile.json",
   "script": "test-script.js",
-  "respond": "Test task for JSON file storage",
+  "respond": "Updated task - now running",
   "id": 1,
   "createdAt": "2025-06-13T08:19:01.252Z"
 }

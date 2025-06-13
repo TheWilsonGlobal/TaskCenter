@@ -1,0 +1,9 @@
+{
+  "status": "NEW",
+  "workerId": "worker-002",
+  "profile": "mobile-profile.json",
+  "script": "scrape-data.js",
+  "respond": "Mobile scraping task",
+  "id": 2,
+  "createdAt": "2025-06-13T08:19:39.699Z"
+}
