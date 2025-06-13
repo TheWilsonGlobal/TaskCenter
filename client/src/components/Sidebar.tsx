@@ -19,7 +19,9 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   });
 
   const activeWorkers = new Set(
-    tasks.filter(task => task.status === "RUNNING").map(task => task.workerId)
+    tasks
+      .filter((task) => task.status === "RUNNING")
+      .map((task) => task.workerId),
   ).size;
 
   const getNavItemClass = (tab: string) => {
@@ -39,7 +41,9 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             <Bot className="text-white text-sm" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-slate-900">Puppeteer Manager</h1>
+            <h1 className="text-lg font-semibold text-slate-900">
+              Task Center
+            </h1>
             <p className="text-xs text-slate-500">Task Automation</p>
           </div>
         </div>

@@ -64,10 +64,10 @@ export default function ScriptsTab() {
     if (!files || files.length === 0) return;
     
     const file = files[0];
-    if (!file.name.endsWith('.ts')) {
+    if (!file.name.endsWith('.ts') && !file.name.endsWith('.js')) {
       toast({
         title: "Invalid file type",
-        description: "Only .ts files are allowed",
+        description: "Only .ts and .js files are allowed",
         variant: "destructive",
       });
       return;
@@ -97,7 +97,7 @@ export default function ScriptsTab() {
     if (!selectedFile) {
       toast({
         title: "No file selected",
-        description: "Please select a .ts file to upload",
+        description: "Please select a .ts or .js file to upload",
         variant: "destructive",
       });
       return;
@@ -256,7 +256,7 @@ export default function ScriptsTab() {
             >
               <div className="text-center">
                 <CloudUpload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-                <p className="text-slate-600 mb-2">Drag & drop your .ts file here</p>
+                <p className="text-slate-600 mb-2">Drag & drop your .ts or .js file here</p>
                 <p className="text-sm text-slate-500">or click to browse</p>
                 {selectedFile && (
                   <p className="text-sm text-primary mt-2 font-medium">
@@ -268,7 +268,7 @@ export default function ScriptsTab() {
                 ref={fileInputRef}
                 type="file"
                 className="hidden"
-                accept=".ts"
+                accept=".ts,.js"
                 onChange={(e) => handleFileSelect(e.target.files)}
               />
             </div>

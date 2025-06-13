@@ -135,8 +135,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filename = validatedData.filename;
       }
 
-      if (!filename.endsWith('.ts')) {
-        return res.status(400).json({ error: "Only .ts files are allowed" });
+      if (!filename.endsWith('.ts') && !filename.endsWith('.js')) {
+        return res.status(400).json({ error: "Only .ts and .js files are allowed" });
       }
 
       const existingScript = await storage.getScriptByFilename(filename);

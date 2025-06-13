@@ -12,7 +12,7 @@ import type { Profile } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilesTab() {
-  const [profileName, setProfileName] = useState("profile_custom.json");
+  const [profileName, setProfileName] = useState("profile_custom");
   const [name, setName] = useState("Custom Profile");
   const [description, setDescription] = useState("New browser profile");
   const [userAgent, setUserAgent] = useState("chrome-linux");
@@ -74,7 +74,7 @@ export default function ProfilesTab() {
   });
 
   const resetForm = () => {
-    setProfileName("profile_custom.json");
+    setProfileName("profile_custom");
     setName("Custom Profile");
     setDescription("New browser profile");
     setUserAgent("chrome-linux");
@@ -103,14 +103,8 @@ export default function ProfilesTab() {
       return;
     }
 
-    if (!profileName.endsWith('.json')) {
-      toast({
-        title: "Invalid profile name",
-        description: "Profile name must end with .json",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Automatically add .json extension if not present
+    const finalProfileName = profileName.endsWith('.json') ? profileName : `${profileName}.json`;
 
     const profileConfig = {
       id: `profile_${Date.now()}`,
@@ -138,7 +132,7 @@ export default function ProfilesTab() {
       profileId: profileConfig.id,
       name,
       description,
-      filename: profileName,
+      filename: finalProfileName,
       content: JSON.stringify(profileConfig, null, 2),
       userAgent,
       customUserAgent,
@@ -308,8 +302,9 @@ export default function ProfilesTab() {
                   type="text"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
-                  placeholder="profile_custom.json"
+                  placeholder="profile_custom"
                 />
+                <p className="text-xs text-slate-500 mt-1">The .json extension will be added automatically</p>
               </div>
 
               <div>
