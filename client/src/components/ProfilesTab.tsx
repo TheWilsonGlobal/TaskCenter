@@ -13,12 +13,22 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilesTab() {
   const [profileName, setProfileName] = useState("profile_custom.json");
-  const [browser, setBrowser] = useState("Chrome");
-  const [width, setWidth] = useState("1920");
-  const [height, setHeight] = useState("1080");
-  const [userAgent, setUserAgent] = useState("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-  const [headless, setHeadless] = useState(true);
-  const [devtools, setDevtools] = useState(false);
+  const [name, setName] = useState("Custom Profile");
+  const [description, setDescription] = useState("New browser profile");
+  const [userAgent, setUserAgent] = useState("chrome-linux");
+  const [customUserAgent, setCustomUserAgent] = useState("");
+  const [viewportWidth, setViewportWidth] = useState("1920");
+  const [viewportHeight, setViewportHeight] = useState("1080");
+  const [timezone, setTimezone] = useState("America/New_York");
+  const [language, setLanguage] = useState("en-US");
+  const [useProxy, setUseProxy] = useState(false);
+  const [proxyType, setProxyType] = useState("http");
+  const [proxyHost, setProxyHost] = useState("");
+  const [proxyPort, setProxyPort] = useState("");
+  const [proxyUsername, setProxyUsername] = useState("");
+  const [proxyPassword, setProxyPassword] = useState("");
+  const [scriptSource, setScriptSource] = useState("editor");
+  const [customScript, setCustomScript] = useState("");
   
   const { toast } = useToast();
 
@@ -65,12 +75,22 @@ export default function ProfilesTab() {
 
   const resetForm = () => {
     setProfileName("profile_custom.json");
-    setBrowser("Chrome");
-    setWidth("1920");
-    setHeight("1080");
-    setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-    setHeadless(true);
-    setDevtools(false);
+    setName("Custom Profile");
+    setDescription("New browser profile");
+    setUserAgent("chrome-linux");
+    setCustomUserAgent("");
+    setViewportWidth("1920");
+    setViewportHeight("1080");
+    setTimezone("America/New_York");
+    setLanguage("en-US");
+    setUseProxy(false);
+    setProxyType("http");
+    setProxyHost("");
+    setProxyPort("");
+    setProxyUsername("");
+    setProxyPassword("");
+    setScriptSource("editor");
+    setCustomScript("");
   };
 
   const handleSaveProfile = () => {
@@ -93,22 +113,47 @@ export default function ProfilesTab() {
     }
 
     const profileConfig = {
-      browser,
-      width: parseInt(width),
-      height: parseInt(height),
+      id: `profile_${Date.now()}`,
+      name,
+      description,
       userAgent,
-      headless,
-      devtools,
+      customUserAgent,
+      viewportWidth: parseInt(viewportWidth),
+      viewportHeight: parseInt(viewportHeight),
+      timezone,
+      language,
+      useProxy,
+      proxyType,
+      proxyHost,
+      proxyPort,
+      proxyUsername,
+      proxyPassword,
+      scriptSource,
+      customScript,
+      created: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
     };
 
     const profileData = {
+      profileId: profileConfig.id,
+      name,
+      description,
       filename: profileName,
       content: JSON.stringify(profileConfig, null, 2),
-      browser,
-      width: parseInt(width),
-      height: parseInt(height),
-      headless,
-      devtools,
+      userAgent,
+      customUserAgent,
+      viewportWidth: parseInt(viewportWidth),
+      viewportHeight: parseInt(viewportHeight),
+      timezone,
+      language,
+      useProxy,
+      proxyType,
+      proxyHost,
+      proxyPort,
+      proxyUsername,
+      proxyPassword,
+      scriptSource,
+      customScript,
     };
 
     createProfileMutation.mutate(profileData);
@@ -148,14 +193,14 @@ export default function ProfilesTab() {
   };
 
   const getDeviceIcon = (profile: Profile) => {
-    if (profile.width && profile.width <= 500) return <Smartphone className="text-success h-5 w-5" />;
-    if (profile.width && profile.width <= 1024) return <Tablet className="text-success h-5 w-5" />;
+    if (profile.viewportWidth && profile.viewportWidth <= 500) return <Smartphone className="text-success h-5 w-5" />;
+    if (profile.viewportWidth && profile.viewportWidth <= 1024) return <Tablet className="text-success h-5 w-5" />;
     return <UserCog className="text-success h-5 w-5" />;
   };
 
   const getDeviceType = (profile: Profile) => {
-    if (profile.width && profile.width <= 500) return "Mobile";
-    if (profile.width && profile.width <= 1024) return "Tablet";
+    if (profile.viewportWidth && profile.viewportWidth <= 500) return "Mobile";
+    if (profile.viewportWidth && profile.viewportWidth <= 1024) return "Tablet";
     return "Desktop";
   };
 

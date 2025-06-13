@@ -80,6 +80,8 @@ export class MemStorage implements IStorage {
     const task: Task = {
       ...insertTask,
       id,
+      status: insertTask.status || "READY",
+      respond: insertTask.respond || "",
       createdAt: new Date().toISOString(),
     };
     this.tasks.set(id, task);
@@ -118,6 +120,7 @@ export class MemStorage implements IStorage {
     const script: Script = {
       ...insertScript,
       id,
+      description: insertScript.description || "",
       size: insertScript.content.length,
       createdAt: now,
       updatedAt: now,
@@ -177,6 +180,21 @@ export class MemStorage implements IStorage {
     const profile: Profile = {
       ...insertProfile,
       id,
+      description: insertProfile.description || "",
+      userAgent: insertProfile.userAgent || "chrome-linux",
+      customUserAgent: insertProfile.customUserAgent || "",
+      viewportWidth: insertProfile.viewportWidth || 1920,
+      viewportHeight: insertProfile.viewportHeight || 1080,
+      timezone: insertProfile.timezone || "America/New_York",
+      language: insertProfile.language || "en-US",
+      useProxy: insertProfile.useProxy || false,
+      proxyType: insertProfile.proxyType || "http",
+      proxyHost: insertProfile.proxyHost || "",
+      proxyPort: insertProfile.proxyPort || "",
+      proxyUsername: insertProfile.proxyUsername || "",
+      proxyPassword: insertProfile.proxyPassword || "",
+      scriptSource: insertProfile.scriptSource || "editor",
+      customScript: insertProfile.customScript || "",
       createdAt: now,
       updatedAt: now,
     };

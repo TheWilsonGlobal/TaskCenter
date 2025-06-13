@@ -262,13 +262,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const profileData = {
+        profileId: req.body.profileId || `profile_${Date.now()}`,
+        name: req.body.name || filename.replace('.json', ''),
+        description: req.body.description || "New browser profile",
         filename,
         content,
-        browser: req.body.browser || "Chrome",
-        width: parseInt(req.body.width) || 1920,
-        height: parseInt(req.body.height) || 1080,
-        headless: req.body.headless !== undefined ? req.body.headless === 'true' : true,
-        devtools: req.body.devtools !== undefined ? req.body.devtools === 'true' : false,
+        userAgent: req.body.userAgent || "chrome-linux",
+        customUserAgent: req.body.customUserAgent || "",
+        viewportWidth: parseInt(req.body.viewportWidth) || parseInt(req.body.width) || 1920,
+        viewportHeight: parseInt(req.body.viewportHeight) || parseInt(req.body.height) || 1080,
+        timezone: req.body.timezone || "America/New_York",
+        language: req.body.language || "en-US",
+        useProxy: req.body.useProxy === 'true' || false,
+        proxyType: req.body.proxyType || "http",
+        proxyHost: req.body.proxyHost || "",
+        proxyPort: req.body.proxyPort || "",
+        proxyUsername: req.body.proxyUsername || "",
+        proxyPassword: req.body.proxyPassword || "",
+        scriptSource: req.body.scriptSource || "editor",
+        customScript: req.body.customScript || "",
       };
 
       const profile = await storage.createProfile(profileData);
