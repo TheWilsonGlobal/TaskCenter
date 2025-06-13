@@ -44,6 +44,7 @@ export class MemStorage implements IStorage {
   private currentProfileId: number;
   private scriptsDir: string;
   private profilesDir: string;
+  private tasksDir: string;
 
   constructor() {
     this.tasks = new Map();
@@ -54,15 +55,58 @@ export class MemStorage implements IStorage {
     this.currentProfileId = 1;
     this.scriptsDir = path.resolve(process.cwd(), 'scripts');
     this.profilesDir = path.resolve(process.cwd(), 'profiles');
+    this.tasksDir = path.resolve(process.cwd(), 'tasks');
     this.initializeDirectories();
+    this.loadTasksFromFiles();
   }
 
   private async initializeDirectories() {
     try {
       await fs.mkdir(this.scriptsDir, { recursive: true });
       await fs.mkdir(this.profilesDir, { recursive: true });
+      await fs.mkdir(this.tasksDir, { recursive: true });
     } catch (error) {
       console.error('Error creating directories:', error);
+    }
+  }
+
+  private async loadTasksFromFiles() {
+    try {
+      const files = await fs.readdir(this.tasksDir);
+      let maxId = 0;
+      
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const filePath = path.join(this.tasksDir, file);
+          const content = await fs.readFile(filePath, 'utf-8');
+          const task = JSON.parse(content) as Task;
+          this.tasks.set(task.id, task);
+          maxId = Math.max(maxId, task.id);
+        }
+      }
+      
+      this.currentTaskId = maxId + 1;
+    } catch (error) {
+      console.error('Error loading tasks from files:', error);
+    }
+  }
+
+  private async saveTaskToFile(task: Task): Promise<void> {
+    try {
+      const filePath = path.join(this.tasksDir, `task_${task.id}.json`);
+      await fs.writeFile(filePath, JSON.stringify(task, null, 2));
+    } catch (error) {
+      console.error('Error saving task to file:', error);
+      throw error;
+    }
+  }
+
+  private async deleteTaskFile(taskId: number): Promise<void> {
+    try {
+      const filePath = path.join(this.tasksDir, `task_${taskId}.json`);
+      await fs.unlink(filePath);
+    } catch (error) {
+      console.error('Error deleting task file:', error);
     }
   }
 
@@ -85,6 +129,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date().toISOString(),
     };
     this.tasks.set(id, task);
+    await this.saveTaskToFile(task);
     return task;
   }
 
@@ -94,11 +139,16 @@ export class MemStorage implements IStorage {
     
     const updatedTask = { ...existingTask, ...updateData };
     this.tasks.set(id, updatedTask);
+    await this.saveTaskToFile(updatedTask);
     return updatedTask;
   }
 
   async deleteTask(id: number): Promise<boolean> {
-    return this.tasks.delete(id);
+    const deleted = this.tasks.delete(id);
+    if (deleted) {
+      await this.deleteTaskFile(id);
+    }
+    return deleted;
   }
 
   // Script methods
