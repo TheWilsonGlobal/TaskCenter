@@ -29,6 +29,7 @@ export default function ProfilesTab() {
   const [proxyPassword, setProxyPassword] = useState("");
   const [scriptSource, setScriptSource] = useState("editor");
   const [customScript, setCustomScript] = useState("");
+  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
   
   const { toast } = useToast();
 
@@ -50,6 +51,26 @@ export default function ProfilesTab() {
       toast({
         title: "Error",
         description: error.message || "Failed to create profile",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: ({ id, profileData }: { id: number; profileData: any }) => 
+      apiRequest("PUT", `/api/profiles/${id}`, profileData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
+      resetForm();
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update profile",
         variant: "destructive",
       });
     },
@@ -91,6 +112,44 @@ export default function ProfilesTab() {
     setProxyPassword("");
     setScriptSource("editor");
     setCustomScript("");
+    setSelectedProfileId(null);
+  };
+
+  const loadProfileData = (profile: Profile) => {
+    // Parse the profile content to get the configuration
+    try {
+      const profileConfig = JSON.parse(profile.content);
+      
+      setProfileName(profile.filename.replace('.json', ''));
+      setName(profile.name || profileConfig.name || "Custom Profile");
+      setDescription(profile.description || profileConfig.description || "");
+      setUserAgent(profile.userAgent || profileConfig.userAgent || "chrome-linux");
+      setCustomUserAgent(profile.customUserAgent || profileConfig.customUserAgent || "");
+      setViewportWidth(String(profile.viewportWidth || profileConfig.viewportWidth || 1920));
+      setViewportHeight(String(profile.viewportHeight || profileConfig.viewportHeight || 1080));
+      setTimezone(profile.timezone || profileConfig.timezone || "America/New_York");
+      setLanguage(profile.language || profileConfig.language || "en-US");
+      setUseProxy(profile.useProxy || profileConfig.useProxy || false);
+      setProxyType(profile.proxyType || profileConfig.proxyType || "http");
+      setProxyHost(profile.proxyHost || profileConfig.proxyHost || "");
+      setProxyPort(profile.proxyPort || profileConfig.proxyPort || "");
+      setProxyUsername(profile.proxyUsername || profileConfig.proxyUsername || "");
+      setProxyPassword(profile.proxyPassword || profileConfig.proxyPassword || "");
+      setScriptSource(profile.scriptSource || profileConfig.scriptSource || "editor");
+      setCustomScript(profile.customScript || profileConfig.customScript || "");
+      setSelectedProfileId(profile.id);
+      
+      toast({
+        title: "Profile loaded",
+        description: `${profile.filename} configuration loaded for editing`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load profile configuration",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSaveProfile = () => {
@@ -107,7 +166,7 @@ export default function ProfilesTab() {
     const finalProfileName = profileName.endsWith('.json') ? profileName : `${profileName}.json`;
 
     const profileConfig = {
-      id: `profile_${Date.now()}`,
+      id: selectedProfileId ? `profile_${selectedProfileId}` : `profile_${Date.now()}`,
       name,
       description,
       userAgent,
@@ -124,7 +183,7 @@ export default function ProfilesTab() {
       proxyPassword,
       scriptSource,
       customScript,
-      created: new Date().toISOString(),
+      created: selectedProfileId ? undefined : new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };
 
@@ -150,7 +209,13 @@ export default function ProfilesTab() {
       customScript,
     };
 
-    createProfileMutation.mutate(profileData);
+    if (selectedProfileId) {
+      // Update existing profile
+      updateProfileMutation.mutate({ id: selectedProfileId, profileData });
+    } else {
+      // Create new profile
+      createProfileMutation.mutate(profileData);
+    }
   };
 
   const handleDownload = async (profile: Profile) => {
@@ -266,7 +331,12 @@ export default function ProfilesTab() {
                         >
                           <Download className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" title="Edit">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => loadProfileData(profile)}
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button 
@@ -292,7 +362,16 @@ export default function ProfilesTab() {
       <div>
         <Card>
           <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-medium text-slate-900">Profile Configuration</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-slate-900">
+                {selectedProfileId ? "Edit Profile Configuration" : "Profile Configuration"}
+              </h3>
+              {selectedProfileId && (
+                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md">
+                  Editing
+                </div>
+              )}
+            </div>
           </div>
           <CardContent className="p-6">
             <div className="space-y-4">
@@ -466,13 +545,17 @@ export default function ProfilesTab() {
               <div className="flex space-x-3 pt-4">
                 <Button 
                   onClick={handleSaveProfile}
-                  disabled={createProfileMutation.isPending}
+                  disabled={createProfileMutation.isPending || updateProfileMutation.isPending}
                   className="flex-1"
                 >
-                  {createProfileMutation.isPending ? "Saving..." : "Save Profile"}
+                  {(createProfileMutation.isPending || updateProfileMutation.isPending) 
+                    ? "Saving..." 
+                    : selectedProfileId 
+                      ? "Update Profile" 
+                      : "Save Profile"}
                 </Button>
                 <Button variant="secondary" onClick={resetForm}>
-                  Reset
+                  {selectedProfileId ? "Cancel Edit" : "Reset"}
                 </Button>
               </div>
             </div>
