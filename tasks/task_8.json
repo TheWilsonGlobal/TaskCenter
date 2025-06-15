@@ -1,5 +1,5 @@
 {
-  "status": "RUNNING",
+  "status": "NEW",
   "workerId": "00001",
   "profile": "Hello.json",
   "script": "screenshot.js",

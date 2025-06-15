@@ -1,5 +1,5 @@
 {
-  "status": "RUNNING",
+  "status": "FAILED",
   "workerId": "00001",
   "profile": "Hello.json",
   "script": "test_script.js",
