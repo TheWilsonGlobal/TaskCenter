@@ -95,6 +95,7 @@ The application uses three main database tables:
 - June 13, 2025. Updated profile configuration schema to support comprehensive browser automation settings including proxy configuration, viewport settings, timezone, language, and custom scripting options
 - June 13, 2025. Implemented JSON file-based task storage system with dedicated tasks folder - all tasks now persist as individual JSON files (task_[id].json) with automatic loading on startup
 - June 13, 2025. Added collapsible sidebar functionality with smooth animations, icon-only view when collapsed, tooltips for navigation items, and responsive footer stats layout
+- June 13, 2025. Added task-specific endpoints: GET /api/tasks/:id/profile and GET /api/tasks/:id/script to retrieve complete profile and script details for individual tasks
 
 ## User Preferences
 
