@@ -3,40 +3,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Code, Download, Edit, Trash2, CloudUpload } from "lucide-react";
+import { Code, Download, Edit, Trash2 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import type { Script } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ScriptsTab() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedScriptId, setSelectedScriptId] = useState<number | null>(null);
   const [scriptName, setScriptName] = useState("");
   const [description, setDescription] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [scriptContent, setScriptContent] = useState("");
   const { toast } = useToast();
 
   const { data: scripts = [], isLoading } = useQuery<Script[]>({
     queryKey: ["/api/scripts"],
   });
 
-  const uploadScriptMutation = useMutation({
-    mutationFn: (formData: FormData) => apiRequest("POST", "/api/scripts", formData),
+  const updateScriptMutation = useMutation({
+    mutationFn: ({ id, scriptData }: { id: number; scriptData: any }) => 
+      apiRequest("PUT", `/api/scripts/${id}`, scriptData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
-      setSelectedFile(null);
-      setScriptName("");
-      setDescription("");
+      resetForm();
       toast({
         title: "Success",
-        description: "Script uploaded successfully",
+        description: "Script updated successfully",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to upload script",
+        description: error.message || "Failed to update script",
         variant: "destructive",
       });
     },
@@ -60,54 +58,52 @@ export default function ScriptsTab() {
     },
   });
 
-  const handleFileSelect = (files: FileList | null) => {
-    if (!files || files.length === 0) return;
+  const resetForm = () => {
+    setScriptName("");
+    setDescription("");
+    setScriptContent("");
+    setSelectedScriptId(null);
+  };
+
+  const loadScriptData = (script: Script) => {
+    setScriptName(script.filename);
+    setDescription(script.description || "");
+    setScriptContent(script.content);
+    setSelectedScriptId(script.id);
     
-    const file = files[0];
-    if (!file.name.endsWith('.ts') && !file.name.endsWith('.js')) {
+    toast({
+      title: "Script loaded",
+      description: `${script.filename} loaded for editing`,
+    });
+  };
+
+  const handleSaveScript = () => {
+    if (!scriptName.trim()) {
       toast({
-        title: "Invalid file type",
-        description: "Only .ts and .js files are allowed",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    setSelectedFile(file);
-    setScriptName(file.name);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFileSelect(e.dataTransfer.files);
-  };
-
-  const handleUpload = () => {
-    if (!selectedFile) {
-      toast({
-        title: "No file selected",
-        description: "Please select a .ts or .js file to upload",
+        title: "Invalid script name",
+        description: "Script name is required",
         variant: "destructive",
       });
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('description', description);
-    
-    uploadScriptMutation.mutate(formData);
+    if (!scriptContent.trim()) {
+      toast({
+        title: "Invalid script content",
+        description: "Script content cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedScriptId) {
+      const scriptData = {
+        filename: scriptName,
+        description,
+        content: scriptContent,
+      };
+      updateScriptMutation.mutate({ id: selectedScriptId, scriptData });
+    }
   };
 
   const handleDownload = async (script: Script) => {
@@ -178,13 +174,7 @@ export default function ScriptsTab() {
       <div className="lg:col-span-2">
         <Card>
           <div className="px-6 py-4 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
-              <Button onClick={() => fileInputRef.current?.click()}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Script
-              </Button>
-            </div>
+            <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
           </div>
           <CardContent className="p-6">
             {scripts.length === 0 ? (
@@ -219,7 +209,12 @@ export default function ScriptsTab() {
                         >
                           <Download className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" title="Edit">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => loadScriptData(script)}
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button 
@@ -241,68 +236,72 @@ export default function ScriptsTab() {
         </Card>
       </div>
 
-      {/* Upload Area */}
+      {/* Script Editor */}
       <div className="lg:col-span-1">
         <Card>
+          <div className="px-6 py-4 border-b border-slate-200">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-slate-900">
+                {selectedScriptId ? "Edit Script" : "Script Editor"}
+              </h3>
+              {selectedScriptId && (
+                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md">
+                  Editing
+                </div>
+              )}
+            </div>
+          </div>
           <CardContent className="p-6">
-            <h3 className="text-lg font-medium text-slate-900 mb-4">Upload New Script</h3>
-            
-            <div
-              className={`upload-area ${isDragging ? 'dragging' : ''}`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <div className="text-center">
-                <CloudUpload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-                <p className="text-slate-600 mb-2">Drag & drop your .ts or .js file here</p>
-                <p className="text-sm text-slate-500">or click to browse</p>
-                {selectedFile && (
-                  <p className="text-sm text-primary mt-2 font-medium">
-                    Selected: {selectedFile.name}
-                  </p>
-                )}
+            {!selectedScriptId ? (
+              <div className="text-center text-slate-500 py-8">
+                Select a script from the list to view and edit its source code.
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept=".ts,.js"
-                onChange={(e) => handleFileSelect(e.target.files)}
-              />
-            </div>
-
-            <div className="mt-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
-                <Input
-                  type="text"
-                  value={scriptName}
-                  onChange={(e) => setScriptName(e.target.value)}
-                  placeholder="Enter script name"
-                />
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
+                  <Input
+                    type="text"
+                    value={scriptName}
+                    onChange={(e) => setScriptName(e.target.value)}
+                    placeholder="Enter script name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Brief description of the script"
+                    className="h-20"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Source Code</label>
+                  <Textarea
+                    value={scriptContent}
+                    onChange={(e) => setScriptContent(e.target.value)}
+                    placeholder="// Script source code will appear here"
+                    className="h-64 font-mono text-sm"
+                  />
+                </div>
+                
+                <div className="flex space-x-3 pt-4">
+                  <Button 
+                    onClick={handleSaveScript}
+                    disabled={updateScriptMutation.isPending}
+                    className="flex-1"
+                  >
+                    {updateScriptMutation.isPending ? "Saving..." : "Update Script"}
+                  </Button>
+                  <Button variant="secondary" onClick={resetForm}>
+                    Cancel Edit
+                  </Button>
+                </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                <Textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of the script"
-                  className="h-20"
-                />
-              </div>
-              
-              <Button 
-                onClick={handleUpload}
-                disabled={!selectedFile || uploadScriptMutation.isPending}
-                className="w-full"
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                {uploadScriptMutation.isPending ? "Uploading..." : "Upload Script"}
-              </Button>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
