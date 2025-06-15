@@ -1,5 +1,5 @@
 {
-  "status": "FAILED",
+  "status": "READY",
   "workerId": "00001",
   "profile": "Hello.json",
   "script": "new_script.ts",

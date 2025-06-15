@@ -32,9 +32,14 @@ export default function ProfilesTab() {
   
   const { toast } = useToast();
 
-  const { data: profiles = [], isLoading } = useQuery<Profile[]>({
+  const { data: profiles = [], isLoading, error } = useQuery<Profile[]>({
     queryKey: ["/api/profiles"],
   });
+
+  // Debug logging
+  console.log("ProfilesTab - profiles data:", profiles);
+  console.log("ProfilesTab - isLoading:", isLoading);
+  console.log("ProfilesTab - error:", error);
 
   const createProfileMutation = useMutation({
     mutationFn: (profileData: any) => apiRequest("POST", "/api/profiles", profileData),
