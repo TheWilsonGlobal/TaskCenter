@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
@@ -16,6 +17,8 @@ export default function TasksTab() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -111,6 +114,11 @@ export default function TasksTab() {
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
     setIsEditModalOpen(true);
+  };
+
+  const handleShowTaskDetails = (task: Task) => {
+    setSelectedTask(task);
+    setIsDetailsModalOpen(true);
   };
 
   if (isLoading) {
@@ -275,7 +283,6 @@ export default function TasksTab() {
                 <TableHead>Worker ID</TableHead>
                 <TableHead>Profile</TableHead>
                 <TableHead>Script</TableHead>
-                <TableHead>Respond</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -283,7 +290,7 @@ export default function TasksTab() {
             <TableBody>
               {filteredTasks.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-slate-500 py-8">
+                  <TableCell colSpan={7} className="text-center text-slate-500 py-8">
                     {searchTerm || statusFilter !== "all" 
                       ? "No tasks match your filters"
                       : "No tasks created yet. Create your first task to get started."
@@ -294,15 +301,17 @@ export default function TasksTab() {
                 filteredTasks.map((task) => (
                   <TableRow key={task.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
-                      {String(task.id).padStart(3, "0")}
+                      <button
+                        onClick={() => handleShowTaskDetails(task)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {String(task.id).padStart(3, "0")}
+                      </button>
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
                     <TableCell>{task.profile}</TableCell>
                     <TableCell className="font-mono text-sm">{task.script}</TableCell>
-                    <TableCell className="text-slate-600 max-w-xs truncate" title={task.respond || "No response"}>
-                      {task.respond || "—"}
-                    </TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
                     </TableCell>
@@ -409,6 +418,66 @@ export default function TasksTab() {
         onOpenChange={setIsEditModalOpen}
         task={editingTask}
       />
+
+      {/* Task Details Modal */}
+      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Task Details - #{selectedTask ? String(selectedTask.id).padStart(3, "0") : ""}</DialogTitle>
+          </DialogHeader>
+          {selectedTask && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Task ID</label>
+                  <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(3, "0")}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                  <div>{getStatusBadge(selectedTask.status)}</div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Worker ID</label>
+                  <p className="text-sm text-slate-900">{selectedTask.workerId}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Profile</label>
+                  <p className="text-sm text-slate-900">{selectedTask.profile}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Script</label>
+                  <p className="text-sm text-slate-900 font-mono">{selectedTask.script}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Created</label>
+                  <p className="text-sm text-slate-900">{formatDate(selectedTask.createdAt)}</p>
+                </div>
+              </div>
+              
+              {selectedTask.respond && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Response</label>
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <p className="text-sm text-slate-900 whitespace-pre-wrap">{selectedTask.respond}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex justify-end space-x-3">
+                <Button variant="outline" onClick={() => setIsDetailsModalOpen(false)}>
+                  Close
+                </Button>
+                <Button onClick={() => {
+                  setIsDetailsModalOpen(false);
+                  handleEditTask(selectedTask);
+                }}>
+                  Edit Task
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

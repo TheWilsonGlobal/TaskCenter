@@ -1,5 +1,5 @@
 {
-  "status": "READY",
+  "status": "NEW",
   "workerId": "00002",
   "profile": "GoodByte.json",
   "script": "screenshot.js",
