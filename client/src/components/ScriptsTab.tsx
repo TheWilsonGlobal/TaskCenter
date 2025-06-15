@@ -179,7 +179,7 @@ export default function ScriptsTab() {
           <CardContent className="p-6">
             {scripts.length === 0 ? (
               <div className="text-center text-slate-500 py-8">
-                No scripts uploaded yet. Upload your first TypeScript script to get started.
+                No scripts available. Scripts will appear here when they are added to the system.
               </div>
             ) : (
               <div className="space-y-4">
