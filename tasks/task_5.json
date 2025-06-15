@@ -1,9 +1,9 @@
 {
-  "status": "NEW",
+  "status": "RUNNING",
   "workerId": "00001",
   "profile": "Hello.json",
   "script": "test_script.js",
-  "respond": "",
+  "respond": "Task started successfully",
   "id": 5,
   "createdAt": "2025-06-13T08:36:29.782Z"
 }

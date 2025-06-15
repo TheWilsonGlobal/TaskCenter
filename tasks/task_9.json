@@ -1,9 +1,9 @@
 {
-  "status": "FAILED",
+  "status": "RUNNING",
   "workerId": "00001",
   "profile": "Hello.json",
-  "script": "new_script.ts",
-  "respond": "",
+  "script": "test_script.js",
+  "respond": "Task started successfully",
   "id": 9,
   "createdAt": "2025-06-13T11:44:14.379Z"
 }
