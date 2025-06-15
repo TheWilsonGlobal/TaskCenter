@@ -467,12 +467,14 @@ export default function TasksTab() {
                 <Button variant="outline" onClick={() => setIsDetailsModalOpen(false)}>
                   Close
                 </Button>
-                <Button onClick={() => {
-                  setIsDetailsModalOpen(false);
-                  handleEditTask(selectedTask);
-                }}>
-                  Edit Task
-                </Button>
+                {selectedTask.status === "NEW" && (
+                  <Button onClick={() => {
+                    setIsDetailsModalOpen(false);
+                    handleEditTask(selectedTask);
+                  }}>
+                    Edit Task
+                  </Button>
+                )}
               </div>
             </div>
           )}
