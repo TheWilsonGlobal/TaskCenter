@@ -58,7 +58,6 @@ export default function TasksTab() {
       RUNNING: "status-running",
       COMPLETED: "status-completed",
       FAILED: "status-failed",
-      CONFIRMED: "bg-emerald-100 text-emerald-800",
       REJECTED: "bg-red-100 text-red-800",
     };
     return (
@@ -81,7 +80,6 @@ export default function TasksTab() {
       running: stats.RUNNING || 0,
       completed: stats.COMPLETED || 0,
       failed: stats.FAILED || 0,
-      confirmed: stats.CONFIRMED || 0,
       rejected: stats.REJECTED || 0,
     };
   };
@@ -203,20 +201,6 @@ export default function TasksTab() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600">Confirmed</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.confirmed}</p>
-              </div>
-              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <Check className="text-emerald-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
                 <p className="text-sm font-medium text-slate-600">Rejected</p>
                 <p className="text-2xl font-bold text-slate-900">{stats.rejected}</p>
               </div>
@@ -255,7 +239,6 @@ export default function TasksTab() {
                   <SelectItem value="RUNNING">RUNNING</SelectItem>
                   <SelectItem value="COMPLETED">COMPLETED</SelectItem>
                   <SelectItem value="FAILED">FAILED</SelectItem>
-                  <SelectItem value="CONFIRMED">CONFIRMED</SelectItem>
                   <SelectItem value="REJECTED">REJECTED</SelectItem>
                 </SelectContent>
               </Select>
@@ -329,32 +312,10 @@ export default function TasksTab() {
                             {task.status === "NEW" ? "Active" : "Inactive"}
                           </Button>
                         ) : task.status === "COMPLETED" ? (
-                          <>
-                            <Button 
-                              variant="default"
-                              size="sm" 
-                              title="Confirm Task (COMPLETED → CONFIRMED)"
-                              onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "CONFIRMED" })}
-                              disabled={updateTaskStatusMutation.isPending}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                            >
-                              Confirm
-                            </Button>
-                            <Button 
-                              variant="destructive"
-                              size="sm" 
-                              title="Reject Task (COMPLETED → REJECTED)"
-                              onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "REJECTED" })}
-                              disabled={updateTaskStatusMutation.isPending}
-                            >
-                              Reject
-                            </Button>
-                          </>
-                        ) : task.status === "CONFIRMED" ? (
                           <Button 
                             variant="destructive"
                             size="sm" 
-                            title="Reject Task (CONFIRMED → REJECTED)"
+                            title="Reject Task (COMPLETED → REJECTED)"
                             onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "REJECTED" })}
                             disabled={updateTaskStatusMutation.isPending}
                           >
@@ -364,12 +325,12 @@ export default function TasksTab() {
                           <Button 
                             variant="default"
                             size="sm" 
-                            title="Confirm Task (REJECTED → CONFIRMED)"
-                            onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "CONFIRMED" })}
+                            title="Mark as Completed (REJECTED → COMPLETED)"
+                            onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "COMPLETED" })}
                             disabled={updateTaskStatusMutation.isPending}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
                           >
-                            Confirm
+                            Complete
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" title="View Details">

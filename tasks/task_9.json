@@ -1,9 +1,9 @@
 {
-  "status": "COMPLETED",
+  "status": "READY",
   "workerId": "00001",
   "profile": "Hello.json",
   "script": "test_script.js",
-  "respond": "Script executed successfully. Execution time: 972ms. Output: No output",
+  "respond": "",
   "id": 9,
   "createdAt": "2025-06-13T11:44:14.379Z"
 }
