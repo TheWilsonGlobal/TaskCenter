@@ -80,6 +80,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get profile for a specific task
+  app.get("/api/tasks/:id/profile", async (req: Request, res: Response) => {
+    try {
+      const taskId = parseInt(req.params.id);
+      const task = await storage.getTask(taskId);
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      
+      const profile = await storage.getProfileByFilename(task.profile);
+      if (!profile) {
+        return res.status(404).json({ error: "Profile not found for this task" });
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch task profile" });
+    }
+  });
+
+  // Get script for a specific task
+  app.get("/api/tasks/:id/script", async (req: Request, res: Response) => {
+    try {
+      const taskId = parseInt(req.params.id);
+      const task = await storage.getTask(taskId);
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+      
+      const script = await storage.getScriptByFilename(task.script);
+      if (!script) {
+        return res.status(404).json({ error: "Script not found for this task" });
+      }
+      
+      res.json(script);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch task script" });
+    }
+  });
+
   // Script routes
   app.get("/api/scripts", async (req: Request, res: Response) => {
     try {

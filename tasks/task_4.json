@@ -1,6 +1,6 @@
 {
-  "status": "RUNNING",
-  "workerId": "123123",
+  "status": "READY",
+  "workerId": "00002",
   "profile": "GoodByte.json",
   "script": "screenshot.js",
   "respond": "",
