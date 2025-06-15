@@ -36,6 +36,9 @@ export default function ProfilesTab() {
     queryKey: ["/api/profiles"],
   });
 
+  // Debug logging
+  console.log("ProfilesTab - profiles:", profiles, "length:", profiles.length, "isLoading:", isLoading);
+
   const createProfileMutation = useMutation({
     mutationFn: (profileData: any) => apiRequest("POST", "/api/profiles", profileData),
     onSuccess: () => {
