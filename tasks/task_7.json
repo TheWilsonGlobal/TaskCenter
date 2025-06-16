@@ -1,9 +1,9 @@
 {
-  "status": "READY",
+  "status": "FAILED",
   "workerId": "00001",
-  "profile": "Hello.json",
-  "script": "test_script.js",
-  "respond": "",
+  "profile": "Profile Full HD.json",
+  "script": "task7.js",
+  "respond": "Task failed by automation system",
   "id": 7,
   "createdAt": "2025-06-13T10:48:02.863Z"
 }

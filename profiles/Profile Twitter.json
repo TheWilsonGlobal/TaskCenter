@@ -1,0 +1,20 @@
+{
+  "id": "profile_5",
+  "name": "Hello",
+  "description": "New browser profile",
+  "userAgent": "chrome-linux",
+  "customUserAgent": "",
+  "viewportWidth": 1980,
+  "viewportHeight": 720,
+  "timezone": "America/New_York",
+  "language": "en-US",
+  "useProxy": true,
+  "proxyType": "http",
+  "proxyHost": "http://mastertool:WajosW5771@pro079.nguyenluy911.win:20079",
+  "proxyPort": "",
+  "proxyUsername": "",
+  "proxyPassword": "",
+  "scriptSource": "editor",
+  "customScript": "",
+  "lastModified": "2025-06-16T10:44:40.499Z"
+}

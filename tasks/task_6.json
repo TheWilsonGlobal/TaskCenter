@@ -1,9 +1,9 @@
 {
-  "status": "READY",
+  "status": "RUNNING",
   "workerId": "00001",
-  "profile": "Hello.json",
-  "script": "screenshot.js",
-  "respond": "",
+  "profile": "Profile Twitter.json",
+  "script": "task6.js",
+  "respond": "Task running by automation system",
   "id": 6,
   "createdAt": "2025-06-13T10:47:53.753Z"
 }
