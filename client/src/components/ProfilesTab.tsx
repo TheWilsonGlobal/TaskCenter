@@ -29,6 +29,7 @@ export default function ProfilesTab() {
   const [proxyPassword, setProxyPassword] = useState("");
   const [scriptSource, setScriptSource] = useState("editor");
   const [customScript, setCustomScript] = useState("");
+  const [customField, setCustomField] = useState("{}");
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
   
   const { toast } = useToast();
@@ -112,6 +113,7 @@ export default function ProfilesTab() {
     setProxyPassword("");
     setScriptSource("editor");
     setCustomScript("");
+    setCustomField("{}");
     setSelectedProfileId(null);
   };
 
@@ -137,6 +139,7 @@ export default function ProfilesTab() {
       setProxyPassword(profile.proxyPassword || profileConfig.proxyPassword || "");
       setScriptSource(profile.scriptSource || profileConfig.scriptSource || "editor");
       setCustomScript(profile.customScript || profileConfig.customScript || "");
+      setCustomField(profile.customField || profileConfig.custom_fields ? JSON.stringify(profileConfig.custom_fields, null, 2) : "{}");
       setSelectedProfileId(profile.id);
       
       toast({
@@ -157,6 +160,19 @@ export default function ProfilesTab() {
       toast({
         title: "Invalid profile name",
         description: "Profile name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate custom field JSON
+    let customFieldData = {};
+    try {
+      customFieldData = JSON.parse(customField);
+    } catch (error) {
+      toast({
+        title: "Invalid JSON",
+        description: "Custom field must be valid JSON format",
         variant: "destructive",
       });
       return;
@@ -183,6 +199,7 @@ export default function ProfilesTab() {
       proxyPassword,
       scriptSource,
       customScript,
+      custom_fields: customFieldData,
       created: selectedProfileId ? undefined : new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };
@@ -207,6 +224,7 @@ export default function ProfilesTab() {
       proxyPassword,
       scriptSource,
       customScript,
+      customField,
     };
 
     if (selectedProfileId) {
