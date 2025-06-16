@@ -1,8 +1,8 @@
 {
-  "status": "NEW",
+  "status": "READY",
   "workerId": "00001",
-  "profile": "Profile HD.json",
-  "script": "task6.js",
+  "profile": "Hello.json",
+  "script": "screenshot.js",
   "respond": "",
   "id": 6,
   "createdAt": "2025-06-13T10:47:53.753Z"
