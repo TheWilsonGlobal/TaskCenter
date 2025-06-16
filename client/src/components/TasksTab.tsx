@@ -131,7 +131,7 @@ export default function TasksTab() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600">Total Tasks</p>
+                <p className="text-sm font-medium text-slate-600">Task List</p>
                 <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -288,7 +288,7 @@ export default function TasksTab() {
                         onClick={() => handleShowTaskDetails(task)}
                         className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                       >
-                        {String(task.id).padStart(3, "0")}
+                        [{String(task.id).padStart(5, "0")}]
                       </button>
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
@@ -384,14 +384,14 @@ export default function TasksTab() {
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Task Details - #{selectedTask ? String(selectedTask.id).padStart(3, "0") : ""}</DialogTitle>
+            <DialogTitle>Task Details - {selectedTask ? `[${String(selectedTask.id).padStart(5, "0")}]` : ""}</DialogTitle>
           </DialogHeader>
           {selectedTask && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Task ID</label>
-                  <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(3, "0")}</p>
+                  <p className="text-sm text-slate-900 font-mono">[{String(selectedTask.id).padStart(5, "0")}]</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
