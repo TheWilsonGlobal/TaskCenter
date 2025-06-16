@@ -216,7 +216,7 @@ export default function TasksTab() {
       <Card>
         <div className="px-6 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-slate-900">ListTodo</h3>
+            <h3 className="text-lg font-medium text-slate-900">Task List</h3>
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <Input
@@ -288,7 +288,7 @@ export default function TasksTab() {
                         onClick={() => handleShowTaskDetails(task)}
                         className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                       >
-                        {String(task.id).padStart(3, "0")}
+                        {String(task.id).padStart(5, "0")}
                       </button>
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
@@ -384,14 +384,14 @@ export default function TasksTab() {
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Task Details - #{selectedTask ? String(selectedTask.id).padStart(3, "0") : ""}</DialogTitle>
+            <DialogTitle>Task Details - #{selectedTask ? String(selectedTask.id).padStart(5, "0") : ""}</DialogTitle>
           </DialogHeader>
           {selectedTask && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Task ID</label>
-                  <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(3, "0")}</p>
+                  <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(5, "0")}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
