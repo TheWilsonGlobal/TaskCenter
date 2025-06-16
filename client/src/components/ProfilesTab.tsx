@@ -560,6 +560,17 @@ export default function ProfilesTab() {
                 )}
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Custom Fields (JSON)</label>
+                <Textarea
+                  value={customField}
+                  onChange={(e) => setCustomField(e.target.value)}
+                  placeholder='{"twitter_account": {"username": "example", "password": "secret", "email": "user@example.com"}}'
+                  className="h-32 font-mono text-sm"
+                />
+                <p className="text-xs text-slate-500 mt-1">Add custom configuration data in JSON format. This data will be available in scripts as profile.custom_fields</p>
+              </div>
+
               <div className="flex space-x-3 pt-4">
                 <Button 
                   onClick={handleSaveProfile}

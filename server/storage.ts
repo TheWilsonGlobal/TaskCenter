@@ -293,6 +293,7 @@ export class MemStorage implements IStorage {
               proxyPassword: parsedContent.proxyPassword || "",
               scriptSource: parsedContent.scriptSource || "editor",
               customScript: parsedContent.customScript || parsedContent.customScripts || "",
+              customField: parsedContent.custom_fields ? JSON.stringify(parsedContent.custom_fields) : "{}",
               createdAt: stats.birthtime.toISOString(),
               updatedAt: stats.mtime.toISOString(),
             };
@@ -338,6 +339,7 @@ export class MemStorage implements IStorage {
       proxyPassword: insertProfile.proxyPassword || "",
       scriptSource: insertProfile.scriptSource || "editor",
       customScript: insertProfile.customScript || "",
+      customField: insertProfile.customField ?? "{}",
       createdAt: now,
       updatedAt: now,
     };

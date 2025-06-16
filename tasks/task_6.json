@@ -1,9 +1,9 @@
 {
-  "status": "RUNNING",
+  "status": "FAILED",
   "workerId": "00001",
   "profile": "Profile Twitter.json",
   "script": "task6.js",
-  "respond": "Task running by automation system",
+  "respond": "Task failed by automation system",
   "id": 6,
   "createdAt": "2025-06-13T10:47:53.753Z"
 }

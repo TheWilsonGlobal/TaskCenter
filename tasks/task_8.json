@@ -1,9 +1,9 @@
 {
-  "status": "RUNNING",
+  "status": "FAILED",
   "workerId": "00001",
   "profile": "Profile Full HD.json",
   "script": "task8.js",
-  "respond": "Task running by automation system",
+  "respond": "Task failed by automation system",
   "id": 8,
   "createdAt": "2025-06-13T10:48:08.785Z"
 }
