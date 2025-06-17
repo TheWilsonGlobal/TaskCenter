@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Code, Download, Edit, Trash2 } from "lucide-react";
+import { Code, Download, Edit, Trash2, Plus } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Script } from "@shared/schema";
@@ -18,6 +18,25 @@ export default function ScriptsTab() {
 
   const { data: scripts = [], isLoading } = useQuery<Script[]>({
     queryKey: ["/api/scripts"],
+  });
+
+  const createScriptMutation = useMutation({
+    mutationFn: (scriptData: any) => apiRequest("POST", "/api/scripts", scriptData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
+      resetForm();
+      toast({
+        title: "Success",
+        description: "Script created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create script",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateScriptMutation = useMutation({
@@ -59,9 +78,9 @@ export default function ScriptsTab() {
   });
 
   const resetForm = () => {
-    setScriptName("");
-    setDescription("");
-    setScriptContent("");
+    setScriptName("new_script.js");
+    setDescription("New script file");
+    setScriptContent("// Your script code here\nconsole.log('Hello, World!');");
     setSelectedScriptId(null);
   };
 
@@ -96,13 +115,18 @@ export default function ScriptsTab() {
       return;
     }
 
+    const scriptData = {
+      filename: scriptName,
+      description,
+      content: scriptContent,
+    };
+
     if (selectedScriptId) {
-      const scriptData = {
-        filename: scriptName,
-        description,
-        content: scriptContent,
-      };
+      // Update existing script
       updateScriptMutation.mutate({ id: selectedScriptId, scriptData });
+    } else {
+      // Create new script
+      createScriptMutation.mutate(scriptData);
     }
   };
 
@@ -174,7 +198,13 @@ export default function ScriptsTab() {
       <div className="lg:col-span-2">
         <Card>
           <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
+              <Button onClick={resetForm}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Script
+              </Button>
+            </div>
           </div>
           <CardContent className="p-6">
             {scripts.length === 0 ? (
@@ -252,9 +282,9 @@ export default function ScriptsTab() {
             </div>
           </div>
           <CardContent className="p-6">
-            {!selectedScriptId ? (
+            {!selectedScriptId && scriptName === "" ? (
               <div className="text-center text-slate-500 py-8">
-                Select a script from the list to view and edit its source code.
+                Select a script from the list to edit or click "New Script" to create one.
               </div>
             ) : (
               <div className="space-y-4">
@@ -291,13 +321,22 @@ export default function ScriptsTab() {
                 <div className="flex space-x-3 pt-4">
                   <Button 
                     onClick={handleSaveScript}
-                    disabled={updateScriptMutation.isPending}
+                    disabled={createScriptMutation.isPending || updateScriptMutation.isPending}
                     className="flex-1"
                   >
-                    {updateScriptMutation.isPending ? "Saving..." : "Update Script"}
+                    {(createScriptMutation.isPending || updateScriptMutation.isPending) 
+                      ? "Saving..." 
+                      : selectedScriptId 
+                        ? "Update Script" 
+                        : "Create Script"}
                   </Button>
-                  <Button variant="secondary" onClick={resetForm}>
-                    Cancel Edit
+                  <Button variant="secondary" onClick={() => {
+                    setScriptName("");
+                    setDescription("");
+                    setScriptContent("");
+                    setSelectedScriptId(null);
+                  }}>
+                    {selectedScriptId ? "Cancel Edit" : "Reset"}
                   </Button>
                 </div>
               </div>

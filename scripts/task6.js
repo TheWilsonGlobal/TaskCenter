@@ -1,37 +1,24 @@
-const jsonData = fs.readFileSync("./profiles/profile_from_task_5/config.json", "utf8");
-const profileData = JSON.parse(jsonData);
-const twitterUsername = profileData.custom_fields?.twitter_account?.username;
-const twitterPassword = profileData.custom_fields?.twitter_account?.password;
-const twitterEmail = profileData.custom_fields?.twitter_account?.email;
-const twitter2FA = profileData.custom_fields?.twitter_account?.["2fa"];
-logger.info("twitterUsername" + twitterUsername);
+const configData = fs.readFileSync("./profiles/profile_from_task_6/config.json", "utf8");
+const profileData = JSON.parse(configData);
 
-// Log in twitter
+cookies = profileData.custom_fields?.twitter_account?.cookies;
+await page.setCookie(...cookies);
 await page.goto("https://www.twitter.com");
-await pause(2000);
-if (await click(page, "//span[text()='Sign in']")) {
-    await type(page, "//input[@autocomplete='username']", twitterUsername);
-    await click(page, "//span[text()='Next']");
-    // await pause(2000);
-    await type(page, "//input[@autocomplete='current-password']", twitterPassword);
-    await click(page, "//span[text()='Log in']");
+await twitterComment();
 
-    // const speakeasy = require("speakeasy");
-
-    const token = speakeasy.totp({
-        secret: twitter2FA,
-        encoding: "base32",
-    });
-    await type(page, "//input[@autocomplete='on']", token);
-    await click(page, "//span[text()='Next']");
+async function twitterComment() {
+    console.log("Comment...");
+    await pause(2000);
+    await click(page, "//div[@data-testId='tweetText']");
+    await pause(2000);
+    await type(page, "//div[@data-testid='tweetTextarea_0']", "👍");
+    await pause(2000);
+    await click(page, "//button/div/span/span[text()='Reply']");
+    await pause(3000);
+    const commentURL = await getAttribute(page,"//a[contains(@href,'0xDavidOlsen') and time]","href");
+    await page.goto(commentURL);
+  
 }
-
-await pause(2000);
-await click(page, "//button[@data-testid='like']");
-await page.screenshot({
-    path: "./output/twitter.png",
-    fullPage: true,
-});
 
 async function pause(time) {
     return new Promise(function (resolve) {
@@ -53,6 +40,24 @@ async function click(page, xpath) {
 }
 
 async function type(page, xpath, text) {
-    const element = await page.waitForSelector("::-p-xpath(" + xpath + ")", { timeout: 5000 }); // Wait up to 5 seconds
+    const element = await page.waitForSelector("::-p-xpath(" + xpath + ")");
     await element.type(text);
+}
+
+async function getAttribute(page, xpath, attributeName) {
+    try {
+        // 1. Wait for the element to appear on the page
+        const element = await page.waitForSelector("::-p-xpath(" + xpath + ")");
+        const propertyHandle = await element.getProperty(attributeName);
+        const propertyValue = await propertyHandle.jsonValue();
+        return propertyValue;
+    } catch (error) {
+        // Handle cases where selector might not be found within timeout
+        if (error.name === "TimeoutError") {
+            console.warn(`Timeout waiting for element with selector "${xpath}".`);
+            return null;
+        }
+        console.error(`Error getting attribute "${attributeName}" for "${xpath}":`, error);
+        return null;
+    }
 }
