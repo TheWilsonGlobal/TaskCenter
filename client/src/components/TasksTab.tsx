@@ -6,9 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw } from "lucide-react";
+import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { Task } from "@shared/schema";
 import EditTaskModal from "@/components/EditTaskModal";
 
@@ -23,6 +23,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -121,6 +122,18 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const handleShowTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsDetailsModalOpen(true);
+  };
+
+  const scrollUp = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ top: -100, behavior: 'smooth' });
+    }
+  };
+
+  const scrollDown = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ top: 100, behavior: 'smooth' });
+    }
   };
 
   if (isLoading) {
@@ -394,49 +407,78 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
       {/* Task Details Modal */}
       <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Task Details - #{selectedTask ? String(selectedTask.id).padStart(5, "0") : ""}</DialogTitle>
           </DialogHeader>
           {selectedTask && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Task ID</label>
-                  <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(5, "0")}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
-                  <div>{getStatusBadge(selectedTask.status)}</div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Worker ID</label>
-                  <p className="text-sm text-slate-900">{selectedTask.workerId}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Profile</label>
-                  <p className="text-sm text-slate-900">{selectedTask.profile}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Script</label>
-                  <p className="text-sm text-slate-900 font-mono">{selectedTask.script}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Created</label>
-                  <p className="text-sm text-slate-900">{formatDate(selectedTask.createdAt)}</p>
-                </div>
+            <div className="flex-1 relative">
+              {/* Scroll Controls */}
+              <div className="absolute right-2 top-2 z-10 flex flex-col space-y-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={scrollUp}
+                  className="w-8 h-8 p-0"
+                  title="Scroll up"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={scrollDown}
+                  className="w-8 h-8 p-0"
+                  title="Scroll down"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </div>
-              
-              {selectedTask.respond && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Response</label>
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-900 whitespace-pre-wrap">{selectedTask.respond}</p>
+
+              {/* Scrollable Content */}
+              <div 
+                ref={scrollContainerRef}
+                className="max-h-[50vh] overflow-y-auto pr-12 space-y-6"
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Task ID</label>
+                    <p className="text-sm text-slate-900 font-mono">{String(selectedTask.id).padStart(5, "0")}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <div>{getStatusBadge(selectedTask.status)}</div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Worker ID</label>
+                    <p className="text-sm text-slate-900">{selectedTask.workerId}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Profile</label>
+                    <p className="text-sm text-slate-900">{selectedTask.profile}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Script</label>
+                    <p className="text-sm text-slate-900 font-mono">{selectedTask.script}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Created</label>
+                    <p className="text-sm text-slate-900">{formatDate(selectedTask.createdAt)}</p>
                   </div>
                 </div>
-              )}
+                
+                {selectedTask.respond && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Response</label>
+                    <div className="bg-slate-50 p-4 rounded-lg">
+                      <p className="text-sm text-slate-900 whitespace-pre-wrap">{selectedTask.respond}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
               
-              <div className="flex justify-end space-x-3">
+              {/* Fixed Footer */}
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200 mt-4">
                 <Button variant="outline" onClick={() => setIsDetailsModalOpen(false)}>
                   Close
                 </Button>
