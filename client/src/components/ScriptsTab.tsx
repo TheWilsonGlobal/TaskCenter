@@ -234,10 +234,26 @@ export default function ScriptsTab() {
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
-              <Button onClick={resetForm}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Script
-              </Button>
+              <div className="flex space-x-2">
+                <input
+                  type="file"
+                  id="import-script"
+                  className="hidden"
+                  accept=".js,.ts"
+                  onChange={handleImportScript}
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={() => document.getElementById('import-script')?.click()}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import Script
+                </Button>
+                <Button onClick={resetForm}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Script
+                </Button>
+              </div>
             </div>
           </div>
           <CardContent className="p-6">
@@ -328,7 +344,7 @@ export default function ScriptsTab() {
                     type="text"
                     value={scriptName}
                     onChange={(e) => setScriptName(e.target.value)}
-                    placeholder="Enter script name"
+                    placeholder="New Script"
                   />
                 </div>
                 
