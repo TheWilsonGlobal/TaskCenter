@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus } from "lucide-react";
+import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { Profile } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,6 +31,7 @@ export default function ProfilesTab() {
   const [customScript, setCustomScript] = useState("");
   const [customField, setCustomField] = useState("{}");
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
 
@@ -269,6 +270,101 @@ export default function ProfilesTab() {
     }
   };
 
+  const handleImportProfile = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a JSON file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const profileData = JSON.parse(text);
+
+      // Validate required fields
+      if (!profileData.name) {
+        toast({
+          title: "Invalid profile",
+          description: "Profile must have a name field",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Extract profile configuration
+      const filename = file.name;
+      const profileConfig = {
+        id: profileData.id || `profile_${Date.now()}`,
+        name: profileData.name || "Imported Profile",
+        description: profileData.description || "Imported profile configuration",
+        userAgent: profileData.userAgent || "chrome-linux",
+        customUserAgent: profileData.customUserAgent || "",
+        viewportWidth: profileData.viewportWidth || 1920,
+        viewportHeight: profileData.viewportHeight || 1080,
+        timezone: profileData.timezone || "America/New_York",
+        language: profileData.language || "en-US",
+        useProxy: profileData.useProxy || false,
+        proxyType: profileData.proxyType || "http",
+        proxyHost: profileData.proxyHost || "",
+        proxyPort: profileData.proxyPort || "",
+        proxyUsername: profileData.proxyUsername || "",
+        proxyPassword: profileData.proxyPassword || "",
+        scriptSource: profileData.scriptSource || "editor",
+        customScript: profileData.customScript || "",
+        custom_fields: profileData.custom_fields || {},
+        created: profileData.created || new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+      };
+
+      const importData = {
+        profileId: profileConfig.id,
+        name: profileConfig.name,
+        description: profileConfig.description,
+        filename: filename,
+        content: JSON.stringify(profileConfig, null, 2),
+        userAgent: profileConfig.userAgent,
+        customUserAgent: profileConfig.customUserAgent,
+        viewportWidth: profileConfig.viewportWidth,
+        viewportHeight: profileConfig.viewportHeight,
+        timezone: profileConfig.timezone,
+        language: profileConfig.language,
+        useProxy: profileConfig.useProxy,
+        proxyType: profileConfig.proxyType,
+        proxyHost: profileConfig.proxyHost,
+        proxyPort: profileConfig.proxyPort,
+        proxyUsername: profileConfig.proxyUsername,
+        proxyPassword: profileConfig.proxyPassword,
+        scriptSource: profileConfig.scriptSource,
+        customScript: profileConfig.customScript,
+        customField: JSON.stringify(profileConfig.custom_fields, null, 2),
+      };
+
+      createProfileMutation.mutate(importData);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+    } catch (error) {
+      toast({
+        title: "Import failed",
+        description: "Invalid JSON file or corrupted profile data",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getDeviceIcon = (profile: Profile) => {
     if (profile.viewportWidth && profile.viewportWidth <= 500) return <Smartphone className="text-success h-5 w-5" />;
     if (profile.viewportWidth && profile.viewportWidth <= 1024) return <Tablet className="text-success h-5 w-5" />;
@@ -310,10 +406,16 @@ export default function ProfilesTab() {
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-slate-900">Profile Configurations</h3>
-              <Button onClick={resetForm}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Profile
-              </Button>
+              <div className="flex space-x-2">
+                <Button variant="outline" onClick={handleImportProfile}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import Profile
+                </Button>
+                <Button onClick={resetForm}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Profile
+                </Button>
+              </div>
             </div>
           </div>
           <CardContent className="p-6">
@@ -591,6 +693,15 @@ export default function ProfilesTab() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Hidden file input for profile import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".json"
+        style={{ display: 'none' }}
+      />
     </div>
   );
 }
