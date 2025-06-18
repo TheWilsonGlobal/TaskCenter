@@ -501,9 +501,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(scripts.id, id))
       .returning();
 
-    if (script && updateData.content) {
-      await this.saveScriptFile(script.filename, updateData.content);
-    }
+
 
     return script || undefined;
   }
@@ -514,11 +512,7 @@ export class DatabaseStorage implements IStorage {
 
     const result = await db.delete(scripts).where(eq(scripts.id, id));
     
-    if ((result.rowCount ?? 0) > 0) {
-      await this.deleteScriptFile(script.filename);
-      return true;
-    }
-    return false;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Profile methods
@@ -563,9 +557,6 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     
-    // Save to file system
-    await this.saveProfileFile(profile.filename, profile.content);
-    
     return profile;
   }
 
@@ -581,10 +572,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(profiles.id, id))
       .returning();
 
-    if (profile && updateData.content) {
-      await this.saveProfileFile(profile.filename, updateData.content);
-    }
-
     return profile || undefined;
   }
 
@@ -594,11 +581,7 @@ export class DatabaseStorage implements IStorage {
 
     const result = await db.delete(profiles).where(eq(profiles.id, id));
     
-    if ((result.rowCount ?? 0) > 0) {
-      await this.deleteProfileFile(profile.filename);
-      return true;
-    }
-    return false;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // File system methods (keep for script and profile files)
