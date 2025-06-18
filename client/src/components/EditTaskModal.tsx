@@ -136,8 +136,8 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
               </SelectTrigger>
               <SelectContent>
                 {profiles.map((prof) => (
-                  <SelectItem key={prof.id} value={prof.filename}>
-                    {prof.filename}
+                  <SelectItem key={prof.id} value={prof.name}>
+                    {prof.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -152,8 +152,8 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
               </SelectTrigger>
               <SelectContent>
                 {scripts.map((scr) => (
-                  <SelectItem key={scr.id} value={scr.filename}>
-                    {scr.filename}
+                  <SelectItem key={scr.id} value={scr.name}>
+                    {scr.name}
                   </SelectItem>
                 ))}
               </SelectContent>
