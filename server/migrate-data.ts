@@ -85,7 +85,7 @@ async function migrateData() {
 }
 
 // Run migration if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   migrateData().then(() => process.exit(0)).catch((error) => {
     console.error('Migration failed:', error);
     process.exit(1);

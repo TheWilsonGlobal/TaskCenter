@@ -597,7 +597,7 @@ export class DatabaseStorage implements IStorage {
 
     const result = await db.delete(profiles).where(eq(profiles.id, id));
     
-    if (result.rowCount > 0) {
+    if ((result.rowCount ?? 0) > 0) {
       await this.deleteProfileFile(profile.filename);
       return true;
     }

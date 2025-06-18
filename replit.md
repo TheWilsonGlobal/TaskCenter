@@ -32,10 +32,9 @@ The application uses three main database tables:
 - **profiles**: Stores browser profile configurations
 
 ### Storage System
-- **Database Storage**: PostgreSQL for structured data using Drizzle ORM
-- **File Storage**: Local file system for script and profile files
-- **Task Storage**: JSON files in dedicated tasks folder for task persistence
-- **Memory Storage**: In-memory fallback implementation for development
+- **Database Storage**: PostgreSQL for all structured data (tasks, scripts, profiles) using Drizzle ORM
+- **File Storage**: Local file system for script and profile content files only
+- **Hybrid Approach**: Database stores metadata and configuration, files store actual script/profile content
 
 ### UI Components
 - **Dashboard**: Main interface with tabbed navigation
@@ -47,11 +46,11 @@ The application uses three main database tables:
 ## Data Flow
 
 1. **Task Creation**: Users select scripts and profiles to create new automation tasks
-2. **File Management**: Scripts and profiles are uploaded and stored in the file system
-3. **Task Storage**: Tasks are persisted as individual JSON files in the tasks folder
+2. **Database Storage**: All tasks, scripts, and profiles metadata stored in PostgreSQL
+3. **File Management**: Script and profile content files maintained in local file system
 4. **Task Execution**: Tasks are tracked with NEW → READY → RUNNING → COMPLETED/FAILED status flow
 5. **Real-time Updates**: Frontend automatically refreshes data using React Query
-6. **File System Integration**: Scripts, profiles, and tasks are managed in dedicated folders
+6. **Hybrid Storage**: Database handles structured data, files handle content
 
 ## External Dependencies
 
@@ -96,6 +95,9 @@ The application uses three main database tables:
 - June 13, 2025. Implemented JSON file-based task storage system with dedicated tasks folder - all tasks now persist as individual JSON files (task_[id].json) with automatic loading on startup
 - June 13, 2025. Added collapsible sidebar functionality with smooth animations, icon-only view when collapsed, tooltips for navigation items, and responsive footer stats layout
 - June 13, 2025. Added task-specific endpoints: GET /api/tasks/:id/profile and GET /api/tasks/:id/script to retrieve complete profile and script details for individual tasks
+- June 18, 2025. Added custom field support to profile configuration with JSON editor and validation
+- June 18, 2025. Implemented "New Script" button in Script Management for creating scripts directly in the interface
+- June 18, 2025. Migrated from file-based storage to PostgreSQL database for all structured data (tasks, scripts, profiles) while maintaining file system for script and profile content
 
 ## User Preferences
 
