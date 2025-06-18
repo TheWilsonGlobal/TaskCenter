@@ -123,7 +123,7 @@ export default function ProfilesTab() {
     try {
       const profileConfig = JSON.parse(profile.content);
       
-      setProfileName(profile.filename.replace('.json', ''));
+      setProfileName(profile.name);
       setName(profile.name || profileConfig.name || "Custom Profile");
       setDescription(profile.description || profileConfig.description || "");
       setUserAgent(profile.userAgent || profileConfig.userAgent || "chrome-linux");
@@ -145,7 +145,7 @@ export default function ProfilesTab() {
       
       toast({
         title: "Profile loaded",
-        description: `${profile.filename} configuration loaded for editing`,
+        description: `${profile.name} configuration loaded for editing`,
       });
     } catch (error) {
       toast({
@@ -250,7 +250,7 @@ export default function ProfilesTab() {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = profile.filename;
+      a.download = `${profile.name}.json`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -433,7 +433,7 @@ export default function ProfilesTab() {
                           {getDeviceIcon(profile)}
                         </div>
                         <div>
-                          <h4 className="font-medium text-slate-900">{profile.filename}</h4>
+                          <h4 className="font-medium text-slate-900">{profile.name}</h4>
                           <p className="text-sm text-slate-500">
                             {getDeviceType(profile)} • {profile.userAgent || 'chrome-linux'} • {profile.viewportWidth}x{profile.viewportHeight}
                           </p>

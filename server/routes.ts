@@ -151,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Script not found" });
       }
       
-      res.setHeader('Content-Disposition', `attachment; filename="${script.filename}"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${script.name}.js"`);
       res.setHeader('Content-Type', 'text/typescript');
       res.send(script.content);
     } catch (error) {
@@ -264,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found" });
       }
       
-      res.setHeader('Content-Disposition', `attachment; filename="${profile.filename}"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${profile.name}.json"`);
       res.setHeader('Content-Type', 'application/json');
       res.send(profile.content);
     } catch (error) {
