@@ -98,6 +98,7 @@ The application uses three main database tables:
 - June 18, 2025. Added custom field support to profile configuration with JSON editor and validation
 - June 18, 2025. Implemented "New Script" button in Script Management for creating scripts directly in the interface
 - June 18, 2025. Migrated from file-based storage to PostgreSQL database for all structured data (tasks, scripts, profiles) while maintaining file system for script and profile content
+- June 18, 2025. Completed removal of filename dependencies - system now operates entirely with names as identifiers, eliminating all file creation functionality
 
 ## User Preferences
 
