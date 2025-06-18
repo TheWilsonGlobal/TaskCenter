@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Task not found" });
       }
       
-      const profile = await storage.getProfileByFilename(task.profile);
+      const profile = await storage.getProfileByName(task.profile);
       if (!profile) {
         return res.status(404).json({ error: "Profile not found for this task" });
       }
@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Task not found" });
       }
       
-      const script = await storage.getScriptByFilename(task.script);
+      const script = await storage.getScriptByName(task.script);
       if (!script) {
         return res.status(404).json({ error: "Script not found for this task" });
       }
@@ -184,13 +184,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Only .ts and .js files are allowed" });
       }
 
-      const existingScript = await storage.getScriptByFilename(filename);
+      const name = filename.replace(/\.(js|ts)$/, '');
+      const existingScript = await storage.getScriptByName(name);
       if (existingScript) {
-        return res.status(409).json({ error: "Script with this filename already exists" });
+        return res.status(409).json({ error: "Script with this name already exists" });
       }
 
       const scriptData = {
-        filename,
+        name,
         content,
         description,
       };
@@ -285,7 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // JSON data
         const validatedData = insertProfileSchema.parse(req.body);
         content = validatedData.content;
-        filename = validatedData.filename;
+        filename = `${validatedData.name}.json`;
       }
 
       if (!filename.endsWith('.json')) {
@@ -299,16 +300,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid JSON content" });
       }
 
-      const existingProfile = await storage.getProfileByFilename(filename);
+      const name = filename.replace('.json', '');
+      const existingProfile = await storage.getProfileByName(name);
       if (existingProfile) {
-        return res.status(409).json({ error: "Profile with this filename already exists" });
+        return res.status(409).json({ error: "Profile with this name already exists" });
       }
 
       const profileData = {
         profileId: req.body.profileId || `profile_${Date.now()}`,
-        name: req.body.name || filename.replace('.json', ''),
+        name: req.body.name || name,
         description: req.body.description || "New browser profile",
-        filename,
         content,
         userAgent: req.body.userAgent || "chrome-linux",
         customUserAgent: req.body.customUserAgent || "",
