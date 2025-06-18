@@ -100,6 +100,7 @@ The application uses three main database tables:
 - June 18, 2025. Migrated from file-based storage to PostgreSQL database for all structured data (tasks, scripts, profiles) while maintaining file system for script and profile content
 - June 18, 2025. Completed removal of filename dependencies - system now operates entirely with names as identifiers, eliminating all file creation functionality
 - June 18, 2025. Removed "New Task" button from the main header area, keeping only the one in the task list controls for better UI organization
+- June 18, 2025. Adjusted Scripts tab layout to reduce Script Files panel width and increase Edit Script panel width for better code editing experience
 
 ## User Preferences
 

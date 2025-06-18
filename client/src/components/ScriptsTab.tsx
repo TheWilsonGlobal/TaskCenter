@@ -227,7 +227,7 @@ export default function ScriptsTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
       {/* Scripts List */}
       <div className="lg:col-span-2">
         <Card>
@@ -317,7 +317,7 @@ export default function ScriptsTab() {
       </div>
 
       {/* Script Editor */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-3">
         <Card>
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
