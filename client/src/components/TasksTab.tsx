@@ -257,6 +257,14 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </Button>
+              <Button
+                size="sm"
+                onClick={onCreateTask}
+                className="flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>New Task</span>
+              </Button>
             </div>
           </div>
         </div>

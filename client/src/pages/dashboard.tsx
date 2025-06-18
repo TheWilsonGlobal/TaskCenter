@@ -58,7 +58,7 @@ export default function Dashboard() {
           title={currentConfig.title}
           subtitle={currentConfig.subtitle}
           onCreateTask={() => setIsCreateTaskModalOpen(true)}
-          showCreateTaskButton={activeTab === "tasks"}
+          showCreateTaskButton={false}
         />
 
         <div className="flex-1 p-6 overflow-auto">{renderTabContent()}</div>
