@@ -245,7 +245,7 @@ export class MemStorage implements IStorage {
     const script = this.scripts.get(id);
     if (!script) return false;
     
-    await this.deleteScriptFile(script.filename);
+    await this.deleteScriptFile(`${script.name}.js`);
     return this.scripts.delete(id);
   }
 
@@ -262,7 +262,8 @@ export class MemStorage implements IStorage {
           const content = await fs.readFile(filePath, 'utf-8');
           
           // Check if we have this profile in memory, otherwise create a new entry
-          const existingProfile = Array.from(this.profiles.values()).find(p => p.filename === file);
+          const profileName = file.replace('.json', '');
+          const existingProfile = Array.from(this.profiles.values()).find(p => p.name === profileName);
           
           if (existingProfile) {
             profiles.push(existingProfile);
@@ -277,8 +278,7 @@ export class MemStorage implements IStorage {
             
             const profile: Profile = {
               id: this.currentProfileId++,
-              name: parsedContent.name || file.replace('.json', ''),
-              filename: file,
+              name: parsedContent.name || profileName,
               content: content,
               description: parsedContent.description || `Profile file: ${file}`,
               profileId: parsedContent.id || `profile_${Date.now()}`,
@@ -349,7 +349,7 @@ export class MemStorage implements IStorage {
     this.profiles.set(id, profile);
     
     // Save to file system
-    await this.saveProfileFile(profile.filename, profile.content);
+    await this.saveProfileFile(`${profile.name}.json`, profile.content);
     
     return profile;
   }
@@ -367,7 +367,7 @@ export class MemStorage implements IStorage {
     
     // Update file system
     if (updateData.content) {
-      await this.saveProfileFile(updatedProfile.filename, updateData.content);
+      await this.saveProfileFile(`${updatedProfile.name}.json`, updateData.content);
     }
     
     return updatedProfile;
@@ -377,7 +377,7 @@ export class MemStorage implements IStorage {
     const profile = this.profiles.get(id);
     if (!profile) return false;
     
-    await this.deleteProfileFile(profile.filename);
+    await this.deleteProfileFile(`${profile.name}.json`);
     return this.profiles.delete(id);
   }
 
