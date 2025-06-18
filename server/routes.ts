@@ -162,29 +162,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/scripts", upload.single('file'), async (req: Request, res: Response) => {
     try {
       let content: string;
-      let filename: string;
+      let name: string;
       let description: string = "";
 
       if (req.file) {
         // File upload
         content = req.file.buffer.toString('utf8');
-        filename = req.file.originalname;
+        const filename = req.file.originalname;
         description = req.body.description || "";
+        
+        if (!filename.endsWith('.ts') && !filename.endsWith('.js')) {
+          return res.status(400).json({ error: "Only .ts and .js files are allowed" });
+        }
+        name = filename.replace(/\.(js|ts)$/, '');
       } else {
         // JSON data - validate the body
-        if (!req.body.filename || !req.body.content) {
-          return res.status(400).json({ error: "Filename and content are required" });
+        if (!req.body.name || !req.body.content) {
+          return res.status(400).json({ error: "Name and content are required" });
         }
         content = req.body.content;
-        filename = req.body.filename;
+        name = req.body.name;
         description = req.body.description || "";
       }
 
-      if (!filename.endsWith('.ts') && !filename.endsWith('.js')) {
-        return res.status(400).json({ error: "Only .ts and .js files are allowed" });
-      }
-
-      const name = filename.replace(/\.(js|ts)$/, '');
       const existingScript = await storage.getScriptByName(name);
       if (existingScript) {
         return res.status(409).json({ error: "Script with this name already exists" });
