@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Code, Download, Edit, Trash2, Plus } from "lucide-react";
+import { Code, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Script } from "@shared/schema";
@@ -78,21 +78,21 @@ export default function ScriptsTab() {
   });
 
   const resetForm = () => {
-    setScriptName("new_script.js");
+    setScriptName("New Script");
     setDescription("New script file");
     setScriptContent("// Your script code here\nconsole.log('Hello, World!');");
     setSelectedScriptId(null);
   };
 
   const loadScriptData = (script: Script) => {
-    setScriptName(script.filename);
+    setScriptName(script.name);
     setDescription(script.description || "");
     setScriptContent(script.content);
     setSelectedScriptId(script.id);
     
     toast({
       title: "Script loaded",
-      description: `${script.filename} loaded for editing`,
+      description: `${script.name} loaded for editing`,
     });
   };
 
@@ -116,7 +116,7 @@ export default function ScriptsTab() {
     }
 
     const scriptData = {
-      filename: scriptName,
+      name: scriptName,
       description,
       content: scriptContent,
     };
@@ -143,7 +143,7 @@ export default function ScriptsTab() {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = script.filename;
+      a.download = `${script.name}.js`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -161,6 +161,40 @@ export default function ScriptsTab() {
     if (confirm("Are you sure you want to delete this script?")) {
       deleteScriptMutation.mutate(id);
     }
+  };
+
+  const handleImportScript = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.ts') && !file.name.endsWith('.js')) {
+      toast({
+        title: "Invalid file type",
+        description: "Only .ts and .js files are allowed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      const fileName = file.name.replace(/\.(js|ts)$/, '');
+      
+      setScriptName(fileName);
+      setScriptContent(content);
+      setDescription(`Imported from ${file.name}`);
+      setSelectedScriptId(null);
+      
+      toast({
+        title: "Script imported",
+        description: `${file.name} has been loaded for editing`,
+      });
+    };
+    reader.readAsText(file);
+    
+    // Reset the input
+    event.target.value = '';
   };
 
   const formatFileSize = (bytes: number) => {
@@ -221,7 +255,7 @@ export default function ScriptsTab() {
                           <Code className="text-primary h-5 w-5" />
                         </div>
                         <div>
-                          <h4 className="font-medium text-slate-900">{script.filename}</h4>
+                          <h4 className="font-medium text-slate-900">{script.name}</h4>
                           <p className="text-sm text-slate-500">
                             Modified {formatDate(script.updatedAt)} • {formatFileSize(script.size)}
                           </p>
