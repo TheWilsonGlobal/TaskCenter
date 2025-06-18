@@ -166,14 +166,15 @@ export class MemStorage implements IStorage {
           const content = await fs.readFile(filePath, 'utf-8');
           
           // Check if we have this script in memory, otherwise create a new entry
-          const existingScript = Array.from(this.scripts.values()).find(s => s.filename === file);
+          const scriptName = file.replace(/\.(js|ts)$/, '');
+          const existingScript = Array.from(this.scripts.values()).find(s => s.name === scriptName);
           
           if (existingScript) {
             scripts.push(existingScript);
           } else {
             const script: Script = {
               id: this.currentScriptId++,
-              filename: file,
+              name: scriptName,
               content: content,
               description: `Script file: ${file}`,
               size: content.length,
@@ -197,8 +198,8 @@ export class MemStorage implements IStorage {
     return this.scripts.get(id);
   }
 
-  async getScriptByFilename(filename: string): Promise<Script | undefined> {
-    return Array.from(this.scripts.values()).find(script => script.filename === filename);
+  async getScriptByName(name: string): Promise<Script | undefined> {
+    return Array.from(this.scripts.values()).find(script => script.name === name);
   }
 
   async createScript(insertScript: InsertScript): Promise<Script> {
@@ -215,7 +216,7 @@ export class MemStorage implements IStorage {
     this.scripts.set(id, script);
     
     // Save to file system
-    await this.saveScriptFile(script.filename, script.content);
+    await this.saveScriptFile(`${script.name}.js`, script.content);
     
     return script;
   }
@@ -234,7 +235,7 @@ export class MemStorage implements IStorage {
     
     // Update file system
     if (updateData.content) {
-      await this.saveScriptFile(updatedScript.filename, updateData.content);
+      await this.saveScriptFile(`${updatedScript.name}.js`, updateData.content);
     }
     
     return updatedScript;
@@ -316,8 +317,8 @@ export class MemStorage implements IStorage {
     return this.profiles.get(id);
   }
 
-  async getProfileByFilename(filename: string): Promise<Profile | undefined> {
-    return Array.from(this.profiles.values()).find(profile => profile.filename === filename);
+  async getProfileByName(name: string): Promise<Profile | undefined> {
+    return Array.from(this.profiles.values()).find(profile => profile.name === name);
   }
 
   async createProfile(insertProfile: InsertProfile): Promise<Profile> {
