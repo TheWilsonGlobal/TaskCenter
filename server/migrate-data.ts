@@ -16,13 +16,13 @@ async function migrateData() {
     for (const script of existingScripts) {
       try {
         await storage.createScript({
-          filename: script.filename,
+          name: script.name,
           content: script.content,
           description: script.description || "",
         });
-        console.log(`✓ Migrated script: ${script.filename}`);
+        console.log(`✓ Migrated script: ${script.name}`);
       } catch (error) {
-        console.log(`⚠ Script ${script.filename} already exists in database`);
+        console.log(`⚠ Script ${script.name} already exists in database`);
       }
     }
 
@@ -35,7 +35,7 @@ async function migrateData() {
           profileId: profile.profileId,
           name: profile.name,
           description: profile.description || "",
-          filename: profile.filename,
+
           content: profile.content,
           userAgent: profile.userAgent,
           customUserAgent: profile.customUserAgent,
@@ -53,9 +53,9 @@ async function migrateData() {
           customScript: profile.customScript,
           customField: profile.customField || "{}",
         });
-        console.log(`✓ Migrated profile: ${profile.filename}`);
+        console.log(`✓ Migrated profile: ${profile.name}`);
       } catch (error) {
-        console.log(`⚠ Profile ${profile.filename} already exists in database`);
+        console.log(`⚠ Profile ${profile.name} already exists in database`);
       }
     }
 
