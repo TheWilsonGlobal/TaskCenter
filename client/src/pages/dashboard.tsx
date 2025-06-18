@@ -37,7 +37,7 @@ export default function Dashboard() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "tasks":
-        return <TasksTab />;
+        return <TasksTab onCreateTask={() => setIsCreateTaskModalOpen(true)} />;
       case "scripts":
         return <ScriptsTab />;
       case "profiles":
@@ -45,7 +45,7 @@ export default function Dashboard() {
       case "api":
         return <ApiTab />;
       default:
-        return <TasksTab />;
+        return <TasksTab onCreateTask={() => setIsCreateTaskModalOpen(true)} />;
     }
   };
 

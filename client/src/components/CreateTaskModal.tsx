@@ -137,8 +137,8 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
                   </SelectItem>
                 ) : (
                   profiles.map((p) => (
-                    <SelectItem key={p.id} value={p.filename}>
-                      {p.filename}
+                    <SelectItem key={p.id} value={p.name}>
+                      {p.name}
                     </SelectItem>
                   ))
                 )}
@@ -159,8 +159,8 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
                   </SelectItem>
                 ) : (
                   scripts.map((s) => (
-                    <SelectItem key={s.id} value={s.filename}>
-                      {s.filename}
+                    <SelectItem key={s.id} value={s.name}>
+                      {s.name}
                     </SelectItem>
                   ))
                 )}
