@@ -12,7 +12,11 @@ import { useState } from "react";
 import type { Task } from "@shared/schema";
 import EditTaskModal from "@/components/EditTaskModal";
 
-export default function TasksTab() {
+interface TasksTabProps {
+  onCreateTask: () => void;
+}
+
+export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -252,6 +256,14 @@ export default function TasksTab() {
               >
                 <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
+              </Button>
+              <Button
+                size="sm"
+                onClick={onCreateTask}
+                className="flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>New Task</span>
               </Button>
             </div>
           </div>
