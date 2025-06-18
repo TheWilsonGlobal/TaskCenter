@@ -1,6 +1,8 @@
 import { tasks, scripts, profiles, type Task, type InsertTask, type Script, type InsertScript, type Profile, type InsertProfile } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Task methods
@@ -418,4 +420,230 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database Storage Implementation
+export class DatabaseStorage implements IStorage {
+  // Task methods
+  async getAllTasks(): Promise<Task[]> {
+    return await db.select().from(tasks);
+  }
+
+  async getTask(id: number): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task || undefined;
+  }
+
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const [task] = await db
+      .insert(tasks)
+      .values({
+        ...insertTask,
+        createdAt: new Date().toISOString(),
+      })
+      .returning();
+    return task;
+  }
+
+  async updateTask(id: number, updateData: Partial<InsertTask>): Promise<Task | undefined> {
+    const [task] = await db
+      .update(tasks)
+      .set(updateData)
+      .where(eq(tasks.id, id))
+      .returning();
+    return task || undefined;
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    const result = await db.delete(tasks).where(eq(tasks.id, id));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Script methods
+  async getAllScripts(): Promise<Script[]> {
+    return await db.select().from(scripts);
+  }
+
+  async getScript(id: number): Promise<Script | undefined> {
+    const [script] = await db.select().from(scripts).where(eq(scripts.id, id));
+    return script || undefined;
+  }
+
+  async getScriptByFilename(filename: string): Promise<Script | undefined> {
+    const [script] = await db.select().from(scripts).where(eq(scripts.filename, filename));
+    return script || undefined;
+  }
+
+  async createScript(insertScript: InsertScript): Promise<Script> {
+    const now = new Date().toISOString();
+    const [script] = await db
+      .insert(scripts)
+      .values({
+        ...insertScript,
+        description: insertScript.description || "",
+        size: insertScript.content.length,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    
+    // Save to file system
+    await this.saveScriptFile(script.filename, script.content);
+    
+    return script;
+  }
+
+  async updateScript(id: number, updateData: Partial<InsertScript>): Promise<Script | undefined> {
+    const updatedData = {
+      ...updateData,
+      size: updateData.content ? updateData.content.length : undefined,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const [script] = await db
+      .update(scripts)
+      .set(updatedData)
+      .where(eq(scripts.id, id))
+      .returning();
+
+    if (script && updateData.content) {
+      await this.saveScriptFile(script.filename, updateData.content);
+    }
+
+    return script || undefined;
+  }
+
+  async deleteScript(id: number): Promise<boolean> {
+    const script = await this.getScript(id);
+    if (!script) return false;
+
+    const result = await db.delete(scripts).where(eq(scripts.id, id));
+    
+    if ((result.rowCount ?? 0) > 0) {
+      await this.deleteScriptFile(script.filename);
+      return true;
+    }
+    return false;
+  }
+
+  // Profile methods
+  async getAllProfiles(): Promise<Profile[]> {
+    return await db.select().from(profiles);
+  }
+
+  async getProfile(id: number): Promise<Profile | undefined> {
+    const [profile] = await db.select().from(profiles).where(eq(profiles.id, id));
+    return profile || undefined;
+  }
+
+  async getProfileByFilename(filename: string): Promise<Profile | undefined> {
+    const [profile] = await db.select().from(profiles).where(eq(profiles.filename, filename));
+    return profile || undefined;
+  }
+
+  async createProfile(insertProfile: InsertProfile): Promise<Profile> {
+    const now = new Date().toISOString();
+    const [profile] = await db
+      .insert(profiles)
+      .values({
+        ...insertProfile,
+        description: insertProfile.description || "",
+        userAgent: insertProfile.userAgent || "chrome-linux",
+        customUserAgent: insertProfile.customUserAgent || "",
+        viewportWidth: insertProfile.viewportWidth || 1920,
+        viewportHeight: insertProfile.viewportHeight || 1080,
+        timezone: insertProfile.timezone || "America/New_York",
+        language: insertProfile.language || "en-US",
+        useProxy: insertProfile.useProxy || false,
+        proxyType: insertProfile.proxyType || "http",
+        proxyHost: insertProfile.proxyHost || "",
+        proxyPort: insertProfile.proxyPort || "",
+        proxyUsername: insertProfile.proxyUsername || "",
+        proxyPassword: insertProfile.proxyPassword || "",
+        scriptSource: insertProfile.scriptSource || "editor",
+        customScript: insertProfile.customScript || "",
+        customField: insertProfile.customField || "{}",
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    
+    // Save to file system
+    await this.saveProfileFile(profile.filename, profile.content);
+    
+    return profile;
+  }
+
+  async updateProfile(id: number, updateData: Partial<InsertProfile>): Promise<Profile | undefined> {
+    const updatedData = {
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const [profile] = await db
+      .update(profiles)
+      .set(updatedData)
+      .where(eq(profiles.id, id))
+      .returning();
+
+    if (profile && updateData.content) {
+      await this.saveProfileFile(profile.filename, updateData.content);
+    }
+
+    return profile || undefined;
+  }
+
+  async deleteProfile(id: number): Promise<boolean> {
+    const profile = await this.getProfile(id);
+    if (!profile) return false;
+
+    const result = await db.delete(profiles).where(eq(profiles.id, id));
+    
+    if (result.rowCount > 0) {
+      await this.deleteProfileFile(profile.filename);
+      return true;
+    }
+    return false;
+  }
+
+  // File system methods (keep for script and profile files)
+  async saveScriptFile(filename: string, content: string): Promise<void> {
+    const scriptsDir = path.join(process.cwd(), 'scripts');
+    await fs.mkdir(scriptsDir, { recursive: true });
+    await fs.writeFile(path.join(scriptsDir, filename), content);
+  }
+
+  async getScriptFile(filename: string): Promise<string> {
+    const scriptsDir = path.join(process.cwd(), 'scripts');
+    return await fs.readFile(path.join(scriptsDir, filename), 'utf-8');
+  }
+
+  async deleteScriptFile(filename: string): Promise<void> {
+    const scriptsDir = path.join(process.cwd(), 'scripts');
+    try {
+      await fs.unlink(path.join(scriptsDir, filename));
+    } catch (error) {
+      // File might not exist, ignore error
+    }
+  }
+
+  async saveProfileFile(filename: string, content: string): Promise<void> {
+    const profilesDir = path.join(process.cwd(), 'profiles');
+    await fs.mkdir(profilesDir, { recursive: true });
+    await fs.writeFile(path.join(profilesDir, filename), content);
+  }
+
+  async getProfileFile(filename: string): Promise<string> {
+    const profilesDir = path.join(process.cwd(), 'profiles');
+    return await fs.readFile(path.join(profilesDir, filename), 'utf-8');
+  }
+
+  async deleteProfileFile(filename: string): Promise<void> {
+    const profilesDir = path.join(process.cwd(), 'profiles');
+    try {
+      await fs.unlink(path.join(profilesDir, filename));
+    } catch (error) {
+      // File might not exist, ignore error
+    }
+  }
+}
+
+export const storage = new DatabaseStorage();

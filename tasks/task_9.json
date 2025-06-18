@@ -1,9 +1,9 @@
 {
-  "status": "NEW",
+  "status": "COMPLETED",
   "workerId": "00001",
   "profile": "Hello.json",
-  "script": "test_script.js",
-  "respond": "",
+  "script": "task9.js",
+  "respond": "Script executed successfully. Execution time: 768ms. Output: No output\n\nOutput:\n{\n  \"result\": \"Hello12312312\",\n  \"actions\": [],\n  \"screenshots\": [],\n  \"dataExtracted\": {},\n  \"errors\": [],\n  \"performance\": {},\n  \"finalStatus\": \"pending\"\n}",
   "id": 9,
   "createdAt": "2025-06-13T11:44:14.379Z"
 }

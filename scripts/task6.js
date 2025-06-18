@@ -1,4 +1,5 @@
 const configData = fs.readFileSync("./profiles/profile_from_task_6/config.json", "utf8");
+const outputPath = "./profiles/profile_from_task_6/output.json";
 const profileData = JSON.parse(configData);
 
 cookies = profileData.custom_fields?.twitter_account?.cookies;
@@ -15,9 +16,17 @@ async function twitterComment() {
     await pause(2000);
     await click(page, "//button/div/span/span[text()='Reply']");
     await pause(3000);
-    const commentURL = await getAttribute(page,"//a[contains(@href,'0xDavidOlsen') and time]","href");
-    await page.goto(commentURL);
-  
+    const commentURL = await getAttribute(
+        page,
+        "//a[contains(@href,'0xDavidOlsen') and time]",
+        "href"
+    );
+    const outputInfo = {
+        commentURL: commentURL,
+    };
+
+    await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.promises.writeFile(outputPath, JSON.stringify(outputInfo, null, 2));
 }
 
 async function pause(time) {
