@@ -15,7 +15,7 @@ export interface IStorage {
   // Script methods
   getAllScripts(): Promise<Script[]>;
   getScript(id: number): Promise<Script | undefined>;
-  getScriptByFilename(filename: string): Promise<Script | undefined>;
+  getScriptByName(name: string): Promise<Script | undefined>;
   createScript(script: InsertScript): Promise<Script>;
   updateScript(id: number, script: Partial<InsertScript>): Promise<Script | undefined>;
   deleteScript(id: number): Promise<boolean>;
@@ -23,7 +23,7 @@ export interface IStorage {
   // Profile methods
   getAllProfiles(): Promise<Profile[]>;
   getProfile(id: number): Promise<Profile | undefined>;
-  getProfileByFilename(filename: string): Promise<Profile | undefined>;
+  getProfileByName(name: string): Promise<Profile | undefined>;
   createProfile(profile: InsertProfile): Promise<Profile>;
   updateProfile(id: number, profile: Partial<InsertProfile>): Promise<Profile | undefined>;
   deleteProfile(id: number): Promise<boolean>;
@@ -467,8 +467,8 @@ export class DatabaseStorage implements IStorage {
     return script || undefined;
   }
 
-  async getScriptByFilename(filename: string): Promise<Script | undefined> {
-    const [script] = await db.select().from(scripts).where(eq(scripts.filename, filename));
+  async getScriptByName(name: string): Promise<Script | undefined> {
+    const [script] = await db.select().from(scripts).where(eq(scripts.name, name));
     return script || undefined;
   }
 
@@ -484,9 +484,6 @@ export class DatabaseStorage implements IStorage {
         updatedAt: now,
       })
       .returning();
-    
-    // Save to file system
-    await this.saveScriptFile(script.filename, script.content);
     
     return script;
   }
@@ -534,8 +531,8 @@ export class DatabaseStorage implements IStorage {
     return profile || undefined;
   }
 
-  async getProfileByFilename(filename: string): Promise<Profile | undefined> {
-    const [profile] = await db.select().from(profiles).where(eq(profiles.filename, filename));
+  async getProfileByName(name: string): Promise<Profile | undefined> {
+    const [profile] = await db.select().from(profiles).where(eq(profiles.name, name));
     return profile || undefined;
   }
 

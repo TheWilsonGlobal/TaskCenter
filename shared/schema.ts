@@ -14,7 +14,7 @@ export const tasks = pgTable("tasks", {
 
 export const scripts = pgTable("scripts", {
   id: serial("id").primaryKey(),
-  filename: text("filename").notNull().unique(),
+  name: text("name").notNull(),
   content: text("content").notNull(),
   description: text("description").default(""),
   size: integer("size").notNull(),
@@ -27,7 +27,6 @@ export const profiles = pgTable("profiles", {
   profileId: text("profile_id").notNull().unique(),
   name: text("name").notNull(),
   description: text("description").default(""),
-  filename: text("filename").notNull().unique(),
   content: text("content").notNull(),
   userAgent: text("user_agent").default("chrome-linux"),
   customUserAgent: text("custom_user_agent").default(""),
