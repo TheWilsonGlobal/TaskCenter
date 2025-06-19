@@ -1,4 +1,4 @@
-import { tasks, scripts, profiles, type Task, type InsertTask, type Script, type InsertScript, type Profile, type InsertProfile } from "@shared/schema";
+import { tasks, scripts, profiles, workers, type Task, type InsertTask, type Script, type InsertScript, type Profile, type InsertProfile, type Worker, type InsertWorker } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
 import { db } from "./db";
@@ -426,6 +426,31 @@ export class MemStorage implements IStorage {
       // File might not exist, ignore error
     }
   }
+
+  // Worker methods (stub implementation for MemStorage)
+  async getAllWorkers(): Promise<Worker[]> {
+    return [];
+  }
+
+  async getWorker(id: number): Promise<Worker | undefined> {
+    return undefined;
+  }
+
+  async getWorkerByUsername(username: string): Promise<Worker | undefined> {
+    return undefined;
+  }
+
+  async createWorker(worker: InsertWorker): Promise<Worker> {
+    throw new Error("Worker operations not supported in MemStorage");
+  }
+
+  async updateWorker(id: number, worker: Partial<InsertWorker>): Promise<Worker | undefined> {
+    return undefined;
+  }
+
+  async deleteWorker(id: number): Promise<boolean> {
+    return false;
+  }
 }
 
 // Database Storage Implementation
@@ -600,6 +625,55 @@ export class DatabaseStorage implements IStorage {
 
     const result = await db.delete(profiles).where(eq(profiles.id, id));
     
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  // Worker methods
+  async getAllWorkers(): Promise<Worker[]> {
+    return await db.select().from(workers);
+  }
+
+  async getWorker(id: number): Promise<Worker | undefined> {
+    const [worker] = await db.select().from(workers).where(eq(workers.id, id));
+    return worker || undefined;
+  }
+
+  async getWorkerByUsername(username: string): Promise<Worker | undefined> {
+    const [worker] = await db.select().from(workers).where(eq(workers.username, username));
+    return worker || undefined;
+  }
+
+  async createWorker(insertWorker: InsertWorker): Promise<Worker> {
+    const now = new Date().toISOString();
+    const [worker] = await db
+      .insert(workers)
+      .values({
+        ...insertWorker,
+        description: insertWorker.description || "",
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning();
+    return worker;
+  }
+
+  async updateWorker(id: number, updateData: Partial<InsertWorker>): Promise<Worker | undefined> {
+    const updatedData = {
+      ...updateData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const [worker] = await db
+      .update(workers)
+      .set(updatedData)
+      .where(eq(workers.id, id))
+      .returning();
+
+    return worker || undefined;
+  }
+
+  async deleteWorker(id: number): Promise<boolean> {
+    const result = await db.delete(workers).where(eq(workers.id, id));
     return (result.rowCount ?? 0) > 0;
   }
 

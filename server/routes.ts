@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertTaskSchema, insertScriptSchema, insertProfileSchema } from "@shared/schema";
+import { insertTaskSchema, insertScriptSchema, insertProfileSchema, insertWorkerSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 
@@ -364,6 +364,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete profile" });
+    }
+  });
+
+  // Worker routes
+  app.get("/api/workers", async (req: Request, res: Response) => {
+    try {
+      const workers = await storage.getAllWorkers();
+      res.json(workers);
+    } catch (error) {
+      console.error("Error fetching workers:", error);
+      res.status(500).json({ error: "Failed to fetch workers" });
+    }
+  });
+
+  app.get("/api/workers/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const worker = await storage.getWorker(id);
+      
+      if (!worker) {
+        return res.status(404).json({ error: "Worker not found" });
+      }
+      
+      res.json(worker);
+    } catch (error) {
+      console.error("Error fetching worker:", error);
+      res.status(500).json({ error: "Failed to fetch worker" });
+    }
+  });
+
+  app.post("/api/workers", async (req: Request, res: Response) => {
+    try {
+      const validatedData = insertWorkerSchema.parse(req.body);
+      const worker = await storage.createWorker(validatedData);
+      res.status(201).json(worker);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid worker data", details: error.errors });
+      }
+      console.error("Error creating worker:", error);
+      res.status(500).json({ error: "Failed to create worker" });
+    }
+  });
+
+  app.put("/api/workers/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validatedData = insertWorkerSchema.partial().parse(req.body);
+      const worker = await storage.updateWorker(id, validatedData);
+      
+      if (!worker) {
+        return res.status(404).json({ error: "Worker not found" });
+      }
+      
+      res.json(worker);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid worker data", details: error.errors });
+      }
+      console.error("Error updating worker:", error);
+      res.status(500).json({ error: "Failed to update worker" });
+    }
+  });
+
+  app.delete("/api/workers/:id", async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteWorker(id);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Worker not found" });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting worker:", error);
+      res.status(500).json({ error: "Failed to delete worker" });
     }
   });
 
