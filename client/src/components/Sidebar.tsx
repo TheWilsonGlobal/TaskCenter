@@ -113,7 +113,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             variant="ghost"
             size="sm"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="w-full flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'} text-slate-600 hover:bg-slate-50 hover:text-slate-900 px-3 py-2`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}

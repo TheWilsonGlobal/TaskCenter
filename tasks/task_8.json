@@ -1,9 +1,0 @@
-{
-  "status": "FAILED",
-  "workerId": "00001",
-  "profile": "Profile Full HD.json",
-  "script": "task8.js",
-  "respond": "Script execution failed: Script exited with code 1\nStderr: /home/runner/workspace/temp/custom-1750071694603.js:89\n            Hello and GoodBye\n                  ^^^\n\nSyntaxError: Unexpected identifier 'and'\n    at wrapSafe (node:internal/modules/cjs/loader:1378:20)\n    at Module._compile (node:internal/modules/cjs/loader:1428:41)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1548:10)\n    at Module.load (node:internal/modules/cjs/loader:1288:32)\n    at Module._load (node:internal/modules/cjs/loader:1104:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:173:12)\n    at node:internal/main/run_main_module:28:49\n\nNode.js v20.18.1\n\nStdout: ",
-  "id": 8,
-  "createdAt": "2025-06-13T10:48:08.785Z"
-}

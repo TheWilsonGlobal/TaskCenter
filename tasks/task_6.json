@@ -1,9 +1,0 @@
-{
-  "status": "COMPLETED",
-  "workerId": "00001",
-  "profile": "Profile Twitter.json",
-  "script": "task6.js",
-  "respond": "Script executed successfully. Execution time: 11483ms. Output: No output\n\nOutput:\n{\n  \"commentURL\": \"https://x.com/0xDavidOlsen/status/1934933229150327237\"\n}",
-  "id": 6,
-  "createdAt": "2025-06-13T10:47:53.753Z"
-}

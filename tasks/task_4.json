@@ -1,9 +1,0 @@
-{
-  "status": "RUNNING",
-  "workerId": "00002",
-  "profile": "GoodByte.json",
-  "script": "screenshot.js",
-  "respond": "Task started successfully",
-  "id": 4,
-  "createdAt": "2025-06-13T08:32:04.860Z"
-}
