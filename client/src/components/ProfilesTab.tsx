@@ -336,9 +336,12 @@ export default function ProfilesTab() {
           </div>
         </div>
         <CardContent className="p-0">
-          {profiles.length === 0 ? (
+          {filteredProfiles.length === 0 ? (
             <div className="text-center text-slate-500 py-8">
-              No profiles created yet. Create your first browser profile to get started.
+              {searchTerm 
+                ? "No profiles match your search"
+                : "No profiles created yet. Create your first browser profile to get started."
+              }
             </div>
           ) : (
             <Table>
@@ -351,7 +354,7 @@ export default function ProfilesTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {profiles.sort((a, b) => a.id - b.id).map((profile) => (
+                {filteredProfiles.sort((a, b) => a.id - b.id).map((profile) => (
                   <TableRow key={profile.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
                       {String(profile.id).padStart(3, "0")}
