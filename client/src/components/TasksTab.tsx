@@ -74,24 +74,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
     );
   };
 
-  const getStatusStats = () => {
-    const stats = tasks.reduce((acc, task) => {
-      acc[task.status] = (acc[task.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
 
-    return {
-      total: tasks.length,
-      new: stats.NEW || 0,
-      ready: stats.READY || 0,
-      running: stats.RUNNING || 0,
-      completed: stats.COMPLETED || 0,
-      failed: stats.FAILED || 0,
-      rejected: stats.REJECTED || 0,
-    };
-  };
-
-  const stats = getStatusStats();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -144,92 +127,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Total Tasks</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <ListTodo className="text-primary text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">New</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.new}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <ListTodo className="text-blue-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Running</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.running}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Play className="text-warning text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Completed</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.completed}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <Check className="text-success text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Failed</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.failed}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="text-error text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Rejected</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.rejected}</p>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="text-red-600 text-xl" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Task Table */}
       <Card>
