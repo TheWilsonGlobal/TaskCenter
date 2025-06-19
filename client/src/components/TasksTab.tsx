@@ -51,7 +51,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const filteredTasks = tasks
     .filter(task => {
       const matchesSearch = task.script?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           task.workerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           String(task.workerId).includes(searchTerm) ||
                            task.profile?.name?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || task.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -231,41 +231,38 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
         </Card>
       </div>
 
-      {/* ListTodo Table */}
+      {/* Task Table */}
       <Card>
         <div className="px-6 py-4 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-slate-900">Task List</h3>
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search tasks..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64 pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="flex items-center space-x-2"
-                title="Refresh tasks"
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
-              </Button>
-              <Button
-                size="sm"
-                onClick={onCreateTask}
-                className="flex items-center space-x-2"
-              >
-                <Plus className="h-4 w-4" />
-                <span>New Task</span>
-              </Button>
+          <div className="flex items-center space-x-3">
+            <Button
+              size="sm"
+              onClick={onCreateTask}
+              className="flex items-center space-x-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>New Task</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="flex items-center space-x-2"
+              title="Refresh tasks"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </Button>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { z } from "zod";
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   status: text("status", { enum: ["NEW", "READY", "RUNNING", "COMPLETED", "FAILED", "REJECTED"] }).notNull().default("NEW"),
-  workerId: text("worker_id").notNull(),
+  workerId: integer("worker_id").notNull().references(() => workers.id),
   profileId: integer("profile_id").notNull().references(() => profiles.id),
   scriptId: integer("script_id").notNull().references(() => scripts.id),
   respond: text("respond").default(""),
@@ -66,6 +66,10 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
     fields: [tasks.scriptId],
     references: [scripts.id],
   }),
+  worker: one(workers, {
+    fields: [tasks.workerId],
+    references: [workers.id],
+  }),
 }));
 
 export const profilesRelations = relations(profiles, ({ many }) => ({
@@ -108,6 +112,7 @@ export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type Task = typeof tasks.$inferSelect & {
   profile?: Profile;
   script?: Script;
+  worker?: Worker;
 };
 
 export type InsertScript = z.infer<typeof insertScriptSchema>;

@@ -54,7 +54,7 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
   // Populate form when task changes
   useEffect(() => {
     if (task) {
-      setWorkerId(task.workerId || "");
+      setWorkerId(String(task.workerId) || "");
       setProfile(task.profile?.name || "");
       setScript(task.script?.name || "");
       setStatus(task.status || "NEW");
