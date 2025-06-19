@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Download, Edit, Trash2, Plus, Upload } from "lucide-react";
+import { Download, Edit, Trash2, Plus, Upload, Search } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Script } from "@shared/schema";
@@ -17,6 +17,7 @@ export default function ScriptsTab() {
   const [description, setDescription] = useState("");
   const [scriptContent, setScriptContent] = useState("");
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
 
   const { data: scripts = [], isLoading } = useQuery<Script[]>({
@@ -150,6 +151,12 @@ export default function ScriptsTab() {
     event.target.value = '';
   };
 
+  const filteredScripts = scripts.filter(script => {
+    const matchesSearch = script.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (script.description && script.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesSearch;
+  });
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-64">Loading scripts...</div>;
   }
@@ -160,7 +167,17 @@ export default function ScriptsTab() {
         <div className="px-6 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search scripts..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-64 pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              </div>
               <input
                 type="file"
                 id="import-script"
@@ -183,9 +200,12 @@ export default function ScriptsTab() {
           </div>
         </div>
         <CardContent className="p-0">
-          {scripts.length === 0 ? (
+          {filteredScripts.length === 0 ? (
             <div className="text-center text-slate-500 py-8">
-              No scripts available. Scripts will appear here when they are added to the system.
+              {searchTerm 
+                ? "No scripts match your search"
+                : "No scripts available. Scripts will appear here when they are added to the system."
+              }
             </div>
           ) : (
             <Table>
@@ -198,7 +218,7 @@ export default function ScriptsTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {scripts.sort((a, b) => a.id - b.id).map((script) => (
+                {filteredScripts.sort((a, b) => a.id - b.id).map((script) => (
                   <TableRow key={script.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
                       {String(script.id).padStart(3, "0")}

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
+import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload, Search } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
 import type { Profile } from "@shared/schema";
@@ -34,6 +34,7 @@ export default function ProfilesTab() {
   const [customField, setCustomField] = useState("{}");
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -290,6 +291,12 @@ export default function ProfilesTab() {
     reader.readAsText(file);
   };
 
+  const filteredProfiles = profiles.filter(profile => {
+    const matchesSearch = profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (profile.description && profile.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesSearch;
+  });
+
   const getDeviceIcon = (profile: Profile) => {
     if (profile.viewportWidth && profile.viewportWidth <= 500) return <Smartphone className="text-success h-5 w-5" />;
     if (profile.viewportWidth && profile.viewportWidth <= 1024) return <Tablet className="text-success h-5 w-5" />;
@@ -306,7 +313,17 @@ export default function ProfilesTab() {
         <div className="px-6 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium text-slate-900">Profile Configurations</h3>
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Search profiles..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-64 pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              </div>
               <Button variant="outline" onClick={handleImportProfile}>
                 <Upload className="h-4 w-4 mr-2" />
                 Import Profile
