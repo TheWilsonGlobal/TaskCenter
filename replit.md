@@ -107,6 +107,7 @@ The application uses three main database tables:
 - June 19, 2025. Updated UI to use table format for Script Files and Profile Configurations with ID, Name, Description columns
 - June 19, 2025. Implemented popup modal interface for Script Editor and Profile Configuration editing
 - June 19, 2025. Added ID-based sorting for Tasks, Scripts, and Profiles tables (ascending order)
+- June 19, 2025. Implemented complete Worker Management system with database table (id, username, password, description), API endpoints, and UI interface matching Profile Management design
 
 ## User Preferences
 
