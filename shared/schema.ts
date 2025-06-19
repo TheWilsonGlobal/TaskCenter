@@ -47,6 +47,15 @@ export const profiles = pgTable("profiles", {
   updatedAt: text("updated_at").notNull(),
 });
 
+export const workers = pgTable("workers", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  description: text("description").default(""),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
 // Relations
 export const tasksRelations = relations(tasks, ({ one }) => ({
   profile: one(profiles, {
@@ -64,6 +73,10 @@ export const profilesRelations = relations(profiles, ({ many }) => ({
 }));
 
 export const scriptsRelations = relations(scripts, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
+export const workersRelations = relations(workers, ({ many }) => ({
   tasks: many(tasks),
 }));
 
@@ -85,6 +98,12 @@ export const insertProfileSchema = createInsertSchema(profiles).omit({
   updatedAt: true,
 });
 
+export const insertWorkerSchema = createInsertSchema(workers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type Task = typeof tasks.$inferSelect & {
   profile?: Profile;
@@ -96,6 +115,9 @@ export type Script = typeof scripts.$inferSelect;
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
 export type Profile = typeof profiles.$inferSelect;
+
+export type InsertWorker = z.infer<typeof insertWorkerSchema>;
+export type Worker = typeof workers.$inferSelect;
 
 export type User = {
   id: number;

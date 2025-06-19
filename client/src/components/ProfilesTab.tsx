@@ -489,7 +489,7 @@ export default function ProfilesTab() {
                 <Checkbox
                   id="use-proxy"
                   checked={useProxy}
-                  onCheckedChange={setUseProxy}
+                  onCheckedChange={(checked) => setUseProxy(checked === true)}
                 />
                 <label htmlFor="use-proxy" className="text-sm font-medium text-slate-700">
                   Use Proxy

@@ -28,6 +28,14 @@ export interface IStorage {
   updateProfile(id: number, profile: Partial<InsertProfile>): Promise<Profile | undefined>;
   deleteProfile(id: number): Promise<boolean>;
   
+  // Worker methods
+  getAllWorkers(): Promise<Worker[]>;
+  getWorker(id: number): Promise<Worker | undefined>;
+  getWorkerByUsername(username: string): Promise<Worker | undefined>;
+  createWorker(worker: InsertWorker): Promise<Worker>;
+  updateWorker(id: number, worker: Partial<InsertWorker>): Promise<Worker | undefined>;
+  deleteWorker(id: number): Promise<boolean>;
+  
   // File system methods
   saveScriptFile(filename: string, content: string): Promise<void>;
   getScriptFile(filename: string): Promise<string>;
