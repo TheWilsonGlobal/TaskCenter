@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Download, Edit, Trash2, Plus, Upload } from "lucide-react";
+import { Code, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
 import type { Script } from "@shared/schema";
@@ -27,10 +27,17 @@ export default function ScriptsTab() {
     mutationFn: (scriptData: any) => apiRequest("POST", "/api/scripts", scriptData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
-      setIsEditorOpen(false);
+      resetForm();
       toast({
         title: "Success",
         description: "Script created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create script",
+        variant: "destructive",
       });
     },
   });
@@ -40,10 +47,17 @@ export default function ScriptsTab() {
       apiRequest("PUT", `/api/scripts/${id}`, scriptData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
-      setIsEditorOpen(false);
+      resetForm();
       toast({
         title: "Success",
         description: "Script updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update script",
+        variant: "destructive",
       });
     },
   });
@@ -57,11 +71,18 @@ export default function ScriptsTab() {
         description: "Script deleted successfully",
       });
     },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete script",
+        variant: "destructive",
+      });
+    },
   });
 
   const resetForm = () => {
     setScriptName("New Script");
-    setDescription("");
+    setDescription("New script file");
     setScriptContent("// Your script code here\nconsole.log('Hello, World!');");
     setSelectedScriptId(null);
     setIsEditorOpen(true);
@@ -73,6 +94,11 @@ export default function ScriptsTab() {
     setScriptContent(script.content);
     setSelectedScriptId(script.id);
     setIsEditorOpen(true);
+    
+    toast({
+      title: "Script loaded",
+      description: `${script.name} loaded for editing`,
+    });
   };
 
   const handleSaveScript = () => {
@@ -80,6 +106,15 @@ export default function ScriptsTab() {
       toast({
         title: "Invalid script name",
         description: "Script name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!scriptContent.trim()) {
+      toast({
+        title: "Invalid script content",
+        description: "Script content cannot be empty",
         variant: "destructive",
       });
       return;
@@ -96,6 +131,8 @@ export default function ScriptsTab() {
     } else {
       createScriptMutation.mutate(scriptData);
     }
+    
+    setIsEditorOpen(false);
   };
 
   const handleDownload = async (script: Script) => {
@@ -135,6 +172,15 @@ export default function ScriptsTab() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!file.name.endsWith('.ts') && !file.name.endsWith('.js')) {
+      toast({
+        title: "Invalid file type",
+        description: "Only .ts and .js files are allowed",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const content = e.target?.result as string;
@@ -145,8 +191,14 @@ export default function ScriptsTab() {
       setDescription(`Imported from ${file.name}`);
       setSelectedScriptId(null);
       setIsEditorOpen(true);
+      
+      toast({
+        title: "Script imported",
+        description: `${file.name} has been loaded for editing`,
+      });
     };
     reader.readAsText(file);
+    
     event.target.value = '';
   };
 
@@ -244,6 +296,7 @@ export default function ScriptsTab() {
         </CardContent>
       </Card>
 
+      {/* Script Editor Modal */}
       <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
         <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
           <DialogHeader>
