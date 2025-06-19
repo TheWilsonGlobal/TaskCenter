@@ -484,6 +484,80 @@ export default function ProfilesTab() {
               </div>
             </div>
 
+            <div className="space-y-4 border-t pt-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="use-proxy"
+                  checked={useProxy}
+                  onCheckedChange={setUseProxy}
+                />
+                <label htmlFor="use-proxy" className="text-sm font-medium text-slate-700">
+                  Use Proxy
+                </label>
+              </div>
+
+              {useProxy && (
+                <div className="space-y-4 ml-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Type</label>
+                    <Select value={proxyType} onValueChange={setProxyType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="http">HTTP</SelectItem>
+                        <SelectItem value="https">HTTPS</SelectItem>
+                        <SelectItem value="socks4">SOCKS4</SelectItem>
+                        <SelectItem value="socks5">SOCKS5</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Host</label>
+                      <Input
+                        type="text"
+                        value={proxyHost}
+                        onChange={(e) => setProxyHost(e.target.value)}
+                        placeholder="proxy.example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Port</label>
+                      <Input
+                        type="number"
+                        value={proxyPort}
+                        onChange={(e) => setProxyPort(e.target.value)}
+                        placeholder="8080"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Username (Optional)</label>
+                      <Input
+                        type="text"
+                        value={proxyUsername}
+                        onChange={(e) => setProxyUsername(e.target.value)}
+                        placeholder="proxy_user"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Password (Optional)</label>
+                      <Input
+                        type="password"
+                        value={proxyPassword}
+                        onChange={(e) => setProxyPassword(e.target.value)}
+                        placeholder="proxy_password"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Custom Fields (JSON)</label>
               <Textarea
