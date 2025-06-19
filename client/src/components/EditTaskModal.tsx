@@ -55,8 +55,8 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
   useEffect(() => {
     if (task) {
       setWorkerId(task.workerId || "");
-      setProfile(task.profile || "");
-      setScript(task.script || "");
+      setProfile(task.profile?.name || "");
+      setScript(task.script?.name || "");
       setStatus(task.status || "NEW");
       setNotes(task.respond || "");
     }
@@ -92,10 +92,13 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
       return;
     }
 
+    const selectedProfile = profiles.find(p => p.name === profile);
+    const selectedScript = scripts.find(s => s.name === script);
+
     const taskData = {
       workerId: workerId.trim(),
-      profile,
-      script,
+      profileId: selectedProfile?.id,
+      scriptId: selectedScript?.id,
       status,
       respond: notes.trim(),
     };

@@ -89,10 +89,13 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
       return;
     }
 
+    const selectedProfile = profiles.find(p => p.name === profile);
+    const selectedScript = scripts.find(s => s.name === script);
+
     const taskData = {
       workerId: workerId.trim(),
-      profile,
-      script,
+      profileId: selectedProfile?.id,
+      scriptId: selectedScript?.id,
       status: "NEW",
       respond: notes.trim(),
     };

@@ -455,11 +455,11 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Profile</label>
-                    <p className="text-sm text-slate-900">{selectedTask.profile}</p>
+                    <p className="text-sm text-slate-900">{selectedTask.profile?.name || 'Unknown Profile'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Script</label>
-                    <p className="text-sm text-slate-900 font-mono">{selectedTask.script}</p>
+                    <p className="text-sm text-slate-900 font-mono">{selectedTask.script?.name || 'Unknown Script'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Created</label>

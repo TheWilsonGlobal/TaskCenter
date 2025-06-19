@@ -86,7 +86,10 @@ export const insertProfileSchema = createInsertSchema(profiles).omit({
 });
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;
-export type Task = typeof tasks.$inferSelect;
+export type Task = typeof tasks.$inferSelect & {
+  profile?: Profile;
+  script?: Script;
+};
 
 export type InsertScript = z.infer<typeof insertScriptSchema>;
 export type Script = typeof scripts.$inferSelect;
