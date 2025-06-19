@@ -311,27 +311,24 @@ export default function ProfilesTab() {
     <>
       <Card>
         <div className="px-6 py-4 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-slate-900">Profile Configurations</h3>
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search profiles..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64 pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-              </div>
-              <Button variant="outline" onClick={handleImportProfile}>
-                <Upload className="h-4 w-4 mr-2" />
-                Import Profile
-              </Button>
-              <Button onClick={resetForm}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Profile
-              </Button>
+          <div className="flex items-center space-x-3">
+            <Button onClick={resetForm}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Profile
+            </Button>
+            <Button variant="outline" onClick={handleImportProfile}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import
+            </Button>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search profiles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
             </div>
           </div>
         </div>

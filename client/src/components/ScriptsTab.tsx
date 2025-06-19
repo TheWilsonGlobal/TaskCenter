@@ -165,37 +165,34 @@ export default function ScriptsTab() {
     <>
       <Card>
         <div className="px-6 py-4 border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search scripts..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-64 pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-              </div>
-              <input
-                type="file"
-                id="import-script"
-                className="hidden"
-                accept=".js,.ts"
-                onChange={handleImportScript}
+          <div className="flex items-center space-x-3">
+            <Button onClick={resetForm}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Script
+            </Button>
+            <input
+              type="file"
+              id="import-script"
+              className="hidden"
+              accept=".js,.ts"
+              onChange={handleImportScript}
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => document.getElementById('import-script')?.click()}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Import
+            </Button>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search scripts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 pl-10"
               />
-              <Button 
-                variant="outline" 
-                onClick={() => document.getElementById('import-script')?.click()}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Import Script
-              </Button>
-              <Button onClick={resetForm}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Script
-              </Button>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
             </div>
           </div>
         </div>
