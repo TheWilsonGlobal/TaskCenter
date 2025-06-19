@@ -27,7 +27,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   ).size;
 
   const getNavItemClass = (tab: string) => {
-    return `flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 rounded-lg transition-colors cursor-pointer w-full text-left ${
+    return `flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'} px-3 py-2 rounded-lg transition-colors cursor-pointer w-full text-left ${
       activeTab === tab
         ? "bg-primary text-white hover:bg-primary hover:text-white"
         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
@@ -38,7 +38,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
     <nav className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white shadow-sm border-r border-slate-200 flex flex-col transition-all duration-300`}>
       {/* Logo/Brand */}
       <div className="p-6 border-b border-slate-200">
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
+        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'}`}>
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Bot className="text-white text-sm" />
           </div>
@@ -125,12 +125,12 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Footer Stats */}
       <div className="p-4 border-t border-slate-200">
         {!isCollapsed ? (
-          <div className="text-xs text-slate-500 space-y-1">
-            <div className="flex justify-between">
+          <div className="text-xs text-slate-500 space-y-1 text-left">
+            <div className="flex justify-between items-center">
               <span>Active Workers:</span>
               <span className="text-success font-medium">{activeWorkers}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span>Total Scripts:</span>
               <span className="font-medium">{scripts.length}</span>
             </div>

@@ -102,6 +102,7 @@ The application uses three main database tables:
 - June 18, 2025. Removed "New Task" button from the main header area, keeping only the one in the task list controls for better UI organization
 - June 18, 2025. Adjusted Scripts tab layout to reduce Script Files panel width and increase Edit Script panel width for better code editing experience
 - June 18, 2025. Added scroll functionality to task detail modal with up/down scroll buttons for better navigation through task content
+- June 19, 2025. Improved sidebar alignment to ensure all content is properly left-aligned when expanded
 
 ## User Preferences
 
