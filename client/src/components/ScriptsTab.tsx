@@ -234,36 +234,34 @@ export default function ScriptsTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      {/* Scripts List */}
-      <div className="lg:col-span-2">
-        <Card>
-          <div className="px-6 py-4 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
-              <div className="flex space-x-2">
-                <input
-                  type="file"
-                  id="import-script"
-                  className="hidden"
-                  accept=".js,.ts"
-                  onChange={handleImportScript}
-                />
-                <Button 
-                  variant="outline" 
-                  onClick={() => document.getElementById('import-script')?.click()}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Import Script
-                </Button>
-                <Button onClick={resetForm}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Script
-                </Button>
-              </div>
+    <>
+      <Card>
+        <div className="px-6 py-4 border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-slate-900">Script Files</h3>
+            <div className="flex space-x-2">
+              <input
+                type="file"
+                id="import-script"
+                className="hidden"
+                accept=".js,.ts"
+                onChange={handleImportScript}
+              />
+              <Button 
+                variant="outline" 
+                onClick={() => document.getElementById('import-script')?.click()}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Import Script
+              </Button>
+              <Button onClick={resetForm}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Script
+              </Button>
             </div>
           </div>
-          <CardContent className="p-0">
+        </div>
+        <CardContent className="p-0">
             {scripts.length === 0 ? (
               <div className="text-center text-slate-500 py-8">
                 No scripts available. Scripts will appear here when they are added to the system.
@@ -324,86 +322,72 @@ export default function ScriptsTab() {
             )}
           </CardContent>
         </Card>
-      </div>
 
-      {/* Script Editor */}
-      <div className="lg:col-span-3">
-        <Card>
-          <div className="px-6 py-4 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-slate-900">
-                {selectedScriptId ? "Edit Script" : "Script Editor"}
-              </h3>
-              {selectedScriptId && (
-                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md">
-                  Editing
-                </div>
-              )}
+        {/* Script Editor Modal */}
+        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+          <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedScriptId ? "Edit Script" : "Create New Script"}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
+                <Input
+                  type="text"
+                  value={scriptName}
+                  onChange={(e) => setScriptName(e.target.value)}
+                  placeholder="New Script"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief description of the script"
+                  className="h-20"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Source Code</label>
+                <Textarea
+                  value={scriptContent}
+                  onChange={(e) => setScriptContent(e.target.value)}
+                  placeholder="// Script source code will appear here"
+                  className="h-96 font-mono text-sm"
+                />
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <Button 
+                  onClick={handleSaveScript}
+                  disabled={createScriptMutation.isPending || updateScriptMutation.isPending}
+                  className="flex-1"
+                >
+                  {(createScriptMutation.isPending || updateScriptMutation.isPending) 
+                    ? "Saving..." 
+                    : selectedScriptId 
+                      ? "Update Script" 
+                      : "Create Script"}
+                </Button>
+                <Button variant="secondary" onClick={() => {
+                  setScriptName("");
+                  setDescription("");
+                  setScriptContent("");
+                  setSelectedScriptId(null);
+                  setIsEditorOpen(false);
+                }}>
+                  Cancel
+                </Button>
+              </div>
             </div>
-          </div>
-          <CardContent className="p-6">
-            {!selectedScriptId && scriptName === "" ? (
-              <div className="text-center text-slate-500 py-8">
-                Select a script from the list to edit or click "New Script" to create one.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
-                  <Input
-                    type="text"
-                    value={scriptName}
-                    onChange={(e) => setScriptName(e.target.value)}
-                    placeholder="New Script"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Brief description of the script"
-                    className="h-20"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Source Code</label>
-                  <Textarea
-                    value={scriptContent}
-                    onChange={(e) => setScriptContent(e.target.value)}
-                    placeholder="// Script source code will appear here"
-                    className="h-64 font-mono text-sm"
-                  />
-                </div>
-                
-                <div className="flex space-x-3 pt-4">
-                  <Button 
-                    onClick={handleSaveScript}
-                    disabled={createScriptMutation.isPending || updateScriptMutation.isPending}
-                    className="flex-1"
-                  >
-                    {(createScriptMutation.isPending || updateScriptMutation.isPending) 
-                      ? "Saving..." 
-                      : selectedScriptId 
-                        ? "Update Script" 
-                        : "Create Script"}
-                  </Button>
-                  <Button variant="secondary" onClick={() => {
-                    setScriptName("");
-                    setDescription("");
-                    setScriptContent("");
-                    setSelectedScriptId(null);
-                  }}>
-                    {selectedScriptId ? "Cancel Edit" : "Reset"}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          </DialogContent>
+        </Dialog>
+      </>
   );
 }
