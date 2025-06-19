@@ -247,20 +247,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="NEW">NEW</SelectItem>
-                  <SelectItem value="READY">READY</SelectItem>
-                  <SelectItem value="RUNNING">RUNNING</SelectItem>
-                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                  <SelectItem value="FAILED">FAILED</SelectItem>
-                  <SelectItem value="REJECTED">REJECTED</SelectItem>
-                </SelectContent>
-              </Select>
               <Button
                 variant="outline"
                 size="sm"
@@ -289,7 +275,22 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-24 h-8 text-xs border-0 bg-transparent p-0 focus:ring-0">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Status</SelectItem>
+                      <SelectItem value="NEW">NEW</SelectItem>
+                      <SelectItem value="READY">READY</SelectItem>
+                      <SelectItem value="RUNNING">RUNNING</SelectItem>
+                      <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+                      <SelectItem value="FAILED">FAILED</SelectItem>
+                      <SelectItem value="REJECTED">REJECTED</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableHead>
                 <TableHead>Worker ID</TableHead>
                 <TableHead>Profile</TableHead>
                 <TableHead>Script</TableHead>
