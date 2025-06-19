@@ -104,6 +104,9 @@ The application uses three main database tables:
 - June 18, 2025. Added scroll functionality to task detail modal with up/down scroll buttons for better navigation through task content
 - June 19, 2025. Improved sidebar alignment to ensure all content is properly left-aligned when expanded
 - June 19, 2025. Aligned Collapse button to the left in sidebar menu for consistent navigation layout
+- June 19, 2025. Updated UI to use table format for Script Files and Profile Configurations with ID, Name, Description columns
+- June 19, 2025. Implemented popup modal interface for Script Editor and Profile Configuration editing
+- June 19, 2025. Added ID-based sorting for Tasks, Scripts, and Profiles tables (ascending order)
 
 ## User Preferences
 

@@ -48,13 +48,15 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
     },
   });
 
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.script?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.workerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.profile?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || task.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredTasks = tasks
+    .filter(task => {
+      const matchesSearch = task.script?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           task.workerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           task.profile?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || task.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => a.id - b.id);
 
   const getStatusBadge = (status: string) => {
     const statusClasses = {

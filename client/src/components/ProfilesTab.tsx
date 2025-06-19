@@ -334,7 +334,7 @@ export default function ProfilesTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {profiles.map((profile) => (
+                {profiles.sort((a, b) => a.id - b.id).map((profile) => (
                   <TableRow key={profile.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
                       {String(profile.id).padStart(3, "0")}
