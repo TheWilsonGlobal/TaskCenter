@@ -49,9 +49,9 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   });
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.script.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = task.script?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.workerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         task.profile.toLowerCase().includes(searchTerm.toLowerCase());
+                         task.profile?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || task.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -318,8 +318,8 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
-                    <TableCell>{task.profile}</TableCell>
-                    <TableCell className="font-mono text-sm">{task.script}</TableCell>
+                    <TableCell>{task.profile?.name || 'Unknown Profile'}</TableCell>
+                    <TableCell className="font-mono text-sm">{task.script?.name || 'Unknown Script'}</TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
                     </TableCell>

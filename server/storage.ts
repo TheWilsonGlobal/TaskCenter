@@ -281,7 +281,6 @@ export class MemStorage implements IStorage {
               name: parsedContent.name || profileName,
               content: content,
               description: parsedContent.description || `Profile file: ${file}`,
-              profileId: parsedContent.id || `profile_${Date.now()}`,
               userAgent: parsedContent.userAgent || "chrome-linux",
               customUserAgent: parsedContent.customUserAgent || "",
               viewportWidth: parsedContent.viewportWidth || 1920,
@@ -425,11 +424,22 @@ export class MemStorage implements IStorage {
 export class DatabaseStorage implements IStorage {
   // Task methods
   async getAllTasks(): Promise<Task[]> {
-    return await db.select().from(tasks);
+    return await db.query.tasks.findMany({
+      with: {
+        profile: true,
+        script: true,
+      },
+    });
   }
 
   async getTask(id: number): Promise<Task | undefined> {
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    const task = await db.query.tasks.findFirst({
+      where: eq(tasks.id, id),
+      with: {
+        profile: true,
+        script: true,
+      },
+    });
     return task || undefined;
   }
 
