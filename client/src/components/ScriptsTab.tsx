@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Code, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
@@ -256,61 +257,64 @@ export default function ScriptsTab() {
               </div>
             </div>
           </div>
-          <CardContent className="p-6">
+          <CardContent className="p-0">
             {scripts.length === 0 ? (
               <div className="text-center text-slate-500 py-8">
                 No scripts available. Scripts will appear here when they are added to the system.
               </div>
             ) : (
-              <div className="space-y-4">
-                {scripts.map((script) => (
-                  <div key={script.id} className="p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Code className="text-primary h-5 w-5" />
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {scripts.map((script) => (
+                    <TableRow key={script.id} className="hover:bg-slate-50">
+                      <TableCell className="font-mono text-sm">
+                        {String(script.id).padStart(3, "0")}
+                      </TableCell>
+                      <TableCell className="font-medium">{script.name}</TableCell>
+                      <TableCell className="text-slate-600">
+                        {script.description || "No description"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDownload(script)}
+                            title="Download"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => loadScriptData(script)}
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(script.id)}
+                            disabled={deleteScriptMutation.isPending}
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-slate-900">{script.name}</h4>
-                          <p className="text-sm text-slate-500">
-                            Modified {formatDate(script.updatedAt)} • {formatFileSize(script.size)}
-                          </p>
-                          {script.description && (
-                            <p className="text-sm text-slate-600 mt-1">{script.description}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDownload(script)}
-                          title="Download"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => loadScriptData(script)}
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDelete(script.id)}
-                          disabled={deleteScriptMutation.isPending}
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>

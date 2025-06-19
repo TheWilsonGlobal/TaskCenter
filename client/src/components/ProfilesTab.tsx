@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
@@ -418,61 +419,64 @@ export default function ProfilesTab() {
               </div>
             </div>
           </div>
-          <CardContent className="p-6">
+          <CardContent className="p-0">
             {profiles.length === 0 ? (
               <div className="text-center text-slate-500 py-8">
                 No profiles created yet. Create your first browser profile to get started.
               </div>
             ) : (
-              <div className="space-y-4">
-                {profiles.map((profile) => (
-                  <div key={profile.id} className="p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          {getDeviceIcon(profile)}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {profiles.map((profile) => (
+                    <TableRow key={profile.id} className="hover:bg-slate-50">
+                      <TableCell className="font-mono text-sm">
+                        {String(profile.id).padStart(3, "0")}
+                      </TableCell>
+                      <TableCell className="font-medium">{profile.name}</TableCell>
+                      <TableCell className="text-slate-600">
+                        {profile.description || "No description"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDownload(profile)}
+                            title="Download"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => loadProfileData(profile)}
+                            title="Edit"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(profile.id)}
+                            disabled={deleteProfileMutation.isPending}
+                            title="Delete"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-slate-900">{profile.name}</h4>
-                          <p className="text-sm text-slate-500">
-                            {getDeviceType(profile)} • {profile.userAgent || 'chrome-linux'} • {profile.viewportWidth}x{profile.viewportHeight}
-                          </p>
-                          <p className="text-sm text-slate-400">
-                            Modified {formatDate(profile.updatedAt)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDownload(profile)}
-                          title="Download"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => loadProfileData(profile)}
-                          title="Edit"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDelete(profile.id)}
-                          disabled={deleteProfileMutation.isPending}
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
