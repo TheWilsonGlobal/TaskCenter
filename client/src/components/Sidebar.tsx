@@ -75,12 +75,12 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           <li>
             <Button
               variant="ghost"
-              className={getNavItemClass("scripts")}
-              onClick={() => onTabChange("scripts")}
-              title={isCollapsed ? "Scripts" : ""}
+              className={getNavItemClass("workers")}
+              onClick={() => onTabChange("workers")}
+              title={isCollapsed ? "Workers" : ""}
             >
-              <Code className="h-5 w-5" />
-              {!isCollapsed && <span>Scripts</span>}
+              <Users className="h-5 w-5" />
+              {!isCollapsed && <span>Workers</span>}
             </Button>
           </li>
           <li>
@@ -97,12 +97,12 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
           <li>
             <Button
               variant="ghost"
-              className={getNavItemClass("workers")}
-              onClick={() => onTabChange("workers")}
-              title={isCollapsed ? "Workers" : ""}
+              className={getNavItemClass("scripts")}
+              onClick={() => onTabChange("scripts")}
+              title={isCollapsed ? "Scripts" : ""}
             >
-              <Users className="h-5 w-5" />
-              {!isCollapsed && <span>Workers</span>}
+              <Code className="h-5 w-5" />
+              {!isCollapsed && <span>Scripts</span>}
             </Button>
           </li>
           <li>
