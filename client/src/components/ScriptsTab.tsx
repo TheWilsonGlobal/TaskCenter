@@ -262,65 +262,65 @@ export default function ScriptsTab() {
           </div>
         </div>
         <CardContent className="p-0">
-            {scripts.length === 0 ? (
-              <div className="text-center text-slate-500 py-8">
-                No scripts available. Scripts will appear here when they are added to the system.
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+          {scripts.length === 0 ? (
+            <div className="text-center text-slate-500 py-8">
+              No scripts available. Scripts will appear here when they are added to the system.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {scripts.map((script) => (
+                  <TableRow key={script.id} className="hover:bg-slate-50">
+                    <TableCell className="font-mono text-sm">
+                      {String(script.id).padStart(3, "0")}
+                    </TableCell>
+                    <TableCell className="font-medium">{script.name}</TableCell>
+                    <TableCell className="text-slate-600">
+                      {script.description || "No description"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDownload(script)}
+                          title="Download"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => loadScriptData(script)}
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDelete(script.id)}
+                          disabled={deleteScriptMutation.isPending}
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {scripts.map((script) => (
-                    <TableRow key={script.id} className="hover:bg-slate-50">
-                      <TableCell className="font-mono text-sm">
-                        {String(script.id).padStart(3, "0")}
-                      </TableCell>
-                      <TableCell className="font-medium">{script.name}</TableCell>
-                      <TableCell className="text-slate-600">
-                        {script.description || "No description"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDownload(script)}
-                            title="Download"
-                          >
-                            <Download className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => loadScriptData(script)}
-                            title="Edit"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDelete(script.id)}
-                            disabled={deleteScriptMutation.isPending}
-                            title="Delete"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
         </Card>
 
         {/* Script Editor Modal */}

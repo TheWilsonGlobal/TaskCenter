@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
@@ -32,6 +33,7 @@ export default function ProfilesTab() {
   const [customScript, setCustomScript] = useState("");
   const [customField, setCustomField] = useState("{}");
   const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -117,6 +119,7 @@ export default function ProfilesTab() {
     setCustomScript("");
     setCustomField("{}");
     setSelectedProfileId(null);
+    setIsEditorOpen(true);
   };
 
   const loadProfileData = (profile: Profile) => {
@@ -143,6 +146,7 @@ export default function ProfilesTab() {
       setCustomScript(profile.customScript || profileConfig.customScript || "");
       setCustomField(profile.customField || profileConfig.custom_fields ? JSON.stringify(profileConfig.custom_fields, null, 2) : "{}");
       setSelectedProfileId(profile.id);
+      setIsEditorOpen(true);
       
       toast({
         title: "Profile loaded",
@@ -400,10 +404,8 @@ export default function ProfilesTab() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Profiles List */}
-      <div>
-        <Card>
+    <>
+      <Card>
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-slate-900">Profile Configurations</h3>
@@ -480,10 +482,15 @@ export default function ProfilesTab() {
             )}
           </CardContent>
         </Card>
-      </div>
 
-      {/* Profile Editor */}
-      <div>
+        {/* Profile Editor Modal */}
+        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+          <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {selectedProfileId ? "Edit Profile Configuration" : "Create New Profile"}
+              </DialogTitle>
+            </DialogHeader>
         <Card>
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
@@ -690,22 +697,21 @@ export default function ProfilesTab() {
                       : "Save Profile"}
                 </Button>
                 <Button variant="secondary" onClick={resetForm}>
-                  {selectedProfileId ? "Cancel Edit" : "Reset"}
+                  Cancel
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Hidden file input for profile import */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept=".json"
-        style={{ display: 'none' }}
-      />
-    </div>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Hidden file input for profile import */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".json"
+          style={{ display: 'none' }}
+        />
+      </>
   );
 }
