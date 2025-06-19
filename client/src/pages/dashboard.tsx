@@ -4,10 +4,11 @@ import Header from "@/components/Header";
 import TasksTab from "@/components/TasksTab";
 import ScriptsTab from "@/components/ScriptsTab";
 import ProfilesTab from "@/components/ProfilesTab";
+import WorkersTab from "@/components/WorkersTab";
 import ApiTab from "@/components/ApiTab";
 import CreateTaskModal from "@/components/CreateTaskModal";
 
-type TabType = "tasks" | "scripts" | "profiles" | "api";
+type TabType = "tasks" | "scripts" | "profiles" | "workers" | "api";
 
 const tabConfig = {
   tasks: {
@@ -21,6 +22,10 @@ const tabConfig = {
   profiles: {
     title: "Profile Configuration",
     subtitle: "Configure browser profiles and settings",
+  },
+  workers: {
+    title: "Worker Management",
+    subtitle: "Manage remote automation workers",
   },
   api: {
     title: "API Documentation",
@@ -42,6 +47,8 @@ export default function Dashboard() {
         return <ScriptsTab />;
       case "profiles":
         return <ProfilesTab />;
+      case "workers":
+        return <WorkersTab />;
       case "api":
         return <ApiTab />;
       default:

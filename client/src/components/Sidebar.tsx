@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bot, ListTodo, Code, UserCog, Plug, ChevronLeft, ChevronRight } from "lucide-react";
+import { Bot, ListTodo, Code, UserCog, Users, Plug, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Task, Script } from "@shared/schema";
 
 interface SidebarProps {
   activeTab: string;
-  onTabChange: (tab: "tasks" | "scripts" | "profiles" | "api") => void;
+  onTabChange: (tab: "tasks" | "scripts" | "profiles" | "workers" | "api") => void;
 }
 
 export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
@@ -92,6 +92,17 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             >
               <UserCog className="h-5 w-5" />
               {!isCollapsed && <span>Profiles</span>}
+            </Button>
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              className={getNavItemClass("workers")}
+              onClick={() => onTabChange("workers")}
+              title={isCollapsed ? "Workers" : ""}
+            >
+              <Users className="h-5 w-5" />
+              {!isCollapsed && <span>Workers</span>}
             </Button>
           </li>
           <li>
