@@ -1,13 +1,14 @@
 import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   status: text("status", { enum: ["NEW", "READY", "RUNNING", "COMPLETED", "FAILED", "REJECTED"] }).notNull().default("NEW"),
   workerId: text("worker_id").notNull(),
-  profile: text("profile").notNull(),
-  script: text("script").notNull(),
+  profileId: integer("profile_id").notNull().references(() => profiles.id),
+  scriptId: integer("script_id").notNull().references(() => scripts.id),
   respond: text("respond").default(""),
   createdAt: text("created_at").notNull(),
 });
@@ -24,7 +25,6 @@ export const scripts = pgTable("scripts", {
 
 export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
-  profileId: text("profile_id").notNull().unique(),
   name: text("name").notNull(),
   description: text("description").default(""),
   content: text("content").notNull(),
@@ -46,6 +46,26 @@ export const profiles = pgTable("profiles", {
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });
+
+// Relations
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [tasks.profileId],
+    references: [profiles.id],
+  }),
+  script: one(scripts, {
+    fields: [tasks.scriptId],
+    references: [scripts.id],
+  }),
+}));
+
+export const profilesRelations = relations(profiles, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
+export const scriptsRelations = relations(scripts, ({ many }) => ({
+  tasks: many(tasks),
+}));
 
 export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true,
