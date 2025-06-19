@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Code, Download, Edit, Trash2, Plus, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState } from "react";
@@ -15,6 +16,7 @@ export default function ScriptsTab() {
   const [scriptName, setScriptName] = useState("");
   const [description, setDescription] = useState("");
   const [scriptContent, setScriptContent] = useState("");
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const { toast } = useToast();
 
   const { data: scripts = [], isLoading } = useQuery<Script[]>({
@@ -83,6 +85,7 @@ export default function ScriptsTab() {
     setDescription("New script file");
     setScriptContent("// Your script code here\nconsole.log('Hello, World!');");
     setSelectedScriptId(null);
+    setIsEditorOpen(true);
   };
 
   const loadScriptData = (script: Script) => {
@@ -90,6 +93,7 @@ export default function ScriptsTab() {
     setDescription(script.description || "");
     setScriptContent(script.content);
     setSelectedScriptId(script.id);
+    setIsEditorOpen(true);
     
     toast({
       title: "Script loaded",
@@ -129,6 +133,8 @@ export default function ScriptsTab() {
       // Create new script
       createScriptMutation.mutate(scriptData);
     }
+    
+    setIsEditorOpen(false);
   };
 
   const handleDownload = async (script: Script) => {
