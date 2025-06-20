@@ -593,28 +593,30 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                   <TabsContent value="custom-field" className="space-y-4">
                     <div className="space-y-2">
                       <Label>Custom Field (JSON)</Label>
-                      <div className="max-h-80 overflow-y-auto">
-                        <div className="bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
-                          <pre className="text-sm font-mono whitespace-pre-wrap overflow-x-auto leading-relaxed" style={{
-                            tabSize: 2,
-                            lineHeight: '1.6',
-                            fontSize: '13px',
-                            fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                          }}>
-                            <code dangerouslySetInnerHTML={{
-                              __html: selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 
-                                ? JSON.stringify(selectedProfile.customField, null, 2)
-                                    .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, '<span style="color: #0066cc;">$1</span><span style="color: #666;">$2</span>')
-                                    .replace(/:\s*("(?:[^"\\]|\\.)*")/g, ': <span style="color: #008000;">$1</span>')
-                                    .replace(/:\s*(true|false)/g, ': <span style="color: #800080;">$1</span>')
-                                    .replace(/:\s*(\d+)/g, ': <span style="color: #ff6600;">$1</span>')
-                                    .replace(/([{}[\],])/g, '<span style="color: #666;">$1</span>')
-                                : '<span style="color: #999; font-style: italic;">{\n  // No custom fields defined\n}</span>'
-                            }} />
-                          </pre>
-                          <div className="absolute top-2 right-2">
-                            <div className="bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-xs text-slate-600 dark:text-slate-400">
-                              JSON
+                      <div className="w-full max-w-2xl">
+                        <div className="max-h-80 overflow-y-auto">
+                          <div className="bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-3 relative">
+                            <pre className="text-sm font-mono whitespace-pre-wrap overflow-x-auto leading-relaxed" style={{
+                              tabSize: 2,
+                              lineHeight: '1.6',
+                              fontSize: '12px',
+                              fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                            }}>
+                              <code dangerouslySetInnerHTML={{
+                                __html: selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 
+                                  ? JSON.stringify(selectedProfile.customField, null, 2)
+                                      .replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, '<span style="color: #0066cc;">$1</span><span style="color: #666;">$2</span>')
+                                      .replace(/:\s*("(?:[^"\\]|\\.)*")/g, ': <span style="color: #008000;">$1</span>')
+                                      .replace(/:\s*(true|false)/g, ': <span style="color: #800080;">$1</span>')
+                                      .replace(/:\s*(\d+)/g, ': <span style="color: #ff6600;">$1</span>')
+                                      .replace(/([{}[\],])/g, '<span style="color: #666;">$1</span>')
+                                  : '<span style="color: #999; font-style: italic;">{\n  // No custom fields defined\n}</span>'
+                              }} />
+                            </pre>
+                            <div className="absolute top-2 right-2">
+                              <div className="bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-600 px-2 py-1 rounded text-xs text-slate-600 dark:text-slate-400">
+                                JSON
+                              </div>
                             </div>
                           </div>
                         </div>
