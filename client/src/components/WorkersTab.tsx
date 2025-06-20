@@ -195,7 +195,12 @@ export default function WorkersTab() {
                 {filteredWorkers.sort((a, b) => a.id - b.id).map((worker) => (
                   <TableRow key={worker.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
-                      {String(worker.id).padStart(3, "0")}
+                      <button
+                        onClick={() => loadWorkerData(worker)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {String(worker.id).padStart(3, "0")}
+                      </button>
                     </TableCell>
                     <TableCell className="font-medium">{worker.username}</TableCell>
                     <TableCell className="text-slate-600">

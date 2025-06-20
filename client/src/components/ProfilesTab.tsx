@@ -333,7 +333,12 @@ export default function ProfilesTab() {
                 {filteredProfiles.sort((a, b) => a.id - b.id).map((profile: Profile) => (
                   <TableRow key={profile.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
-                      {String(profile.id).padStart(3, "0")}
+                      <button
+                        onClick={() => loadProfileData(profile)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {String(profile.id).padStart(3, "0")}
+                      </button>
                     </TableCell>
                     <TableCell className="font-medium">{profile.name}</TableCell>
                     <TableCell className="text-slate-600">

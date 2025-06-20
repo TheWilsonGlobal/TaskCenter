@@ -218,7 +218,12 @@ export default function ScriptsTab() {
                 {filteredScripts.sort((a, b) => a.id - b.id).map((script) => (
                   <TableRow key={script.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
-                      {String(script.id).padStart(3, "0")}
+                      <button
+                        onClick={() => loadScriptData(script)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
+                        {String(script.id).padStart(3, "0")}
+                      </button>
                     </TableCell>
                     <TableCell className="font-medium">{script.name}</TableCell>
                     <TableCell className="text-slate-600">

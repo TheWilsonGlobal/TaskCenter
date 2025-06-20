@@ -206,9 +206,12 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                 filteredTasks.map((task) => (
                   <TableRow key={task.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
-                      <span className="text-blue-600">
+                      <button
+                        onClick={() => handleShowTaskDetails(task)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      >
                         {String(task.id).padStart(5, "0")}
-                      </span>
+                      </button>
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>

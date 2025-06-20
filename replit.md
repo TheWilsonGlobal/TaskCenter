@@ -115,6 +115,7 @@ The application uses three main database tables:
 - June 20, 2025. Implemented comprehensive JavaScript syntax highlighting for Script Source Code editor with color-coded keywords, strings, comments, functions, and operators
 - June 20, 2025. Enhanced all table screens (Tasks, Workers, Profiles, Scripts) with row selection - users can now click anywhere on a table row to edit that item instead of using Edit buttons (later removed per user request)
 - June 20, 2025. Updated Tasks API endpoints to return customField in profiles as proper JSON format instead of raw strings for better data structure and frontend consumption
+- June 20, 2025. Implemented clickable ID functionality for all table screens - users can click on ID numbers to view details or edit items with blue link styling and hover effects
 
 ## User Preferences
 
