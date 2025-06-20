@@ -275,55 +275,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/profiles", upload.single('file'), async (req: Request, res: Response) => {
     try {
-      let content: string;
-      let filename: string;
+      let profileData: any;
 
       if (req.file) {
-        // File upload
-        content = req.file.buffer.toString('utf8');
-        filename = req.file.originalname;
+        // File upload - parse JSON content
+        const content = req.file.buffer.toString('utf8');
+        const filename = req.file.originalname;
+        
+        if (!filename.endsWith('.json')) {
+          return res.status(400).json({ error: "Only .json files are allowed" });
+        }
+
+        // Validate JSON content
+        try {
+          profileData = JSON.parse(content);
+        } catch {
+          return res.status(400).json({ error: "Invalid JSON content" });
+        }
+
+        const name = filename.replace('.json', '');
+        const existingProfile = await storage.getProfileByName(name);
+        if (existingProfile) {
+          return res.status(409).json({ error: "Profile with this name already exists" });
+        }
+
+        profileData.name = name;
+        profileData.description = profileData.description || `Profile file: ${filename}`;
       } else {
         // JSON data from form
-        filename = `${req.body.name}.json`;
+        profileData = req.body;
       }
 
-      if (!filename.endsWith('.json')) {
-        return res.status(400).json({ error: "Only .json files are allowed" });
-      }
+      const validatedData = insertProfileSchema.parse({
+        name: profileData.name,
+        description: profileData.description || "New browser profile",
+        userAgent: profileData.userAgent || "chrome-linux",
+        customUserAgent: profileData.customUserAgent || "",
+        viewportWidth: parseInt(profileData.viewportWidth) || 1920,
+        viewportHeight: parseInt(profileData.viewportHeight) || 1080,
+        timezone: profileData.timezone || "America/New_York",
+        language: profileData.language || "en-US",
+        useProxy: profileData.useProxy === 'true' || profileData.useProxy === true || false,
+        proxyType: profileData.proxyType || "http",
+        proxyHost: profileData.proxyHost || "",
+        proxyPort: profileData.proxyPort || "",
+        proxyUsername: profileData.proxyUsername || "",
+        proxyPassword: profileData.proxyPassword || "",
+        scriptSource: profileData.scriptSource || "editor",
+        customScript: profileData.customScript || "",
+        customField: profileData.customField || "{}"
+      });
 
-      // Validate JSON content
-      try {
-        JSON.parse(content);
-      } catch {
-        return res.status(400).json({ error: "Invalid JSON content" });
-      }
-
-      const name = filename.replace('.json', '');
-      const existingProfile = await storage.getProfileByName(name);
-      if (existingProfile) {
-        return res.status(409).json({ error: "Profile with this name already exists" });
-      }
-
-      const profileData = {
-        name: req.body.name || name,
-        description: req.body.description || "New browser profile",
-        userAgent: req.body.userAgent || "chrome-linux",
-        customUserAgent: req.body.customUserAgent || "",
-        viewportWidth: parseInt(req.body.viewportWidth) || parseInt(req.body.width) || 1920,
-        viewportHeight: parseInt(req.body.viewportHeight) || parseInt(req.body.height) || 1080,
-        timezone: req.body.timezone || "America/New_York",
-        language: req.body.language || "en-US",
-        useProxy: req.body.useProxy === 'true' || false,
-        proxyType: req.body.proxyType || "http",
-        proxyHost: req.body.proxyHost || "",
-        proxyPort: req.body.proxyPort || "",
-        proxyUsername: req.body.proxyUsername || "",
-        proxyPassword: req.body.proxyPassword || "",
-        scriptSource: req.body.scriptSource || "editor",
-        customScript: req.body.customScript || "",
-      };
-
-      const profile = await storage.createProfile(profileData);
+      const profile = await storage.createProfile(validatedData);
       res.status(201).json(profile);
     } catch (error) {
       if (error instanceof z.ZodError) {
