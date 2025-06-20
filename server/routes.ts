@@ -267,7 +267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.setHeader('Content-Disposition', `attachment; filename="${profile.name}.json"`);
       res.setHeader('Content-Type', 'application/json');
-      res.send(profile.content);
+      res.send(JSON.stringify(profile, null, 2));
     } catch (error) {
       res.status(500).json({ error: "Failed to download profile" });
     }

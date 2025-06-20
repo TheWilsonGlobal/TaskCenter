@@ -27,7 +27,6 @@ export const profiles = pgTable("profiles", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").default(""),
-  content: text("content").notNull(),
   userAgent: text("user_agent").default("chrome-linux"),
   customUserAgent: text("custom_user_agent").default(""),
   viewportWidth: integer("viewport_width").default(1920),

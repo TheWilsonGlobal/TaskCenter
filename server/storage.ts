@@ -287,7 +287,6 @@ export class MemStorage implements IStorage {
             const profile: Profile = {
               id: this.currentProfileId++,
               name: parsedContent.name || profileName,
-              content: content,
               description: parsedContent.description || `Profile file: ${file}`,
               userAgent: parsedContent.userAgent || "chrome-linux",
               customUserAgent: parsedContent.customUserAgent || "",
@@ -355,9 +354,6 @@ export class MemStorage implements IStorage {
     };
     this.profiles.set(id, profile);
     
-    // Save to file system
-    await this.saveProfileFile(`${profile.name}.json`, profile.content);
-    
     return profile;
   }
 
@@ -371,11 +367,6 @@ export class MemStorage implements IStorage {
       updatedAt: new Date().toISOString(),
     };
     this.profiles.set(id, updatedProfile);
-    
-    // Update file system
-    if (updateData.content) {
-      await this.saveProfileFile(`${updatedProfile.name}.json`, updateData.content);
-    }
     
     return updatedProfile;
   }
