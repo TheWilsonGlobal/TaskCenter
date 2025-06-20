@@ -592,7 +592,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
                   <TabsContent value="custom-field" className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Custom Fields (JSON)</Label>
+                      <Label>Custom Field (JSON)</Label>
                       <div className="max-h-80 overflow-y-auto">
                         <pre className="text-sm text-slate-900 bg-slate-50 p-4 rounded-lg overflow-x-auto border font-mono whitespace-pre-wrap" style={{
                           tabSize: 2,

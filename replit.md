@@ -124,6 +124,7 @@ The application uses three main database tables:
 - June 20, 2025. Replaced simple Profile Details modal in Task List with comprehensive tabbed interface from Profile screen - includes Basic, Browser, Proxy, and Custom Field tabs with read-only fields and proper JSON syntax highlighting
 - June 20, 2025. Updated Edit Task popup title to "Task Details" and added read-only Task ID field displayed alongside Worker ID field with proper grid layout
 - June 20, 2025. Modified Task List to open Task Details popup (edit modal) when clicking on Task ID instead of the read-only task details view modal
+- June 20, 2025. Updated Task Details popup to only show "Update Task" button when task status is "NEW" - other statuses show read-only view with Cancel button only
 
 ## User Preferences
 

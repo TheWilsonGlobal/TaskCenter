@@ -207,12 +207,14 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
             <Button type="button" variant="secondary" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={updateTaskMutation.isPending}
-            >
-              {updateTaskMutation.isPending ? "Updating..." : "Update Task"}
-            </Button>
+            {status === "NEW" && (
+              <Button 
+                type="submit" 
+                disabled={updateTaskMutation.isPending}
+              >
+                {updateTaskMutation.isPending ? "Updating..." : "Update Task"}
+              </Button>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

@@ -462,7 +462,7 @@ export default function ProfilesTab() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Custom Fields (JSON)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Custom Field (JSON)</label>
               <Textarea
                 value={customField}
                 onChange={(e) => setCustomField(e.target.value)}
