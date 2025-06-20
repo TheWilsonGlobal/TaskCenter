@@ -193,7 +193,11 @@ export default function WorkersTab() {
               </TableHeader>
               <TableBody>
                 {filteredWorkers.sort((a, b) => a.id - b.id).map((worker) => (
-                  <TableRow key={worker.id} className="hover:bg-slate-50">
+                  <TableRow 
+                    key={worker.id} 
+                    className="hover:bg-slate-50 cursor-pointer"
+                    onClick={() => loadWorkerData(worker)}
+                  >
                     <TableCell className="font-mono text-sm">
                       {String(worker.id).padStart(3, "0")}
                     </TableCell>
