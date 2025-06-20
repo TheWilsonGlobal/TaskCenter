@@ -121,6 +121,7 @@ The application uses three main database tables:
 - June 20, 2025. Updated Edit Script popup title to "Script Details" and added read-only Script ID field displayed alongside Script Name
 - June 20, 2025. Improved Task List detail modals by moving scroll bars to specific content sections - Profile Details has scrollable Custom Fields area, Script Details has scrollable Source Code area for better content visibility
 - June 20, 2025. Enhanced Profile Details modal in Task List by increasing overall width to max-w-4xl and reducing Custom Fields section to 50% width for better layout proportions
+- June 20, 2025. Replaced simple Profile Details modal in Task List with comprehensive tabbed interface from Profile screen - includes Basic, Browser, Proxy, and Custom Field tabs with read-only fields and proper JSON syntax highlighting
 
 ## User Preferences
 

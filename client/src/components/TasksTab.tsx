@@ -6,7 +6,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown } from "lucide-react";
+import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
 import type { Task } from "@shared/schema";
@@ -431,70 +435,189 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
       {/* Profile Details Modal */}
       <Dialog open={isProfileDetailsOpen} onOpenChange={setIsProfileDetailsOpen}>
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>Profile Details</DialogTitle>
           </DialogHeader>
           
           {selectedProfile && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                <p className="text-sm text-slate-900">{selectedProfile.name}</p>
+            <ScrollArea className="h-[600px] pr-4">
+              <div className="space-y-6">
+                <Tabs defaultValue="basic" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="basic">Basic</TabsTrigger>
+                    <TabsTrigger value="browser">Browser</TabsTrigger>
+                    <TabsTrigger value="proxy">Proxy</TabsTrigger>
+                    <TabsTrigger value="custom-field">Custom Field</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="basic" className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Profile ID</Label>
+                        <Input
+                          value={String(selectedProfile.id).padStart(3, "0")}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Profile Name</Label>
+                        <Input
+                          value={selectedProfile.name}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Input
+                          value={selectedProfile.description || "No description"}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="browser" className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>User Agent</Label>
+                        <Input
+                          value={selectedProfile.userAgent}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Custom User Agent</Label>
+                        <Input
+                          value={selectedProfile.customUserAgent || "Not set"}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Viewport Width</Label>
+                        <Input
+                          value={String(selectedProfile.viewportWidth)}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Viewport Height</Label>
+                        <Input
+                          value={String(selectedProfile.viewportHeight)}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Timezone</Label>
+                        <Input
+                          value={selectedProfile.timezone}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Language</Label>
+                        <Input
+                          value={selectedProfile.language}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="proxy" className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={selectedProfile.useProxy}
+                        disabled
+                      />
+                      <Label>Enable Proxy</Label>
+                    </div>
+
+                    {selectedProfile.useProxy && (
+                      <>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Proxy Type</Label>
+                            <Input
+                              value={selectedProfile.proxyType}
+                              readOnly
+                              className="bg-slate-50 text-slate-600"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Proxy Host</Label>
+                            <Input
+                              value={selectedProfile.proxyHost}
+                              readOnly
+                              className="bg-slate-50 text-slate-600"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Proxy Port</Label>
+                            <Input
+                              value={selectedProfile.proxyPort}
+                              readOnly
+                              className="bg-slate-50 text-slate-600"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Proxy Username</Label>
+                            <Input
+                              value={selectedProfile.proxyUsername || "Not set"}
+                              readOnly
+                              className="bg-slate-50 text-slate-600"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="custom-field" className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Custom Fields (JSON)</Label>
+                      <div className="max-h-80 overflow-y-auto">
+                        <pre className="text-sm text-slate-900 bg-slate-50 p-4 rounded-lg overflow-x-auto border font-mono whitespace-pre-wrap" style={{
+                          tabSize: 2,
+                          lineHeight: '1.6',
+                          fontSize: '13px',
+                          fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                        }}>
+                          {selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 
+                            ? JSON.stringify(selectedProfile.customField, null, 2)
+                            : '{\n  // No custom fields defined\n}'
+                          }
+                        </pre>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                <p className="text-sm text-slate-900">{selectedProfile.description || "No description"}</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">User Agent</label>
-                  <p className="text-sm text-slate-900">{selectedProfile.userAgent}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Viewport</label>
-                  <p className="text-sm text-slate-900">{selectedProfile.viewportWidth}x{selectedProfile.viewportHeight}</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
-                  <p className="text-sm text-slate-900">{selectedProfile.timezone}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Language</label>
-                  <p className="text-sm text-slate-900">{selectedProfile.language}</p>
-                </div>
-              </div>
-              
-              {selectedProfile.useProxy && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Proxy</label>
-                  <p className="text-sm text-slate-900">{selectedProfile.proxyType}://{selectedProfile.proxyHost}:{selectedProfile.proxyPort}</p>
-                </div>
-              )}
-              
-              {selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Custom Fields</label>
-                  <div className="max-h-48 overflow-y-auto w-1/2">
-                    <pre className="text-sm text-slate-900 bg-slate-50 p-3 rounded-lg overflow-x-auto">
-                      {JSON.stringify(selectedProfile.customField, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-              )}
-              
-              <div className="flex justify-end pt-4 border-t border-slate-200">
-                <Button variant="outline" onClick={() => setIsProfileDetailsOpen(false)}>
-                  Close
-                </Button>
-              </div>
-            </div>
+            </ScrollArea>
           )}
+          
+          <div className="flex justify-end pt-4 border-t border-slate-200 mt-4">
+            <Button variant="outline" onClick={() => setIsProfileDetailsOpen(false)}>
+              Close
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
