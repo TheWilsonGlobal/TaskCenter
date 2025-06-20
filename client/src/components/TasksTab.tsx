@@ -136,16 +136,16 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
       customUserAgent: profile.customUserAgent,
       viewportWidth: profile.viewportWidth,
       viewportHeight: profile.viewportHeight,
-      deviceScaleFactor: profile.deviceScaleFactor,
-      isMobile: profile.isMobile,
-      hasTouch: profile.hasTouch,
-      isLandscape: profile.isLandscape,
+      timezone: profile.timezone,
+      language: profile.language,
+      useProxy: profile.useProxy,
+      proxyType: profile.proxyType,
       proxyHost: profile.proxyHost,
       proxyPort: profile.proxyPort,
       proxyUsername: profile.proxyUsername,
       proxyPassword: profile.proxyPassword,
-      timezone: profile.timezone,
-      language: profile.language,
+      scriptSource: profile.scriptSource,
+      customScript: profile.customScript,
       customField: profile.customField
     };
     
@@ -441,6 +441,107 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Profile Details Modal */}
+      <Dialog open={isProfileDetailsModalOpen} onOpenChange={setIsProfileDetailsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[70vh] flex flex-col">
+          <DialogHeader className="flex flex-row items-center justify-between">
+            <DialogTitle>Profile Details</DialogTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsProfileDetailsModalOpen(false)}
+              className="h-6 w-6 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogHeader>
+          
+          {selectedTaskProfile?.profile && (
+            <div className="flex-1 overflow-y-auto space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Profile Name</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.name}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.description || 'No description'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">User Agent</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.userAgent}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Custom User Agent</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.customUserAgent || 'None'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Viewport</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.viewportWidth} x {selectedTaskProfile.profile.viewportHeight}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.timezone}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Language</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.language}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Use Proxy</label>
+                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.useProxy ? 'Yes' : 'No'}</p>
+                </div>
+              </div>
+
+              {selectedTaskProfile.profile.useProxy && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Type</label>
+                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyType}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Host</label>
+                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyHost || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Port</label>
+                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyPort || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Authentication</label>
+                    <p className="text-sm text-slate-900">
+                      {selectedTaskProfile.profile.proxyUsername ? 'Yes' : 'No'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Additional Properties</label>
+                <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-32 overflow-y-auto">
+                  <pre>{JSON.stringify(
+                    selectedTaskProfile.profile.customField ? 
+                      JSON.parse(selectedTaskProfile.profile.customField) : 
+                      {}, 
+                    null, 
+                    2
+                  )}</pre>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
+            <Button variant="outline" onClick={() => setIsProfileDetailsModalOpen(false)}>
+              Close
+            </Button>
+            <Button onClick={handleSaveProfile} disabled={createProfileMutation.isPending}>
+              {createProfileMutation.isPending ? "Saving..." : "Save Profile"}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
