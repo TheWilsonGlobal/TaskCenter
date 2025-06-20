@@ -431,7 +431,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
       {/* Profile Details Modal */}
       <Dialog open={isProfileDetailsOpen} onOpenChange={setIsProfileDetailsOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Profile Details</DialogTitle>
           </DialogHeader>
@@ -480,7 +480,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               {selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Custom Fields</label>
-                  <div className="max-h-48 overflow-y-auto">
+                  <div className="max-h-48 overflow-y-auto w-1/2">
                     <pre className="text-sm text-slate-900 bg-slate-50 p-3 rounded-lg overflow-x-auto">
                       {JSON.stringify(selectedProfile.customField, null, 2)}
                     </pre>
