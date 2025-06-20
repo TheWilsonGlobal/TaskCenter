@@ -248,10 +248,12 @@ export default function ProfilesTab() {
     return <Monitor className="w-4 h-4" />;
   };
 
-  const filteredProfiles = profiles.filter((profile: Profile) =>
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (profile.description && profile.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredProfiles = Array.isArray(profiles) 
+    ? profiles.filter((profile: Profile) =>
+        profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (profile.description && profile.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    : [];
 
   return (
     <div className="space-y-6">

@@ -345,8 +345,7 @@ export class MemStorage implements IStorage {
       proxyPort: insertProfile.proxyPort || "",
       proxyUsername: insertProfile.proxyUsername || "",
       proxyPassword: insertProfile.proxyPassword || "",
-      scriptSource: insertProfile.scriptSource || "editor",
-      customScript: insertProfile.customScript || "",
+
       customField: insertProfile.customField ?? "{}",
       createdAt: now,
       updatedAt: now,
@@ -569,7 +568,7 @@ export class DatabaseStorage implements IStorage {
     const [profile] = await db
       .insert(profiles)
       .values({
-        ...insertProfile,
+        name: insertProfile.name,
         description: insertProfile.description || "",
         userAgent: insertProfile.userAgent || "chrome-linux",
         customUserAgent: insertProfile.customUserAgent || "",
@@ -583,8 +582,7 @@ export class DatabaseStorage implements IStorage {
         proxyPort: insertProfile.proxyPort || "",
         proxyUsername: insertProfile.proxyUsername || "",
         proxyPassword: insertProfile.proxyPassword || "",
-        scriptSource: insertProfile.scriptSource || "editor",
-        customScript: insertProfile.customScript || "",
+
         customField: insertProfile.customField || "{}",
         createdAt: now,
         updatedAt: now,
