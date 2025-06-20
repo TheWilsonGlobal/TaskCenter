@@ -205,7 +205,7 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
 
           <DialogFooter>
             <Button type="button" variant="secondary" onClick={handleCancel}>
-              Cancel
+              Close
             </Button>
             {status === "NEW" && (
               <Button 
