@@ -273,133 +273,113 @@ export default function ProfilesTab() {
     : [];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Profile Configurations</h2>
-          <p className="text-muted-foreground">
-            Manage browser profiles for automation tasks
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search profiles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-64"
+    <>
+      <Card>
+        <div className="px-6 py-4 border-b border-slate-200">
+          <div className="flex items-center space-x-3">
+            <Button onClick={() => { resetForm(); setIsEditorOpen(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Profile
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileUpload}
+              className="hidden"
             />
+            <Button 
+              variant="outline" 
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Import
+            </Button>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search profiles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 pl-10"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+            </div>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="w-4 h-4 mr-2" />
-            Upload
-          </Button>
-          <Button onClick={() => { resetForm(); setIsEditorOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Profile
-          </Button>
         </div>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-8">
-          <div className="text-muted-foreground">Loading profiles...</div>
-        </div>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Files</CardTitle>
-            <CardDescription>
-              Browser automation profiles ({filteredProfiles.length} total)
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="text-slate-500">Loading profiles...</div>
+            </div>
+          ) : filteredProfiles.length === 0 ? (
+            <div className="text-center text-slate-500 py-8">
+              {searchTerm 
+                ? "No profiles match your search"
+                : "No profiles available. Profiles will appear here when they are added to the system."
+              }
+            </div>
+          ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>Viewport</TableHead>
-                  <TableHead>User Agent</TableHead>
-                  <TableHead>Proxy</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProfiles.map((profile: Profile) => (
-                  <TableRow key={profile.id}>
-                    <TableCell className="font-mono text-sm">{profile.id}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {getDeviceIcon(profile)}
-                        <span className="font-medium">{profile.name}</span>
-                      </div>
+                {filteredProfiles.sort((a, b) => a.id - b.id).map((profile: Profile) => (
+                  <TableRow key={profile.id} className="hover:bg-slate-50">
+                    <TableCell className="font-mono text-sm">
+                      {String(profile.id).padStart(3, "0")}
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">
+                    <TableCell className="font-medium">{profile.name}</TableCell>
+                    <TableCell className="text-slate-600">
                       {profile.description || "No description"}
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">
-                        {profile.viewportWidth}x{profile.viewportHeight}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {profile.userAgent}
-                    </TableCell>
-                    <TableCell>
-                      {profile.useProxy ? (
-                        <Badge variant="outline">
-                          <Lock className="w-3 h-3 mr-1" />
-                          Enabled
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary">Disabled</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => loadProfileData(profile)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
                           onClick={() => handleDownload(profile)}
+                          title="Download"
                         >
-                          <Download className="w-4 h-4" />
+                          <Download className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => loadProfileData(profile)}
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <Trash2 className="w-4 h-4" />
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              title="Delete"
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Profile</AlertDialogTitle>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{profile.name}"? This action cannot be undone.
+                                This action cannot be undone. This will permanently delete the profile
+                                "{profile.name}" and remove all its data from the server.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
+                              <AlertDialogAction 
                                 onClick={() => handleDeleteProfile(profile.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                className="bg-red-600 hover:bg-red-700"
                               >
                                 Delete
                               </AlertDialogAction>
@@ -412,14 +392,9 @@ export default function ProfilesTab() {
                 ))}
               </TableBody>
             </Table>
-            {filteredProfiles.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? "No profiles match your search" : "No profiles found"}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
 
       {/* Profile Editor Dialog */}
       <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
@@ -692,6 +667,6 @@ export default function ProfilesTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
