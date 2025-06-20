@@ -137,9 +137,22 @@ export default function ProfilesTab() {
     setProxyPassword(profile.proxyPassword || "");
 
     // Handle custom field - convert object back to JSON string for editing
-    const customFieldString = typeof profile.customField === 'object' 
-      ? JSON.stringify(profile.customField, null, 2)
-      : profile.customField || "{}";
+    let customFieldString = "{}";
+    if (profile.customField) {
+      if (typeof profile.customField === 'object') {
+        // Pretty format the JSON object
+        customFieldString = JSON.stringify(profile.customField, null, 2);
+      } else if (typeof profile.customField === 'string') {
+        try {
+          // Try to parse and reformat if it's a JSON string
+          const parsed = JSON.parse(profile.customField);
+          customFieldString = JSON.stringify(parsed, null, 2);
+        } catch {
+          // If parsing fails, use the string as is
+          customFieldString = profile.customField;
+        }
+      }
+    }
     setCustomField(customFieldString);
     setSelectedProfileId(profile.id);
     setIsEditorOpen(true);
@@ -609,13 +622,20 @@ export default function ProfilesTab() {
                         value={customField}
                         onChange={(e) => setCustomField(e.target.value)}
                         placeholder='{\n  "key": "value",\n  "account": {\n    "username": "example",\n    "password": "example"\n  }\n}'
-                        rows={16}
-                        className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-4 resize-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                        rows={18}
+                        className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-4 resize-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors leading-relaxed"
                         style={{
                           tabSize: 2,
-                          whiteSpace: 'pre',
-                          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                          whiteSpace: 'pre-wrap',
+                          overflowWrap: 'break-word',
+                          lineHeight: '1.6',
+                          fontSize: '13px',
+                          fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
                         }}
+                        spellCheck={false}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
                       />
                       <div className="absolute top-2 right-2">
                         <Badge variant="outline" className="text-xs bg-white dark:bg-slate-800">
