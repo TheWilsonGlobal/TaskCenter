@@ -94,9 +94,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found for this task" });
       }
       
+      let parsedCustomField = {};
+      try {
+        parsedCustomField = profile.customField ? JSON.parse(profile.customField) : {};
+      } catch (error) {
+        console.error('Error parsing custom field for profile', profile.id, error);
+        parsedCustomField = {};
+      }
       const profileWithParsedCustomField = {
         ...profile,
-        customField: profile.customField ? JSON.parse(profile.customField) : {}
+        customField: parsedCustomField
       };
       res.json(profileWithParsedCustomField);
     } catch (error) {
@@ -268,9 +275,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!profile) {
         return res.status(404).json({ error: "Profile not found" });
       }
+      let parsedCustomField = {};
+      try {
+        parsedCustomField = profile.customField ? JSON.parse(profile.customField) : {};
+      } catch (error) {
+        console.error('Error parsing custom field for profile', profile.id, error);
+        parsedCustomField = {};
+      }
       const profileWithParsedCustomField = {
         ...profile,
-        customField: profile.customField ? JSON.parse(profile.customField) : {}
+        customField: parsedCustomField
       };
       res.json(profileWithParsedCustomField);
     } catch (error) {
@@ -286,9 +300,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found" });
       }
       
+      let parsedCustomField = {};
+      try {
+        parsedCustomField = profile.customField ? JSON.parse(profile.customField) : {};
+      } catch (error) {
+        console.error('Error parsing custom field for profile', profile.id, error);
+        parsedCustomField = {};
+      }
       const profileWithParsedCustomField = {
         ...profile,
-        customField: profile.customField ? JSON.parse(profile.customField) : {}
+        customField: parsedCustomField
       };
       
       res.setHeader('Content-Disposition', `attachment; filename="${profile.name}.json"`);
