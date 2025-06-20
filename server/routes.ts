@@ -94,7 +94,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found for this task" });
       }
       
-      res.json(profile);
+      const profileWithParsedCustomField = {
+        ...profile,
+        customField: profile.customField ? JSON.parse(profile.customField) : {}
+      };
+      res.json(profileWithParsedCustomField);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch task profile" });
     }
@@ -238,7 +242,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/profiles", async (req: Request, res: Response) => {
     try {
       const profiles = await storage.getAllProfiles();
-      res.json(profiles);
+      const profilesWithParsedCustomField = profiles.map(profile => {
+        let parsedCustomField = {};
+        try {
+          parsedCustomField = profile.customField ? JSON.parse(profile.customField) : {};
+        } catch (error) {
+          console.error('Error parsing custom field for profile', profile.id, error);
+          parsedCustomField = {};
+        }
+        return {
+          ...profile,
+          customField: parsedCustomField
+        };
+      });
+      res.json(profilesWithParsedCustomField);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch profiles" });
     }
@@ -251,7 +268,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!profile) {
         return res.status(404).json({ error: "Profile not found" });
       }
-      res.json(profile);
+      const profileWithParsedCustomField = {
+        ...profile,
+        customField: profile.customField ? JSON.parse(profile.customField) : {}
+      };
+      res.json(profileWithParsedCustomField);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch profile" });
     }
@@ -265,9 +286,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Profile not found" });
       }
       
+      const profileWithParsedCustomField = {
+        ...profile,
+        customField: profile.customField ? JSON.parse(profile.customField) : {}
+      };
+      
       res.setHeader('Content-Disposition', `attachment; filename="${profile.name}.json"`);
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(profile, null, 2));
+      res.send(JSON.stringify(profileWithParsedCustomField, null, 2));
     } catch (error) {
       res.status(500).json({ error: "Failed to download profile" });
     }
