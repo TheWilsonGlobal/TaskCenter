@@ -109,6 +109,9 @@ The application uses three main database tables:
 - June 19, 2025. Added ID-based sorting for Tasks, Scripts, and Profiles tables (ascending order)
 - June 19, 2025. Implemented complete Worker Management system with database table (id, username, password, description), API endpoints, and UI interface matching Profile Management design
 - June 20, 2025. Removed content field from Profile system - eliminated all content element references from database schema, API endpoints, storage layer, and UI components
+- June 20, 2025. Fixed custom field display in Profile API endpoints to return proper JSON format instead of raw strings
+- June 20, 2025. Removed Script Source and Custom Script fields from Profile system - updated database schema, storage layer, and UI components
+- June 20, 2025. Updated Edit Profile popup to replace "Advanced" tab with "Custom Field" tab featuring dedicated JSON editor with syntax highlighting
 
 ## User Preferences
 
