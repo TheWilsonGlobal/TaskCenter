@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Task not found" });
       }
       
-      const profile = await storage.getProfileByName(task.profile);
+      const profile = await storage.getProfile(task.profileId);
       if (!profile) {
         return res.status(404).json({ error: "Profile not found for this task" });
       }
@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Task not found" });
       }
       
-      const script = await storage.getScriptByName(task.script);
+      const script = await storage.getScript(task.scriptId);
       if (!script) {
         return res.status(404).json({ error: "Script not found for this task" });
       }
@@ -283,10 +283,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content = req.file.buffer.toString('utf8');
         filename = req.file.originalname;
       } else {
-        // JSON data
-        const validatedData = insertProfileSchema.parse(req.body);
-        content = validatedData.content;
-        filename = `${validatedData.name}.json`;
+        // JSON data from form
+        filename = `${req.body.name}.json`;
       }
 
       if (!filename.endsWith('.json')) {
@@ -307,10 +305,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const profileData = {
-        profileId: req.body.profileId || `profile_${Date.now()}`,
         name: req.body.name || name,
         description: req.body.description || "New browser profile",
-        content,
         userAgent: req.body.userAgent || "chrome-linux",
         customUserAgent: req.body.customUserAgent || "",
         viewportWidth: parseInt(req.body.viewportWidth) || parseInt(req.body.width) || 1920,

@@ -1,22 +1,38 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useRef } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { UserCog, Smartphone, Tablet, Download, Edit, Trash2, Plus, Upload, Search } from "lucide-react";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useState, useRef } from "react";
-import type { Profile } from "@shared/schema";
+import { Monitor, Smartphone, Tablet, Globe, Lock, Edit, Trash2, Download, Upload, Plus, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import type { Profile, InsertProfile } from "@/../../shared/schema";
 
 export default function ProfilesTab() {
-  const [profileName, setProfileName] = useState("profile_custom");
-  const [name, setName] = useState("Custom Profile");
-  const [description, setDescription] = useState("New browser profile");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // UI State
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Form State
+  const [profileName, setProfileName] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [userAgent, setUserAgent] = useState("chrome-linux");
   const [customUserAgent, setCustomUserAgent] = useState("");
   const [viewportWidth, setViewportWidth] = useState("1920");
@@ -32,57 +48,69 @@ export default function ProfilesTab() {
   const [scriptSource, setScriptSource] = useState("editor");
   const [customScript, setCustomScript] = useState("");
   const [customField, setCustomField] = useState("{}");
-  const [selectedProfileId, setSelectedProfileId] = useState<number | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const { toast } = useToast();
 
-  const { data: profiles = [], isLoading } = useQuery<Profile[]>({
+  // Queries
+  const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["/api/profiles"],
   });
 
+  // Mutations
   const createProfileMutation = useMutation({
-    mutationFn: (profileData: any) => apiRequest("POST", "/api/profiles", profileData),
+    mutationFn: async (profileData: InsertProfile) => {
+      return apiRequest("/api/profiles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileData),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
+      resetForm();
       setIsEditorOpen(false);
       toast({
-        title: "Success",
-        description: "Profile created successfully",
+        title: "Profile created",
+        description: "Browser profile has been created successfully",
       });
     },
   });
 
   const updateProfileMutation = useMutation({
-    mutationFn: ({ id, profileData }: { id: number; profileData: any }) => 
-      apiRequest("PUT", `/api/profiles/${id}`, profileData),
+    mutationFn: async ({ id, profileData }: { id: number; profileData: Partial<InsertProfile> }) => {
+      return apiRequest(`/api/profiles/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileData),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
+      resetForm();
       setIsEditorOpen(false);
       toast({
-        title: "Success",
-        description: "Profile updated successfully",
+        title: "Profile updated",
+        description: "Browser profile has been updated successfully",
       });
     },
   });
 
   const deleteProfileMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/profiles/${id}`),
+    mutationFn: async (id: number) => {
+      return apiRequest(`/api/profiles/${id}`, { method: "DELETE" });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
       toast({
-        title: "Success",
-        description: "Profile deleted successfully",
+        title: "Profile deleted",
+        description: "Browser profile has been deleted successfully",
       });
     },
   });
 
+  // Helper Functions
   const resetForm = () => {
-    setProfileName("profile_custom");
-    setName("Custom Profile");
-    setDescription("New browser profile");
+    setProfileName("");
+    setName("");
+    setDescription("");
     setUserAgent("chrome-linux");
     setCustomUserAgent("");
     setViewportWidth("1920");
@@ -103,41 +131,31 @@ export default function ProfilesTab() {
   };
 
   const loadProfileData = (profile: Profile) => {
-    try {
-      const profileConfig = JSON.parse(profile.content);
-      
-      setProfileName(profile.name);
-      setName(profile.name || profileConfig.name || "Custom Profile");
-      setDescription(profile.description || profileConfig.description || "");
-      setUserAgent(profile.userAgent || profileConfig.userAgent || "chrome-linux");
-      setCustomUserAgent(profile.customUserAgent || profileConfig.customUserAgent || "");
-      setViewportWidth(String(profile.viewportWidth || profileConfig.viewportWidth || 1920));
-      setViewportHeight(String(profile.viewportHeight || profileConfig.viewportHeight || 1080));
-      setTimezone(profile.timezone || profileConfig.timezone || "America/New_York");
-      setLanguage(profile.language || profileConfig.language || "en-US");
-      setUseProxy(profile.useProxy || profileConfig.useProxy || false);
-      setProxyType(profile.proxyType || profileConfig.proxyType || "http");
-      setProxyHost(profile.proxyHost || profileConfig.proxyHost || "");
-      setProxyPort(profile.proxyPort || profileConfig.proxyPort || "");
-      setProxyUsername(profile.proxyUsername || profileConfig.proxyUsername || "");
-      setProxyPassword(profile.proxyPassword || profileConfig.proxyPassword || "");
-      setScriptSource(profile.scriptSource || profileConfig.scriptSource || "editor");
-      setCustomScript(profile.customScript || profileConfig.customScript || "");
-      setCustomField(profile.customField || profileConfig.custom_fields ? JSON.stringify(profileConfig.custom_fields, null, 2) : "{}");
-      setSelectedProfileId(profile.id);
-      setIsEditorOpen(true);
-      
-      toast({
-        title: "Profile loaded",
-        description: `${profile.name} configuration loaded for editing`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error loading profile",
-        description: "Failed to parse profile configuration",
-        variant: "destructive",
-      });
-    }
+    setProfileName(profile.name);
+    setName(profile.name || "Custom Profile");
+    setDescription(profile.description || "");
+    setUserAgent(profile.userAgent || "chrome-linux");
+    setCustomUserAgent(profile.customUserAgent || "");
+    setViewportWidth(String(profile.viewportWidth || 1920));
+    setViewportHeight(String(profile.viewportHeight || 1080));
+    setTimezone(profile.timezone || "America/New_York");
+    setLanguage(profile.language || "en-US");
+    setUseProxy(profile.useProxy || false);
+    setProxyType(profile.proxyType || "http");
+    setProxyHost(profile.proxyHost || "");
+    setProxyPort(profile.proxyPort || "");
+    setProxyUsername(profile.proxyUsername || "");
+    setProxyPassword(profile.proxyPassword || "");
+    setScriptSource(profile.scriptSource || "editor");
+    setCustomScript(profile.customScript || "");
+    setCustomField(profile.customField || "{}");
+    setSelectedProfileId(profile.id);
+    setIsEditorOpen(true);
+    
+    toast({
+      title: "Profile loaded",
+      description: `${profile.name} configuration loaded for editing`,
+    });
   };
 
   const handleSaveProfile = () => {
@@ -170,26 +188,7 @@ export default function ProfilesTab() {
         proxyPassword: proxyPassword.trim(),
         scriptSource,
         customScript: customScript.trim(),
-        customField,
-        content: JSON.stringify({
-          name: name.trim(),
-          description: description.trim(),
-          userAgent,
-          customUserAgent: customUserAgent.trim(),
-          viewportWidth: parseInt(viewportWidth) || 1920,
-          viewportHeight: parseInt(viewportHeight) || 1080,
-          timezone,
-          language,
-          useProxy,
-          proxyType,
-          proxyHost: proxyHost.trim(),
-          proxyPort: proxyPort.trim(),
-          proxyUsername: proxyUsername.trim(),
-          proxyPassword: proxyPassword.trim(),
-          scriptSource,
-          customScript: customScript.trim(),
-          custom_fields: customFields
-        }, null, 2)
+        customField
       };
 
       if (selectedProfileId) {
@@ -206,18 +205,19 @@ export default function ProfilesTab() {
     }
   };
 
+  const handleDeleteProfile = async (profileId: number) => {
+    deleteProfileMutation.mutate(profileId);
+  };
+
   const handleDownload = async (profile: Profile) => {
     try {
-      const response = await fetch(`/api/profiles/${profile.id}/download`, {
-        credentials: 'include',
-      });
-      
-      if (!response.ok) throw new Error('Download failed');
+      const response = await fetch(`/api/profiles/${profile.id}/download`);
+      if (!response.ok) throw new Error("Failed to download");
       
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
+      const a = document.createElement("a");
+      a.style.display = "none";
       a.href = url;
       a.download = `${profile.name}.json`;
       document.body.appendChild(a);
@@ -226,375 +226,439 @@ export default function ProfilesTab() {
       document.body.removeChild(a);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to download profile",
+        title: "Download failed",
+        description: "Failed to download profile file",
         variant: "destructive",
       });
     }
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this profile?")) {
-      deleteProfileMutation.mutate(id);
-    }
-  };
-
-  const handleImportProfile = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        const profileConfig = JSON.parse(content);
-        
-        const importData = {
-          name: profileConfig.name || "Imported Profile",
-          description: profileConfig.description || "Imported profile configuration",
-          userAgent: profileConfig.userAgent || "chrome-linux",
-          customUserAgent: profileConfig.customUserAgent || "",
-          viewportWidth: profileConfig.viewportWidth || 1920,
-          viewportHeight: profileConfig.viewportHeight || 1080,
-          timezone: profileConfig.timezone || "America/New_York",
-          language: profileConfig.language || "en-US",
-          useProxy: profileConfig.useProxy || false,
-          proxyType: profileConfig.proxyType || "http",
-          proxyHost: profileConfig.proxyHost || "",
-          proxyPort: profileConfig.proxyPort || "",
-          proxyUsername: profileConfig.proxyUsername || "",
-          proxyPassword: profileConfig.proxyPassword || "",
-          scriptSource: profileConfig.scriptSource || "editor",
-          customScript: profileConfig.customScript || "",
-          customField: JSON.stringify(profileConfig.custom_fields, null, 2),
-          content
-        };
+    const formData = new FormData();
+    formData.append("file", file);
 
-        createProfileMutation.mutate(importData);
-        
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-
-      } catch (error) {
-        toast({
-          title: "Import failed",
-          description: "Invalid JSON file or corrupted profile data",
-          variant: "destructive",
-        });
+    try {
+      await createProfileMutation.mutateAsync(formData as any);
+    } catch (error) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
-    };
-    reader.readAsText(file);
+      
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload profile file",
+        variant: "destructive",
+      });
+    }
   };
-
-  const filteredProfiles = profiles.filter(profile => {
-    const matchesSearch = profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (profile.description && profile.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesSearch;
-  });
 
   const getDeviceIcon = (profile: Profile) => {
-    if (profile.viewportWidth && profile.viewportWidth <= 500) return <Smartphone className="text-success h-5 w-5" />;
-    if (profile.viewportWidth && profile.viewportWidth <= 1024) return <Tablet className="text-success h-5 w-5" />;
-    return <UserCog className="text-success h-5 w-5" />;
+    const width = profile.viewportWidth || 1920;
+    if (width <= 480) return <Smartphone className="w-4 h-4" />;
+    if (width <= 768) return <Tablet className="w-4 h-4" />;
+    return <Monitor className="w-4 h-4" />;
   };
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center h-64">Loading profiles...</div>;
-  }
+  const filteredProfiles = profiles.filter((profile: Profile) =>
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (profile.description && profile.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
-    <>
-      <Card>
-        <div className="px-6 py-4 border-b border-slate-200">
-          <div className="flex items-center space-x-3">
-            <Button onClick={resetForm}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Profile
-            </Button>
-            <Button variant="outline" onClick={handleImportProfile}>
-              <Upload className="h-4 w-4 mr-2" />
-              Import
-            </Button>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search profiles..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64 pl-10"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Profile Configurations</h2>
+          <p className="text-muted-foreground">
+            Manage browser profiles for automation tasks
+          </p>
         </div>
-        <CardContent className="p-0">
-          {filteredProfiles.length === 0 ? (
-            <div className="text-center text-slate-500 py-8">
-              {searchTerm 
-                ? "No profiles match your search"
-                : "No profiles created yet. Create your first browser profile to get started."
-              }
-            </div>
-          ) : (
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search profiles..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 w-64"
+            />
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" />
+            Upload
+          </Button>
+          <Button onClick={() => { resetForm(); setIsEditorOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Profile
+          </Button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="text-muted-foreground">Loading profiles...</div>
+        </div>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Files</CardTitle>
+            <CardDescription>
+              Browser automation profiles ({filteredProfiles.length} total)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Viewport</TableHead>
+                  <TableHead>User Agent</TableHead>
+                  <TableHead>Proxy</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProfiles.sort((a, b) => a.id - b.id).map((profile) => (
-                  <TableRow key={profile.id} className="hover:bg-slate-50">
-                    <TableCell className="font-mono text-sm">
-                      {String(profile.id).padStart(3, "0")}
+                {filteredProfiles.map((profile: Profile) => (
+                  <TableRow key={profile.id}>
+                    <TableCell className="font-mono text-sm">{profile.id}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getDeviceIcon(profile)}
+                        <span className="font-medium">{profile.name}</span>
+                      </div>
                     </TableCell>
-                    <TableCell className="font-medium">{profile.name}</TableCell>
-                    <TableCell className="text-slate-600">
+                    <TableCell className="max-w-xs truncate">
                       {profile.description || "No description"}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDownload(profile)}
-                          title="Download"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {profile.viewportWidth}x{profile.viewportHeight}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {profile.userAgent}
+                    </TableCell>
+                    <TableCell>
+                      {profile.useProxy ? (
+                        <Badge variant="outline">
+                          <Lock className="w-3 h-3 mr-1" />
+                          Enabled
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary">Disabled</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => loadProfileData(profile)}
-                          title="Edit"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDelete(profile.id)}
-                          disabled={deleteProfileMutation.isPending}
-                          title="Delete"
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDownload(profile)}
                         >
-                          <Trash2 className="h-4 w-4 text-red-500" />
+                          <Download className="w-4 h-4" />
                         </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Profile</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{profile.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteProfile(profile.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
+            {filteredProfiles.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                {searchTerm ? "No profiles match your search" : "No profiles found"}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
+      {/* Profile Editor Dialog */}
       <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-        <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>
-              {selectedProfileId ? "Edit Profile Configuration" : "Create New Profile"}
+              {selectedProfileId ? "Edit Profile" : "New Profile"}
             </DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Display Name</label>
-              <Input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Custom Profile"
-              />
-            </div>
+          <ScrollArea className="h-[600px] pr-4">
+            <div className="space-y-6">
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="basic">Basic</TabsTrigger>
+                  <TabsTrigger value="browser">Browser</TabsTrigger>
+                  <TabsTrigger value="proxy">Proxy</TabsTrigger>
+                  <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                </TabsList>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
-              <Input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="New browser profile"
-              />
-            </div>
+                <TabsContent value="basic" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Profile Name</Label>
+                      <Input
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Enter profile name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Input
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Profile description"
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">User Agent</label>
-              <Select value={userAgent} onValueChange={setUserAgent}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="chrome-linux">Chrome Linux</SelectItem>
-                  <SelectItem value="chrome-windows">Chrome Windows</SelectItem>
-                  <SelectItem value="firefox-linux">Firefox Linux</SelectItem>
-                  <SelectItem value="safari-mac">Safari Mac</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <TabsContent value="browser" className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="userAgent">User Agent</Label>
+                      <Select value={userAgent} onValueChange={setUserAgent}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="chrome-linux">Chrome Linux</SelectItem>
+                          <SelectItem value="chrome-windows">Chrome Windows</SelectItem>
+                          <SelectItem value="chrome-mac">Chrome Mac</SelectItem>
+                          <SelectItem value="firefox">Firefox</SelectItem>
+                          <SelectItem value="safari">Safari</SelectItem>
+                          <SelectItem value="custom">Custom</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="customUserAgent">Custom User Agent</Label>
+                      <Input
+                        id="customUserAgent"
+                        value={customUserAgent}
+                        onChange={(e) => setCustomUserAgent(e.target.value)}
+                        placeholder="Custom user agent string"
+                        disabled={userAgent !== "custom"}
+                      />
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Viewport Width</label>
-                <Input
-                  type="number"
-                  value={viewportWidth}
-                  onChange={(e) => setViewportWidth(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Viewport Height</label>
-                <Input
-                  type="number"
-                  value={viewportHeight}
-                  onChange={(e) => setViewportHeight(e.target.value)}
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="viewportWidth">Viewport Width</Label>
+                      <Input
+                        id="viewportWidth"
+                        type="number"
+                        value={viewportWidth}
+                        onChange={(e) => setViewportWidth(e.target.value)}
+                        placeholder="1920"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="viewportHeight">Viewport Height</Label>
+                      <Input
+                        id="viewportHeight"
+                        type="number"
+                        value={viewportHeight}
+                        onChange={(e) => setViewportHeight(e.target.value)}
+                        placeholder="1080"
+                      />
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Timezone</label>
-                <Input
-                  type="text"
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  placeholder="America/New_York"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
-                <Input
-                  type="text"
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  placeholder="en-US"
-                />
-              </div>
-            </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="timezone">Timezone</Label>
+                      <Input
+                        id="timezone"
+                        value={timezone}
+                        onChange={(e) => setTimezone(e.target.value)}
+                        placeholder="America/New_York"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="language">Language</Label>
+                      <Input
+                        id="language"
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        placeholder="en-US"
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
 
-            <div className="space-y-4 border-t pt-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="use-proxy"
-                  checked={useProxy}
-                  onCheckedChange={(checked) => setUseProxy(checked === true)}
-                />
-                <label htmlFor="use-proxy" className="text-sm font-medium text-slate-700">
-                  Use Proxy
-                </label>
-              </div>
+                <TabsContent value="proxy" className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="useProxy"
+                      checked={useProxy}
+                      onCheckedChange={setUseProxy}
+                    />
+                    <Label htmlFor="useProxy">Enable Proxy</Label>
+                  </div>
 
-              {useProxy && (
-                <div className="space-y-4 ml-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Type</label>
-                    <Select value={proxyType} onValueChange={setProxyType}>
+                  {useProxy && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="proxyType">Proxy Type</Label>
+                          <Select value={proxyType} onValueChange={setProxyType}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="http">HTTP</SelectItem>
+                              <SelectItem value="https">HTTPS</SelectItem>
+                              <SelectItem value="socks4">SOCKS4</SelectItem>
+                              <SelectItem value="socks5">SOCKS5</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="proxyHost">Proxy Host</Label>
+                          <Input
+                            id="proxyHost"
+                            value={proxyHost}
+                            onChange={(e) => setProxyHost(e.target.value)}
+                            placeholder="proxy.example.com"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="proxyPort">Proxy Port</Label>
+                          <Input
+                            id="proxyPort"
+                            value={proxyPort}
+                            onChange={(e) => setProxyPort(e.target.value)}
+                            placeholder="8080"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="proxyUsername">Username</Label>
+                          <Input
+                            id="proxyUsername"
+                            value={proxyUsername}
+                            onChange={(e) => setProxyUsername(e.target.value)}
+                            placeholder="Username (optional)"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="proxyPassword">Password</Label>
+                          <Input
+                            id="proxyPassword"
+                            type="password"
+                            value={proxyPassword}
+                            onChange={(e) => setProxyPassword(e.target.value)}
+                            placeholder="Password (optional)"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="advanced" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="scriptSource">Script Source</Label>
+                    <Select value={scriptSource} onValueChange={setScriptSource}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="http">HTTP</SelectItem>
-                        <SelectItem value="https">HTTPS</SelectItem>
-                        <SelectItem value="socks4">SOCKS4</SelectItem>
-                        <SelectItem value="socks5">SOCKS5</SelectItem>
+                        <SelectItem value="editor">Editor</SelectItem>
+                        <SelectItem value="file">File</SelectItem>
+                        <SelectItem value="custom">Custom</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Host</label>
-                      <Input
-                        type="text"
-                        value={proxyHost}
-                        onChange={(e) => setProxyHost(e.target.value)}
-                        placeholder="proxy.example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Proxy Port</label>
-                      <Input
-                        type="number"
-                        value={proxyPort}
-                        onChange={(e) => setProxyPort(e.target.value)}
-                        placeholder="8080"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customScript">Custom Script</Label>
+                    <Textarea
+                      id="customScript"
+                      value={customScript}
+                      onChange={(e) => setCustomScript(e.target.value)}
+                      placeholder="Enter custom script"
+                      rows={6}
+                    />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Username (Optional)</label>
-                      <Input
-                        type="text"
-                        value={proxyUsername}
-                        onChange={(e) => setProxyUsername(e.target.value)}
-                        placeholder="proxy_user"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Password (Optional)</label>
-                      <Input
-                        type="password"
-                        value={proxyPassword}
-                        onChange={(e) => setProxyPassword(e.target.value)}
-                        placeholder="proxy_password"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customField">Custom Fields (JSON)</Label>
+                    <Textarea
+                      id="customField"
+                      value={customField}
+                      onChange={(e) => setCustomField(e.target.value)}
+                      placeholder='{"key": "value"}'
+                      rows={6}
+                    />
                   </div>
-                </div>
-              )}
+                </TabsContent>
+              </Tabs>
             </div>
+          </ScrollArea>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Custom Fields (JSON)</label>
-              <Textarea
-                value={customField}
-                onChange={(e) => setCustomField(e.target.value)}
-                placeholder='{"key": "value"}'
-                className="h-32 font-mono text-sm"
-              />
-            </div>
-            
-            <div className="flex space-x-3 pt-4">
-              <Button 
-                onClick={handleSaveProfile}
-                disabled={createProfileMutation.isPending || updateProfileMutation.isPending}
-                className="flex-1"
-              >
-                {(createProfileMutation.isPending || updateProfileMutation.isPending) 
-                  ? "Saving..." 
-                  : selectedProfileId 
-                    ? "Update Profile" 
-                    : "Create Profile"}
-              </Button>
-              <Button variant="secondary" onClick={() => {
-                resetForm();
-                setIsEditorOpen(false);
-              }}>
-                Cancel
-              </Button>
-            </div>
-          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditorOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProfile}>
+              {selectedProfileId ? "Update Profile" : "Create Profile"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
-      
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept=".json"
-        style={{ display: 'none' }}
-      />
-    </>
+    </div>
   );
 }

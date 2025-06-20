@@ -102,27 +102,24 @@ export default function ProfilesTab() {
   };
 
   const loadProfileData = (profile: Profile) => {
-    try {
-      const profileConfig = JSON.parse(profile.content);
-      
       setProfileName(profile.name);
-      setName(profile.name || profileConfig.name || "Custom Profile");
-      setDescription(profile.description || profileConfig.description || "");
-      setUserAgent(profile.userAgent || profileConfig.userAgent || "chrome-linux");
-      setCustomUserAgent(profile.customUserAgent || profileConfig.customUserAgent || "");
-      setViewportWidth(String(profile.viewportWidth || profileConfig.viewportWidth || 1920));
-      setViewportHeight(String(profile.viewportHeight || profileConfig.viewportHeight || 1080));
-      setTimezone(profile.timezone || profileConfig.timezone || "America/New_York");
-      setLanguage(profile.language || profileConfig.language || "en-US");
-      setUseProxy(profile.useProxy || profileConfig.useProxy || false);
-      setProxyType(profile.proxyType || profileConfig.proxyType || "http");
-      setProxyHost(profile.proxyHost || profileConfig.proxyHost || "");
-      setProxyPort(profile.proxyPort || profileConfig.proxyPort || "");
-      setProxyUsername(profile.proxyUsername || profileConfig.proxyUsername || "");
-      setProxyPassword(profile.proxyPassword || profileConfig.proxyPassword || "");
-      setScriptSource(profile.scriptSource || profileConfig.scriptSource || "editor");
-      setCustomScript(profile.customScript || profileConfig.customScript || "");
-      setCustomField(profile.customField || profileConfig.custom_fields ? JSON.stringify(profileConfig.custom_fields, null, 2) : "{}");
+      setName(profile.name || "Custom Profile");
+      setDescription(profile.description || "");
+      setUserAgent(profile.userAgent || "chrome-linux");
+      setCustomUserAgent(profile.customUserAgent || "");
+      setViewportWidth(String(profile.viewportWidth || 1920));
+      setViewportHeight(String(profile.viewportHeight || 1080));
+      setTimezone(profile.timezone || "America/New_York");
+      setLanguage(profile.language || "en-US");
+      setUseProxy(profile.useProxy || false);
+      setProxyType(profile.proxyType || "http");
+      setProxyHost(profile.proxyHost || "");
+      setProxyPort(profile.proxyPort || "");
+      setProxyUsername(profile.proxyUsername || "");
+      setProxyPassword(profile.proxyPassword || "");
+      setScriptSource(profile.scriptSource || "editor");
+      setCustomScript(profile.customScript || "");
+      setCustomField(profile.customField || "{}");
       setSelectedProfileId(profile.id);
       setIsEditorOpen(true);
       
