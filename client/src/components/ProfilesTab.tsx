@@ -45,8 +45,7 @@ export default function ProfilesTab() {
   const [proxyPort, setProxyPort] = useState("");
   const [proxyUsername, setProxyUsername] = useState("");
   const [proxyPassword, setProxyPassword] = useState("");
-  const [scriptSource, setScriptSource] = useState("editor");
-  const [customScript, setCustomScript] = useState("");
+
   const [customField, setCustomField] = useState("{}");
 
   // Queries
@@ -123,8 +122,6 @@ export default function ProfilesTab() {
     setProxyPort("");
     setProxyUsername("");
     setProxyPassword("");
-    setScriptSource("editor");
-    setCustomScript("");
     setCustomField("{}");
     setSelectedProfileId(null);
     setIsEditorOpen(true);
@@ -146,8 +143,7 @@ export default function ProfilesTab() {
     setProxyPort(profile.proxyPort || "");
     setProxyUsername(profile.proxyUsername || "");
     setProxyPassword(profile.proxyPassword || "");
-    setScriptSource(profile.scriptSource || "editor");
-    setCustomScript(profile.customScript || "");
+
     setCustomField(profile.customField || "{}");
     setSelectedProfileId(profile.id);
     setIsEditorOpen(true);
@@ -186,8 +182,6 @@ export default function ProfilesTab() {
         proxyPort: proxyPort.trim(),
         proxyUsername: proxyUsername.trim(),
         proxyPassword: proxyPassword.trim(),
-        scriptSource,
-        customScript: customScript.trim(),
         customField
       };
 
@@ -608,41 +602,20 @@ export default function ProfilesTab() {
                   )}
                 </TabsContent>
 
-                <TabsContent value="advanced" className="space-y-4">
+                <TabsContent value="custom-field" className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="scriptSource">Script Source</Label>
-                    <Select value={scriptSource} onValueChange={setScriptSource}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="editor">Editor</SelectItem>
-                        <SelectItem value="file">File</SelectItem>
-                        <SelectItem value="custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="customScript">Custom Script</Label>
-                    <Textarea
-                      id="customScript"
-                      value={customScript}
-                      onChange={(e) => setCustomScript(e.target.value)}
-                      placeholder="Enter custom script"
-                      rows={6}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="customField">Custom Fields (JSON)</Label>
+                    <Label htmlFor="customField">Custom Field (JSON Format)</Label>
                     <Textarea
                       id="customField"
                       value={customField}
                       onChange={(e) => setCustomField(e.target.value)}
-                      placeholder='{"key": "value"}'
-                      rows={6}
+                      placeholder='{"key": "value", "account": {"username": "example", "password": "example"}}'
+                      rows={12}
+                      className="font-mono text-sm"
                     />
+                    <p className="text-sm text-muted-foreground">
+                      Enter custom configuration data in JSON format. This field supports any valid JSON structure.
+                    </p>
                   </div>
                 </TabsContent>
               </Tabs>

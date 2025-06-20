@@ -39,8 +39,7 @@ export const profiles = pgTable("profiles", {
   proxyPort: text("proxy_port").default(""),
   proxyUsername: text("proxy_username").default(""),
   proxyPassword: text("proxy_password").default(""),
-  scriptSource: text("script_source").default("editor"),
-  customScript: text("custom_script").default(""),
+
   customField: text("custom_field").default("{}"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
