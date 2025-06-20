@@ -431,7 +431,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
       {/* Profile Details Modal */}
       <Dialog open={isProfileDetailsOpen} onOpenChange={setIsProfileDetailsOpen}>
-        <DialogContent className="sm:max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Profile Details</DialogTitle>
           </DialogHeader>
@@ -480,9 +480,11 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               {selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Custom Fields</label>
-                  <pre className="text-sm text-slate-900 bg-slate-50 p-3 rounded-lg overflow-x-auto">
-                    {JSON.stringify(selectedProfile.customField, null, 2)}
-                  </pre>
+                  <div className="max-h-48 overflow-y-auto">
+                    <pre className="text-sm text-slate-900 bg-slate-50 p-3 rounded-lg overflow-x-auto">
+                      {JSON.stringify(selectedProfile.customField, null, 2)}
+                    </pre>
+                  </div>
                 </div>
               )}
               
@@ -498,7 +500,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
 
       {/* Script Details Modal */}
       <Dialog open={isScriptDetailsOpen} onOpenChange={setIsScriptDetailsOpen}>
-        <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Script Details</DialogTitle>
           </DialogHeader>
@@ -522,16 +524,18 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Source Code</label>
-                <pre className="text-sm text-slate-900 bg-slate-50 p-4 rounded-lg overflow-x-auto font-mono" style={{
-                  tabSize: 2,
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'break-word',
-                  lineHeight: '1.6',
-                  fontSize: '13px',
-                  fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                }}>
-                  {selectedScript.content}
-                </pre>
+                <div className="max-h-96 overflow-y-auto">
+                  <pre className="text-sm text-slate-900 bg-slate-50 p-4 rounded-lg overflow-x-auto font-mono" style={{
+                    tabSize: 2,
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'break-word',
+                    lineHeight: '1.6',
+                    fontSize: '13px',
+                    fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                  }}>
+                    {selectedScript.content}
+                  </pre>
+                </div>
               </div>
               
               <div className="flex justify-end pt-4 border-t border-slate-200">

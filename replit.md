@@ -119,6 +119,7 @@ The application uses three main database tables:
 - June 20, 2025. Added clickable Profile and Script columns in Task List - users can click on profile/script names to view detailed read-only information in popup modals without edit buttons
 - June 20, 2025. Updated Edit Profile popup title to "Profile Details" and added read-only Profile ID field displayed alongside Profile Name in Basic tab
 - June 20, 2025. Updated Edit Script popup title to "Script Details" and added read-only Script ID field displayed alongside Script Name
+- June 20, 2025. Improved Task List detail modals by moving scroll bars to specific content sections - Profile Details has scrollable Custom Fields area, Script Details has scrollable Source Code area for better content visibility
 
 ## User Preferences
 
