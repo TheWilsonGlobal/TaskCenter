@@ -56,11 +56,7 @@ export default function ProfilesTab() {
   // Mutations
   const createProfileMutation = useMutation({
     mutationFn: async (profileData: InsertProfile) => {
-      return apiRequest("/api/profiles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
-      });
+      return apiRequest("/api/profiles", "POST", profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -75,11 +71,7 @@ export default function ProfilesTab() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async ({ id, profileData }: { id: number; profileData: Partial<InsertProfile> }) => {
-      return apiRequest(`/api/profiles/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profileData),
-      });
+      return apiRequest(`/api/profiles/${id}`, "PUT", profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -94,7 +86,7 @@ export default function ProfilesTab() {
 
   const deleteProfileMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/profiles/${id}`, { method: "DELETE" });
+      return apiRequest(`/api/profiles/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -426,7 +418,7 @@ export default function ProfilesTab() {
                   <TabsTrigger value="basic">Basic</TabsTrigger>
                   <TabsTrigger value="browser">Browser</TabsTrigger>
                   <TabsTrigger value="proxy">Proxy</TabsTrigger>
-                  <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                  <TabsTrigger value="custom-field">Custom Field</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="basic" className="space-y-4">

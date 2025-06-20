@@ -300,8 +300,7 @@ export class MemStorage implements IStorage {
               proxyPort: parsedContent.proxyPort || "",
               proxyUsername: parsedContent.proxyUsername || "",
               proxyPassword: parsedContent.proxyPassword || "",
-              scriptSource: parsedContent.scriptSource || "editor",
-              customScript: parsedContent.customScript || parsedContent.customScripts || "",
+
               customField: parsedContent.custom_fields ? JSON.stringify(parsedContent.custom_fields) : "{}",
               createdAt: stats.birthtime.toISOString(),
               updatedAt: stats.mtime.toISOString(),
