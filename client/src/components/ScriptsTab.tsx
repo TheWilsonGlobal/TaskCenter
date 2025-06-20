@@ -292,12 +292,67 @@ export default function ScriptsTab() {
             
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Source Code</label>
-              <Textarea
-                value={scriptContent}
-                onChange={(e) => setScriptContent(e.target.value)}
-                placeholder="// Script source code will appear here"
-                className="h-96 font-mono text-sm"
-              />
+              <div className="relative">
+                <div className="relative bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg focus-within:border-blue-500 dark:focus-within:border-blue-400 transition-colors">
+                  <pre 
+                    className="absolute inset-0 p-4 font-mono text-sm leading-relaxed pointer-events-none overflow-hidden whitespace-pre-wrap break-words"
+                    style={{
+                      tabSize: 2,
+                      fontSize: '13px',
+                      lineHeight: '1.6',
+                      fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: scriptContent
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        // Comments
+                        .replace(/(\/\/.*$|\/\*[\s\S]*?\*\/)/gm, '<span class="text-green-600 dark:text-green-400 italic">$1</span>')
+                        // Keywords
+                        .replace(/\b(const|let|var|function|return|if|else|for|while|do|break|continue|switch|case|default|try|catch|finally|throw|new|class|extends|import|export|from|as|async|await|true|false|null|undefined|typeof|instanceof)\b/g, '<span class="text-blue-600 dark:text-blue-400 font-medium">$1</span>')
+                        // Strings
+                        .replace(/(['"`])((?:\\.|[^\\])*?)\1/g, '<span class="text-green-600 dark:text-green-400">$1$2$1</span>')
+                        // Numbers
+                        .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-orange-600 dark:text-orange-400">$1</span>')
+                        // Functions
+                        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*(?=\()/g, '<span class="text-purple-600 dark:text-purple-400 font-medium">$1</span>')
+                        // Objects and properties
+                        .replace(/\.([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g, '.<span class="text-cyan-600 dark:text-cyan-400">$1</span>')
+                        // Operators
+                        .replace(/([+\-*/%=<>!&|?:;,])/g, '<span class="text-slate-600 dark:text-slate-400">$1</span>')
+                        // Brackets and braces
+                        .replace(/([(){}[\]])/g, '<span class="text-slate-700 dark:text-slate-300 font-bold">$1</span>')
+                    }}
+                  />
+                  <Textarea
+                    value={scriptContent}
+                    onChange={(e) => setScriptContent(e.target.value)}
+                    placeholder="// Script source code will appear here&#10;console.log('Hello World!');"
+                    rows={24}
+                    className="relative bg-transparent border-0 p-4 resize-none focus:ring-0 focus:outline-none font-mono text-sm leading-relaxed text-transparent caret-slate-900 dark:caret-slate-100"
+                    style={{
+                      tabSize: 2,
+                      whiteSpace: 'pre-wrap',
+                      overflowWrap: 'break-word',
+                      lineHeight: '1.6',
+                      fontSize: '13px',
+                      fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                    }}
+                    spellCheck={false}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                  />
+                </div>
+                <div className="absolute top-2 right-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-slate-500 bg-white dark:bg-slate-800 px-2 py-1 rounded border">
+                      JavaScript
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div className="flex space-x-3 pt-4">
