@@ -603,17 +603,59 @@ export default function ProfilesTab() {
                 <TabsContent value="custom-field" className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="customField">Custom Field (JSON Format)</Label>
-                    <Textarea
-                      id="customField"
-                      value={customField}
-                      onChange={(e) => setCustomField(e.target.value)}
-                      placeholder='{"key": "value", "account": {"username": "example", "password": "example"}}'
-                      rows={12}
-                      className="font-mono text-sm"
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Enter custom configuration data in JSON format. This field supports any valid JSON structure.
-                    </p>
+                    <div className="relative">
+                      <Textarea
+                        id="customField"
+                        value={customField}
+                        onChange={(e) => setCustomField(e.target.value)}
+                        placeholder='{\n  "key": "value",\n  "account": {\n    "username": "example",\n    "password": "example"\n  }\n}'
+                        rows={16}
+                        className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-4 resize-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                        style={{
+                          tabSize: 2,
+                          whiteSpace: 'pre',
+                          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                        }}
+                      />
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="outline" className="text-xs bg-white dark:bg-slate-800">
+                          JSON
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start space-x-2 text-sm text-muted-foreground">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                        <p>
+                          Enter custom configuration data in JSON format. Use proper JSON syntax with double quotes for strings.
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          try {
+                            const parsed = JSON.parse(customField);
+                            const formatted = JSON.stringify(parsed, null, 2);
+                            setCustomField(formatted);
+                            toast({
+                              title: "JSON formatted",
+                              description: "Your JSON has been properly formatted",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Invalid JSON",
+                              description: "Please check your JSON syntax",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="text-xs"
+                      >
+                        Format JSON
+                      </Button>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>
