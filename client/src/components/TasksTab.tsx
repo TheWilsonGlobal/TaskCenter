@@ -204,11 +204,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                 </TableRow>
               ) : (
                 filteredTasks.map((task) => (
-                  <TableRow 
-                    key={task.id} 
-                    className="hover:bg-slate-50 cursor-pointer"
-                    onClick={() => handleEditTask(task)}
-                  >
+                  <TableRow key={task.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
                       <span className="text-blue-600">
                         {String(task.id).padStart(5, "0")}
