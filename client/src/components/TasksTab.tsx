@@ -225,7 +225,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                   <TableRow key={task.id} className="hover:bg-slate-50">
                     <TableCell className="font-mono text-sm">
                       <button
-                        onClick={() => handleShowTaskDetails(task)}
+                        onClick={() => handleEditTask(task)}
                         className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                       >
                         {String(task.id).padStart(5, "0")}
