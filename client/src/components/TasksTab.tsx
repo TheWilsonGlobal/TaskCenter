@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown, X } from "lucide-react";
+import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
 import type { Task } from "@shared/schema";
@@ -23,8 +23,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [isProfileDetailsModalOpen, setIsProfileDetailsModalOpen] = useState(false);
-  const [selectedTaskProfile, setSelectedTaskProfile] = useState<Task | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
@@ -47,14 +45,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
       apiRequest("PUT", `/api/tasks/${id}`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-    },
-  });
-
-  const createProfileMutation = useMutation({
-    mutationFn: (profileData: any) => apiRequest("POST", "/api/profiles", profileData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
-      setIsProfileDetailsModalOpen(false);
     },
   });
 
@@ -117,39 +107,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const handleShowTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsDetailsModalOpen(true);
-  };
-
-  const handleShowProfileDetails = (task: Task) => {
-    setSelectedTaskProfile(task);
-    setIsProfileDetailsModalOpen(true);
-  };
-
-  const handleSaveProfile = () => {
-    if (!selectedTaskProfile?.profile) return;
-    
-    const profile = selectedTaskProfile.profile;
-    const profileData = {
-      name: `${profile.name} - Copy`,
-      description: `Copied from Task #${String(selectedTaskProfile.id).padStart(5, "0")}`,
-      content: profile.content,
-      userAgent: profile.userAgent,
-      customUserAgent: profile.customUserAgent,
-      viewportWidth: profile.viewportWidth,
-      viewportHeight: profile.viewportHeight,
-      timezone: profile.timezone,
-      language: profile.language,
-      useProxy: profile.useProxy,
-      proxyType: profile.proxyType,
-      proxyHost: profile.proxyHost,
-      proxyPort: profile.proxyPort,
-      proxyUsername: profile.proxyUsername,
-      proxyPassword: profile.proxyPassword,
-      scriptSource: profile.scriptSource,
-      customScript: profile.customScript,
-      customField: profile.customField
-    };
-    
-    createProfileMutation.mutate(profileData);
   };
 
   const scrollUp = () => {
@@ -258,15 +215,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => handleShowProfileDetails(task)}
-                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                        disabled={!task.profile}
-                      >
-                        {task.profile?.name || 'Unknown Profile'}
-                      </button>
-                    </TableCell>
+                    <TableCell>{task.profile?.name || 'Unknown Profile'}</TableCell>
                     <TableCell className="font-mono text-sm">{task.script?.name || 'Unknown Script'}</TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
@@ -441,107 +390,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Profile Details Modal */}
-      <Dialog open={isProfileDetailsModalOpen} onOpenChange={setIsProfileDetailsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[70vh] flex flex-col">
-          <DialogHeader className="flex flex-row items-center justify-between">
-            <DialogTitle>Profile Details</DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsProfileDetailsModalOpen(false)}
-              className="h-6 w-6 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogHeader>
-          
-          {selectedTaskProfile?.profile && (
-            <div className="flex-1 overflow-y-auto space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Profile Name</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.name}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.description || 'No description'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">User Agent</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.userAgent}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Custom User Agent</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.customUserAgent || 'None'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Viewport</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.viewportWidth} x {selectedTaskProfile.profile.viewportHeight}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.timezone}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Language</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.language}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Use Proxy</label>
-                  <p className="text-sm text-slate-900">{selectedTaskProfile.profile.useProxy ? 'Yes' : 'No'}</p>
-                </div>
-              </div>
-
-              {selectedTaskProfile.profile.useProxy && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Type</label>
-                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyType}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Host</label>
-                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyHost || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Port</label>
-                    <p className="text-sm text-slate-900">{selectedTaskProfile.profile.proxyPort || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Proxy Authentication</label>
-                    <p className="text-sm text-slate-900">
-                      {selectedTaskProfile.profile.proxyUsername ? 'Yes' : 'No'}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Additional Properties</label>
-                <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-32 overflow-y-auto">
-                  <pre>{JSON.stringify(
-                    selectedTaskProfile.profile.customField ? 
-                      JSON.parse(selectedTaskProfile.profile.customField) : 
-                      {}, 
-                    null, 
-                    2
-                  )}</pre>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
-            <Button variant="outline" onClick={() => setIsProfileDetailsModalOpen(false)}>
-              Close
-            </Button>
-            <Button onClick={handleSaveProfile} disabled={createProfileMutation.isPending}>
-              {createProfileMutation.isPending ? "Saving..." : "Save Profile"}
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
     </div>
