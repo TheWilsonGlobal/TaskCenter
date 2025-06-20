@@ -270,19 +270,32 @@ export default function ScriptsTab() {
         <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {selectedScriptId ? "Edit Script" : "Create New Script"}
+              Script Details
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
-              <Input
-                type="text"
-                value={scriptName}
-                onChange={(e) => setScriptName(e.target.value)}
-                placeholder="New Script"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              {selectedScriptId && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Script ID</label>
+                  <Input
+                    type="text"
+                    value={String(selectedScriptId).padStart(3, "0")}
+                    readOnly
+                    className="bg-slate-50 text-slate-600"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Script Name</label>
+                <Input
+                  type="text"
+                  value={scriptName}
+                  onChange={(e) => setScriptName(e.target.value)}
+                  placeholder="New Script"
+                />
+              </div>
             </div>
             
             <div>
