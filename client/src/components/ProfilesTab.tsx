@@ -406,7 +406,7 @@ export default function ProfilesTab() {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>
-              {selectedProfileId ? "Edit Profile" : "New Profile"}
+              Profile Details
             </DialogTitle>
           </DialogHeader>
           
@@ -422,6 +422,17 @@ export default function ProfilesTab() {
 
                 <TabsContent value="basic" className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
+                    {selectedProfileId && (
+                      <div className="space-y-2">
+                        <Label htmlFor="profileId">Profile ID</Label>
+                        <Input
+                          id="profileId"
+                          value={String(selectedProfileId).padStart(3, "0")}
+                          readOnly
+                          className="bg-slate-50 text-slate-600"
+                        />
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="name">Profile Name</Label>
                       <Input
