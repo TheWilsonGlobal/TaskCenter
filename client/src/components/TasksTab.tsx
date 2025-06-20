@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown } from "lucide-react";
+import { Eye, Edit, Trash2, Search, ListTodo, Play, Check, AlertTriangle, Plus, RefreshCw, ChevronUp, ChevronDown, X } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useState, useRef } from "react";
 import type { Task } from "@shared/schema";
@@ -23,6 +23,8 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isProfileDetailsModalOpen, setIsProfileDetailsModalOpen] = useState(false);
+  const [selectedTaskProfile, setSelectedTaskProfile] = useState<Task | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
@@ -45,6 +47,14 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
       apiRequest("PUT", `/api/tasks/${id}`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
+  const createProfileMutation = useMutation({
+    mutationFn: (profileData: any) => apiRequest("POST", "/api/profiles", profileData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
+      setIsProfileDetailsModalOpen(false);
     },
   });
 
@@ -107,6 +117,39 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const handleShowTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleShowProfileDetails = (task: Task) => {
+    setSelectedTaskProfile(task);
+    setIsProfileDetailsModalOpen(true);
+  };
+
+  const handleSaveProfile = () => {
+    if (!selectedTaskProfile?.profile) return;
+    
+    const profile = selectedTaskProfile.profile;
+    const profileData = {
+      name: `${profile.name} - Copy`,
+      description: `Copied from Task #${String(selectedTaskProfile.id).padStart(5, "0")}`,
+      content: profile.content,
+      userAgent: profile.userAgent,
+      customUserAgent: profile.customUserAgent,
+      viewportWidth: profile.viewportWidth,
+      viewportHeight: profile.viewportHeight,
+      deviceScaleFactor: profile.deviceScaleFactor,
+      isMobile: profile.isMobile,
+      hasTouch: profile.hasTouch,
+      isLandscape: profile.isLandscape,
+      proxyHost: profile.proxyHost,
+      proxyPort: profile.proxyPort,
+      proxyUsername: profile.proxyUsername,
+      proxyPassword: profile.proxyPassword,
+      timezone: profile.timezone,
+      language: profile.language,
+      customField: profile.customField
+    };
+    
+    createProfileMutation.mutate(profileData);
   };
 
   const scrollUp = () => {
@@ -215,7 +258,15 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
-                    <TableCell>{task.profile?.name || 'Unknown Profile'}</TableCell>
+                    <TableCell>
+                      <button
+                        onClick={() => handleShowProfileDetails(task)}
+                        className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        disabled={!task.profile}
+                      >
+                        {task.profile?.name || 'Unknown Profile'}
+                      </button>
+                    </TableCell>
                     <TableCell className="font-mono text-sm">{task.script?.name || 'Unknown Script'}</TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
