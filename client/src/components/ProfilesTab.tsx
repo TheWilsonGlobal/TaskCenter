@@ -617,63 +617,26 @@ export default function ProfilesTab() {
                   <div className="space-y-2">
                     <Label htmlFor="customField">Custom Field (JSON Format)</Label>
                     <div className="relative">
-                      <div className="relative bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg focus-within:border-blue-500 dark:focus-within:border-blue-400 transition-colors">
-                        <pre 
-                          className="absolute inset-0 p-4 font-mono text-sm leading-relaxed pointer-events-none overflow-hidden whitespace-pre-wrap break-words"
-                          style={{
-                            tabSize: 2,
-                            fontSize: '13px',
-                            lineHeight: '1.6',
-                            fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                          }}
-                          dangerouslySetInnerHTML={{
-                            __html: customField
-                              .replace(/&/g, '&amp;')
-                              .replace(/</g, '&lt;')
-                              .replace(/>/g, '&gt;')
-                              .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
-                                let cls = 'text-slate-900 dark:text-slate-100';
-                                if (/^"/.test(match)) {
-                                  if (/:$/.test(match)) {
-                                    cls = 'text-blue-600 dark:text-blue-400 font-medium'; // property names
-                                  } else {
-                                    cls = 'text-green-600 dark:text-green-400'; // string values
-                                  }
-                                } else if (/true|false/.test(match)) {
-                                  cls = 'text-purple-600 dark:text-purple-400 font-medium'; // booleans
-                                } else if (/null/.test(match)) {
-                                  cls = 'text-red-500 dark:text-red-400 font-medium'; // null
-                                } else if (/-?\d+/.test(match)) {
-                                  cls = 'text-orange-600 dark:text-orange-400'; // numbers
-                                }
-                                return `<span class="${cls}">${match}</span>`;
-                              })
-                              .replace(/([{}])/g, '<span class="text-slate-600 dark:text-slate-400 font-bold">$1</span>') // braces
-                              .replace(/([[\]])/g, '<span class="text-slate-600 dark:text-slate-400 font-bold">$1</span>') // brackets
-                              .replace(/([:,])/g, '<span class="text-slate-500 dark:text-slate-500">$1</span>') // punctuation
-                          }}
-                        />
-                        <Textarea
-                          id="customField"
-                          value={customField}
-                          onChange={(e) => setCustomField(e.target.value)}
-                          placeholder='{\n  "key": "value",\n  "account": {\n    "username": "example",\n    "password": "example"\n  }\n}'
-                          rows={18}
-                          className="relative bg-transparent border-0 p-4 resize-none focus:ring-0 focus:outline-none font-mono text-sm leading-relaxed text-transparent caret-slate-900 dark:caret-slate-100"
-                          style={{
-                            tabSize: 2,
-                            whiteSpace: 'pre-wrap',
-                            overflowWrap: 'break-word',
-                            lineHeight: '1.6',
-                            fontSize: '13px',
-                            fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-                          }}
-                          spellCheck={false}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          autoCapitalize="off"
-                        />
-                      </div>
+                      <Textarea
+                        id="customField"
+                        value={customField}
+                        onChange={(e) => setCustomField(e.target.value)}
+                        placeholder='{\n  "key": "value",\n  "account": {\n    "username": "example",\n    "password": "example"\n  }\n}'
+                        rows={18}
+                        className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-lg p-4 resize-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors leading-relaxed"
+                        style={{
+                          tabSize: 2,
+                          whiteSpace: 'pre-wrap',
+                          overflowWrap: 'break-word',
+                          lineHeight: '1.6',
+                          fontSize: '13px',
+                          fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                        }}
+                        spellCheck={false}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                      />
                       <div className="absolute top-2 right-2">
                         <Badge variant="outline" className="text-xs bg-white dark:bg-slate-800 shadow-sm">
                           JSON
