@@ -61,8 +61,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           task.profile.customField = JSON.parse(task.profile.customField);
         } catch (error) {
-          // If parsing fails, return empty object
-          task.profile.customField = {};
+          // If parsing fails, return empty object as string
+          task.profile.customField = "{}";
         }
       }
       

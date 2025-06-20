@@ -23,6 +23,10 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [isProfileDetailsOpen, setIsProfileDetailsOpen] = useState(false);
+  const [selectedScript, setSelectedScript] = useState<any>(null);
+  const [isScriptDetailsOpen, setIsScriptDetailsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
@@ -107,6 +111,16 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const handleShowTaskDetails = (task: Task) => {
     setSelectedTask(task);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleShowProfileDetails = (profile: any) => {
+    setSelectedProfile(profile);
+    setIsProfileDetailsOpen(true);
+  };
+
+  const handleShowScriptDetails = (script: any) => {
+    setSelectedScript(script);
+    setIsScriptDetailsOpen(true);
   };
 
   const scrollUp = () => {
@@ -215,8 +229,30 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
-                    <TableCell>{task.profile?.name || 'Unknown Profile'}</TableCell>
-                    <TableCell className="font-mono text-sm">{task.script?.name || 'Unknown Script'}</TableCell>
+                    <TableCell>
+                      {task.profile ? (
+                        <button
+                          onClick={() => handleShowProfileDetails(task.profile)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {task.profile.name}
+                        </button>
+                      ) : (
+                        'Unknown Profile'
+                      )}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {task.script ? (
+                        <button
+                          onClick={() => handleShowScriptDetails(task.script)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                        >
+                          {task.script.name}
+                        </button>
+                      ) : (
+                        'Unknown Script'
+                      )}
+                    </TableCell>
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
                     </TableCell>
@@ -387,6 +423,121 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     Edit Task
                   </Button>
                 )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Profile Details Modal */}
+      <Dialog open={isProfileDetailsOpen} onOpenChange={setIsProfileDetailsOpen}>
+        <DialogContent className="sm:max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Profile Details</DialogTitle>
+          </DialogHeader>
+          
+          {selectedProfile && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <p className="text-sm text-slate-900">{selectedProfile.name}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <p className="text-sm text-slate-900">{selectedProfile.description || "No description"}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">User Agent</label>
+                  <p className="text-sm text-slate-900">{selectedProfile.userAgent}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Viewport</label>
+                  <p className="text-sm text-slate-900">{selectedProfile.viewportWidth}x{selectedProfile.viewportHeight}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Timezone</label>
+                  <p className="text-sm text-slate-900">{selectedProfile.timezone}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Language</label>
+                  <p className="text-sm text-slate-900">{selectedProfile.language}</p>
+                </div>
+              </div>
+              
+              {selectedProfile.useProxy && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Proxy</label>
+                  <p className="text-sm text-slate-900">{selectedProfile.proxyType}://{selectedProfile.proxyHost}:{selectedProfile.proxyPort}</p>
+                </div>
+              )}
+              
+              {selectedProfile.customField && Object.keys(selectedProfile.customField).length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Custom Fields</label>
+                  <pre className="text-sm text-slate-900 bg-slate-50 p-3 rounded-lg overflow-x-auto">
+                    {JSON.stringify(selectedProfile.customField, null, 2)}
+                  </pre>
+                </div>
+              )}
+              
+              <div className="flex justify-end pt-4 border-t border-slate-200">
+                <Button variant="outline" onClick={() => setIsProfileDetailsOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Script Details Modal */}
+      <Dialog open={isScriptDetailsOpen} onOpenChange={setIsScriptDetailsOpen}>
+        <DialogContent className="sm:max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Script Details</DialogTitle>
+          </DialogHeader>
+          
+          {selectedScript && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                <p className="text-sm text-slate-900">{selectedScript.name}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <p className="text-sm text-slate-900">{selectedScript.description || "No description"}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Size</label>
+                <p className="text-sm text-slate-900">{selectedScript.size} bytes</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Source Code</label>
+                <pre className="text-sm text-slate-900 bg-slate-50 p-4 rounded-lg overflow-x-auto font-mono" style={{
+                  tabSize: 2,
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'break-word',
+                  lineHeight: '1.6',
+                  fontSize: '13px',
+                  fontFamily: '"Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+                }}>
+                  {selectedScript.content}
+                </pre>
+              </div>
+              
+              <div className="flex justify-end pt-4 border-t border-slate-200">
+                <Button variant="outline" onClick={() => setIsScriptDetailsOpen(false)}>
+                  Close
+                </Button>
               </div>
             </div>
           )}

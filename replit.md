@@ -116,6 +116,7 @@ The application uses three main database tables:
 - June 20, 2025. Enhanced all table screens (Tasks, Workers, Profiles, Scripts) with row selection - users can now click anywhere on a table row to edit that item instead of using Edit buttons (later removed per user request)
 - June 20, 2025. Updated Tasks API endpoints to return customField in profiles as proper JSON format instead of raw strings for better data structure and frontend consumption
 - June 20, 2025. Implemented clickable ID functionality for all table screens - users can click on ID numbers to view details or edit items with blue link styling and hover effects
+- June 20, 2025. Added clickable Profile and Script columns in Task List - users can click on profile/script names to view detailed read-only information in popup modals without edit buttons
 
 ## User Preferences
 
