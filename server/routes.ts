@@ -18,7 +18,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/tasks", async (req: Request, res: Response) => {
     try {
       const tasks = await storage.getAllTasks();
-      res.json(tasks);
+      // Parse customField in profiles as JSON
+      const tasksWithParsedProfiles = tasks.map(task => {
+        if (task.profile && task.profile.customField) {
+          try {
+            return {
+              ...task,
+              profile: {
+                ...task.profile,
+                customField: JSON.parse(task.profile.customField)
+              }
+            };
+          } catch (error) {
+            // If parsing fails, return empty object
+            return {
+              ...task,
+              profile: {
+                ...task.profile,
+                customField: {}
+              }
+            };
+          }
+        }
+        return task;
+      });
+      res.json(tasksWithParsedProfiles);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch tasks" });
     }
@@ -31,6 +55,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!task) {
         return res.status(404).json({ error: "Task not found" });
       }
+      
+      // Parse customField in profile as JSON
+      if (task.profile && task.profile.customField) {
+        try {
+          task.profile.customField = JSON.parse(task.profile.customField);
+        } catch (error) {
+          // If parsing fails, return empty object
+          task.profile.customField = {};
+        }
+      }
+      
       res.json(task);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch task" });
