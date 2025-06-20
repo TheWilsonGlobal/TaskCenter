@@ -136,7 +136,11 @@ export default function ProfilesTab() {
     setProxyUsername(profile.proxyUsername || "");
     setProxyPassword(profile.proxyPassword || "");
 
-    setCustomField(profile.customField || "{}");
+    // Handle custom field - convert object back to JSON string for editing
+    const customFieldString = typeof profile.customField === 'object' 
+      ? JSON.stringify(profile.customField, null, 2)
+      : profile.customField || "{}";
+    setCustomField(customFieldString);
     setSelectedProfileId(profile.id);
     setIsEditorOpen(true);
     
