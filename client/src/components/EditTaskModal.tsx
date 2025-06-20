@@ -116,19 +116,30 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Task #{String(task.id).padStart(3, "0")}</DialogTitle>
+          <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="workerId">Worker ID</Label>
-            <Input
-              id="workerId"
-              value={workerId}
-              onChange={(e) => setWorkerId(e.target.value)}
-              placeholder="Enter worker ID..."
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="taskId">Task ID</Label>
+              <Input
+                id="taskId"
+                value={String(task.id).padStart(3, "0")}
+                readOnly
+                className="bg-slate-50 text-slate-600"
+              />
+            </div>
+            <div>
+              <Label htmlFor="workerId">Worker ID</Label>
+              <Input
+                id="workerId"
+                value={workerId}
+                onChange={(e) => setWorkerId(e.target.value)}
+                placeholder="Enter worker ID..."
+                required
+              />
+            </div>
           </div>
 
           <div>
