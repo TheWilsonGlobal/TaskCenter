@@ -128,7 +128,6 @@ The application uses three main database tables:
 - June 20, 2025. Changed Cancel button to "Close" in Task Details popup for better user experience
 - June 20, 2025. Enhanced Task List Profile Details Custom Field display with comprehensive JSON syntax highlighting matching Profile screen formatting - includes color-coded keys, values, brackets, and JSON badge
 - June 20, 2025. Optimized Task List Profile Details Custom Field width with max-width constraint (max-w-2xl) and reduced font size for better popup proportions
-- June 21, 2025. Renamed Cancel button to "Close" in Browser Profiles script detail popup for consistent UI labeling
 
 ## User Preferences
 
