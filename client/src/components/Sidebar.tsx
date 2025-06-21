@@ -35,7 +35,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   };
 
   return (
-    <nav className={`${isCollapsed ? 'w-16' : 'w-64'} bg-white shadow-sm border-r border-slate-200 flex flex-col transition-all duration-300`}>
+    <nav className={`${isCollapsed ? 'w-20' : 'w-64'} bg-white shadow-sm border-r border-slate-200 flex flex-col transition-all duration-300`}>
       {/* Logo/Brand */}
       <div className="p-6 border-b border-slate-200">
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'}`}>
