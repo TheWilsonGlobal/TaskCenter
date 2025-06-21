@@ -82,6 +82,14 @@ export default function ProfilesTab() {
         description: "Browser profile has been updated successfully",
       });
     },
+    onError: (error) => {
+      console.error("Update profile error:", error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   const deleteProfileMutation = useMutation({
@@ -164,6 +172,8 @@ export default function ProfilesTab() {
   };
 
   const handleSaveProfile = () => {
+    console.log("handleSaveProfile called, selectedProfileId:", selectedProfileId);
+    
     if (!name.trim()) {
       toast({
         title: "Profile name required",
@@ -194,12 +204,17 @@ export default function ProfilesTab() {
         customField
       };
 
+      console.log("Profile data to save:", profileData);
+
       if (selectedProfileId) {
+        console.log("Calling updateProfileMutation with ID:", selectedProfileId);
         updateProfileMutation.mutate({ id: selectedProfileId, profileData });
       } else {
+        console.log("Calling createProfileMutation");
         createProfileMutation.mutate(profileData);
       }
     } catch (error) {
+      console.error("JSON parsing error:", error);
       toast({
         title: "Invalid JSON",
         description: "Custom fields must be valid JSON",
