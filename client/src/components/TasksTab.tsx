@@ -56,24 +56,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
     },
   });
 
-  const executeTaskMutation = useMutation({
-    mutationFn: (id: number) => apiRequest("POST", `/api/tasks/${id}/execute`, {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-      toast({
-        title: "Task Started",
-        description: "Task execution has been initiated",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Task Execution Failed",
-        description: error.message || "execution is undefined",
-        variant: "destructive",
-      });
-    },
-  });
-
   const filteredTasks = tasks
     .filter(task => {
       const matchesSearch = task.script?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

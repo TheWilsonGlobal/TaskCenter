@@ -115,54 +115,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Task execution endpoint
-  app.post("/api/tasks/:id/execute", async (req: Request, res: Response) => {
-    try {
-      const id = parseInt(req.params.id);
-      const task = await storage.getTask(id);
-      
-      if (!task) {
-        return res.status(404).json({ error: "Task not found" });
-      }
-
-      if (task.status !== "READY") {
-        return res.status(400).json({ error: "Task must be in READY status to execute" });
-      }
-
-      // Update task status to RUNNING
-      await storage.updateTask(id, { status: "RUNNING" });
-
-      // Simulate task execution (in a real implementation, this would trigger actual automation)
-      setTimeout(async () => {
-        try {
-          // Simulate random success/failure for demo purposes
-          const success = Math.random() > 0.3; // 70% success rate
-          const newStatus = success ? "COMPLETED" : "FAILED";
-          const response = success 
-            ? "Task executed successfully" 
-            : "Task execution failed - script error";
-          
-          await storage.updateTask(id, { 
-            status: newStatus,
-            respond: response
-          });
-        } catch (error) {
-          console.error("Error updating task after execution:", error);
-        }
-      }, 2000 + Math.random() * 3000); // 2-5 seconds execution time
-
-      res.json({ 
-        message: "Task execution started",
-        taskId: id,
-        status: "RUNNING"
-      });
-
-    } catch (error) {
-      console.error("Task execution error:", error);
-      res.status(500).json({ error: "Failed to execute task" });
-    }
-  });
-
   // Get profile for a specific task
   app.get("/api/tasks/:id/profile", async (req: Request, res: Response) => {
     try {
