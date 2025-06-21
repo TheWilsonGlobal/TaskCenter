@@ -228,7 +228,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                         onClick={() => handleEditTask(task)}
                         className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                       >
-                        {String(task.id).padStart(5, "0")}
+                        {task.id}
                       </button>
                     </TableCell>
                     <TableCell>{getStatusBadge(task.status)}</TableCell>
