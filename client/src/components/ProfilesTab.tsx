@@ -675,7 +675,7 @@ export default function ProfilesTab() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditorOpen(false)}>
-              Cancel
+              Close
             </Button>
             <Button onClick={handleSaveProfile}>
               {selectedProfileId ? "Update Profile" : "Create Profile"}

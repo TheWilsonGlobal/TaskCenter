@@ -3,6 +3,15 @@ import { createInsertSchema } from "drizzle-zod";
 import { relations } from "drizzle-orm";
 import { z } from "zod";
 
+// Statuses of Task:                                      
+// NEW <=> READY                  by  Task Center
+//           |                             
+//     --> RUNNING                by  Worker
+//    |   /      \
+//   FAIL          COMPLETE       by  Worker
+//                    ||
+//                 REJECTED       by  Task Center (optional)
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   status: text("status", { enum: ["NEW", "READY", "RUNNING", "COMPLETED", "FAILED", "REJECTED"] }).notNull().default("NEW"),
