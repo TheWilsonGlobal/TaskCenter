@@ -128,6 +128,9 @@ The application uses three main database tables:
 - June 20, 2025. Changed Cancel button to "Close" in Task Details popup for better user experience
 - June 20, 2025. Enhanced Task List Profile Details Custom Field display with comprehensive JSON syntax highlighting matching Profile screen formatting - includes color-coded keys, values, brackets, and JSON badge
 - June 20, 2025. Optimized Task List Profile Details Custom Field width with max-width constraint (max-w-2xl) and reduced font size for better popup proportions
+- June 21, 2025. Increased collapsed sidebar menu width from 64px to 80px for better icon spacing and visual balance
+- June 21, 2025. Removed padded format (0000x) from Task ID display in task list - now shows plain numbers instead of zero-padded format
+- June 21, 2025. Fixed Profile update functionality by correcting apiRequest parameter order - resolved "Failed to execute 'fetch'" error that prevented profile updates from working
 
 ## User Preferences
 

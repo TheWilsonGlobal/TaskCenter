@@ -56,7 +56,7 @@ export default function ProfilesTab() {
   // Mutations
   const createProfileMutation = useMutation({
     mutationFn: async (profileData: InsertProfile) => {
-      return apiRequest("/api/profiles", "POST", profileData);
+      return apiRequest("POST", "/api/profiles", profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -71,7 +71,7 @@ export default function ProfilesTab() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async ({ id, profileData }: { id: number; profileData: Partial<InsertProfile> }) => {
-      return apiRequest(`/api/profiles/${id}`, "PUT", profileData);
+      return apiRequest("PUT", `/api/profiles/${id}`, profileData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -83,7 +83,6 @@ export default function ProfilesTab() {
       });
     },
     onError: (error) => {
-      console.error("Update profile error:", error);
       toast({
         title: "Update failed",
         description: "Failed to update profile. Please try again.",
@@ -94,7 +93,7 @@ export default function ProfilesTab() {
 
   const deleteProfileMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/profiles/${id}`, "DELETE");
+      return apiRequest("DELETE", `/api/profiles/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
@@ -172,8 +171,6 @@ export default function ProfilesTab() {
   };
 
   const handleSaveProfile = () => {
-    console.log("handleSaveProfile called, selectedProfileId:", selectedProfileId);
-    
     if (!name.trim()) {
       toast({
         title: "Profile name required",
@@ -204,17 +201,12 @@ export default function ProfilesTab() {
         customField
       };
 
-      console.log("Profile data to save:", profileData);
-
       if (selectedProfileId) {
-        console.log("Calling updateProfileMutation with ID:", selectedProfileId);
         updateProfileMutation.mutate({ id: selectedProfileId, profileData });
       } else {
-        console.log("Calling createProfileMutation");
         createProfileMutation.mutate(profileData);
       }
     } catch (error) {
-      console.error("JSON parsing error:", error);
       toast({
         title: "Invalid JSON",
         description: "Custom fields must be valid JSON",
