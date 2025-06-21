@@ -421,14 +421,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/profiles/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
+      console.log("Profile update request for ID:", id);
+      console.log("Request body:", req.body);
+      
       const validatedData = insertProfileSchema.partial().parse(req.body);
+      console.log("Validated data:", validatedData);
+      
       const profile = await storage.updateProfile(id, validatedData);
       if (!profile) {
         return res.status(404).json({ error: "Profile not found" });
       }
       res.json(profile);
     } catch (error) {
+      console.error("Profile update error:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ error: "Invalid profile data", details: error.errors });
       }
       res.status(500).json({ error: "Failed to update profile" });
