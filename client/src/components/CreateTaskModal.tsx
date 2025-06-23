@@ -71,6 +71,16 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
       return;
     }
 
+    const workerIdNumber = parseInt(workerId.trim());
+    if (isNaN(workerIdNumber)) {
+      toast({
+        title: "Invalid Worker ID",
+        description: "Worker ID must be a number",
+        variant: "destructive",
+      });
+      return;
+    }
+
 
 
     if (!script) {
@@ -86,7 +96,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
     const selectedScript = scripts.find(s => s.name === script);
 
     const taskData = {
-      workerId: workerId.trim(),
+      workerId: workerIdNumber,
       profileId: selectedProfile?.id || null,
       scriptId: selectedScript?.id,
       status: "NEW",
@@ -115,7 +125,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
               id="workerId"
               value={workerId}
               onChange={(e) => setWorkerId(e.target.value)}
-              placeholder="worker-01"
+              placeholder="1"
               required
             />
           </div>
