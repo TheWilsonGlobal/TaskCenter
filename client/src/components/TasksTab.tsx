@@ -242,7 +242,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                           {task.profile.name}
                         </button>
                       ) : (
-                        'Unknown Profile'
+                        <span className="italic text-slate-500">Dedicated</span>
                       )}
                     </TableCell>
                     <TableCell className="font-mono text-sm">
@@ -392,7 +392,9 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Profile</label>
-                    <p className="text-sm text-slate-900">{selectedTask.profile?.name || 'Unknown Profile'}</p>
+                    <p className="text-sm text-slate-900">
+                      {selectedTask.profile?.name || <span className="italic text-slate-500">Dedicated</span>}
+                    </p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Script</label>

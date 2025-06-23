@@ -124,6 +124,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Task not found" });
       }
       
+      if (!task.profileId) {
+        return res.status(404).json({ error: "Task uses dedicated profile" });
+      }
+      
       const profile = await storage.getProfile(task.profileId);
       if (!profile) {
         return res.status(404).json({ error: "Profile not found for this task" });

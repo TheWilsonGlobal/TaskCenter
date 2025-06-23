@@ -131,6 +131,7 @@ The application uses three main database tables:
 - June 21, 2025. Increased collapsed sidebar menu width from 64px to 80px for better icon spacing and visual balance
 - June 21, 2025. Removed padded format (0000x) from Task ID display in task list - now shows plain numbers instead of zero-padded format
 - June 21, 2025. Fixed Profile update functionality by correcting apiRequest parameter order - resolved "Failed to execute 'fetch'" error that prevented profile updates from working
+- June 23, 2025. Updated task schema to allow nullable profileId for dedicated worker profiles - tasks can now be created without selecting a specific profile, displaying "Dedicated" in italics in the Profile column
 
 ## User Preferences
 

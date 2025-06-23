@@ -71,14 +71,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
       return;
     }
 
-    if (!profile) {
-      toast({
-        title: "Profile required",
-        description: "Please select a profile",
-        variant: "destructive",
-      });
-      return;
-    }
+
 
     if (!script) {
       toast({
@@ -94,7 +87,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
 
     const taskData = {
       workerId: workerId.trim(),
-      profileId: selectedProfile?.id,
+      profileId: selectedProfile?.id || null,
       scriptId: selectedScript?.id,
       status: "NEW",
       respond: notes.trim(),
@@ -128,12 +121,13 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
           </div>
 
           <div>
-            <Label htmlFor="profile">Profile</Label>
-            <Select value={profile} onValueChange={setProfile} required>
+            <Label htmlFor="profile">Profile (Optional)</Label>
+            <Select value={profile} onValueChange={setProfile}>
               <SelectTrigger>
-                <SelectValue placeholder="Select Profile" />
+                <SelectValue placeholder="Select Profile or leave empty for dedicated profile" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="">Use Dedicated Profile</SelectItem>
                 {profiles.length === 0 ? (
                   <SelectItem value="none" disabled>
                     No profiles available

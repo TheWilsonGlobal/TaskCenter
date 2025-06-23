@@ -7,7 +7,7 @@ export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   status: text("status", { enum: ["NEW", "READY", "RUNNING", "COMPLETED", "FAILED", "REJECTED"] }).notNull().default("NEW"),
   workerId: integer("worker_id").notNull().references(() => workers.id),
-  profileId: integer("profile_id").notNull().references(() => profiles.id),
+  profileId: integer("profile_id").references(() => profiles.id),
   scriptId: integer("script_id").notNull().references(() => scripts.id),
   respond: text("respond").default(""),
   createdAt: text("created_at").notNull(),
