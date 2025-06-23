@@ -82,7 +82,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
       return;
     }
 
-    const selectedProfile = profiles.find(p => p.name === profile);
+    const selectedProfile = profile === "dedicated" ? null : profiles.find(p => p.name === profile);
     const selectedScript = scripts.find(s => s.name === script);
 
     const taskData = {
@@ -127,7 +127,7 @@ export default function CreateTaskModal({ open, onOpenChange }: CreateTaskModalP
                 <SelectValue placeholder="Select Profile or leave empty for dedicated profile" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Use Dedicated Profile</SelectItem>
+                <SelectItem value="dedicated">Use Dedicated Profile</SelectItem>
                 {profiles.length === 0 ? (
                   <SelectItem value="none" disabled>
                     No profiles available
