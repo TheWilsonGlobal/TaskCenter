@@ -39,9 +39,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Logo/Brand */}
       <div className="p-6 border-b border-slate-200">
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'}`}>
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Bot className="text-white text-sm" />
-          </div>
+          
           {!isCollapsed && (
             <div>
               <h1 className="text-lg font-semibold text-slate-900">
