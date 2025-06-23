@@ -55,7 +55,7 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
   useEffect(() => {
     if (task) {
       setWorkerId(String(task.workerId) || "");
-      setProfile(task.profile?.name || "");
+      setProfile(task.profile?.name || "dedicated");
       setScript(task.script?.name || "");
       setStatus(task.status || "NEW");
       setNotes(task.respond || "");
@@ -74,10 +74,11 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
       return;
     }
 
-    if (!profile) {
+    const workerIdNumber = parseInt(workerId.trim());
+    if (isNaN(workerIdNumber)) {
       toast({
-        title: "Validation Error",
-        description: "Please select a profile",
+        title: "Invalid Worker ID",
+        description: "Worker ID must be a number",
         variant: "destructive",
       });
       return;
@@ -92,12 +93,12 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
       return;
     }
 
-    const selectedProfile = profiles.find(p => p.name === profile);
+    const selectedProfile = profile === "dedicated" ? null : profiles.find(p => p.name === profile);
     const selectedScript = scripts.find(s => s.name === script);
 
     const taskData = {
-      workerId: workerId.trim(),
-      profileId: selectedProfile?.id,
+      workerId: workerIdNumber,
+      profileId: selectedProfile?.id || null,
       scriptId: selectedScript?.id,
       status,
       respond: notes.trim(),
@@ -136,19 +137,20 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
                 id="workerId"
                 value={workerId}
                 onChange={(e) => setWorkerId(e.target.value)}
-                placeholder="Enter worker ID..."
+                placeholder="1"
                 required
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="profile">Browser Profile</Label>
-            <Select value={profile} onValueChange={setProfile} required>
+            <Label htmlFor="profile">Browser Profile (Optional)</Label>
+            <Select value={profile} onValueChange={setProfile}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a profile..." />
+                <SelectValue placeholder="Select Profile or use dedicated profile" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="dedicated">Use Dedicated Profile</SelectItem>
                 {profiles.map((prof) => (
                   <SelectItem key={prof.id} value={prof.name}>
                     {prof.name}
