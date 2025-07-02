@@ -69,8 +69,11 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const getStatusBadge = (status: string) => {
     const statusClasses = {
       NEW: "bg-blue-100 text-blue-800",
-      COMPLETED: "bg-green-100 text-green-800",
-      FAILED: "bg-red-100 text-red-800",
+      READY: "status-ready",
+      RUNNING: "status-running",
+      COMPLETED: "status-completed",
+      FAILED: "status-failed",
+      REJECTED: "bg-red-100 text-red-800",
     };
     return (
       <Badge className={statusClasses[status as keyof typeof statusClasses] || "bg-blue-100 text-blue-800"}>
@@ -192,8 +195,11 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     <SelectContent>
                       <SelectItem value="all">Status</SelectItem>
                       <SelectItem value="NEW">NEW</SelectItem>
+                      <SelectItem value="READY">READY</SelectItem>
+                      <SelectItem value="RUNNING">RUNNING</SelectItem>
                       <SelectItem value="COMPLETED">COMPLETED</SelectItem>
                       <SelectItem value="FAILED">FAILED</SelectItem>
+                      <SelectItem value="REJECTED">REJECTED</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableHead>
@@ -275,14 +281,16 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        {task.status === "NEW" ? (
+                        {(task.status === "NEW" || task.status === "READY") ? (
                           <Button 
-                            variant="secondary"
+                            variant={task.status === "READY" ? "default" : "secondary"}
                             size="sm" 
-                            title="Task is ready to start"
-                            disabled
+                            title={task.status === "NEW" ? "Click to Activate (NEW → READY)" : "Click to Deactivate (READY → NEW)"}
+                            onClick={() => handleToggleStatus(task.id, task.status)}
+                            disabled={updateTaskStatusMutation.isPending}
+                            className={task.status === "READY" ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                           >
-                            Ready
+                            {task.status === "NEW" ? "Active" : "Inactive"}
                           </Button>
                         ) : task.status === "COMPLETED" ? (
                           <Button 
@@ -294,14 +302,16 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                           >
                             Reject
                           </Button>
-                        ) : task.status === "FAILED" ? (
+                        ) : task.status === "REJECTED" ? (
                           <Button 
-                            variant="destructive"
+                            variant="default"
                             size="sm" 
-                            title="Task failed"
-                            disabled
+                            title="Mark as Completed (REJECTED → COMPLETED)"
+                            onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "COMPLETED" })}
+                            disabled={updateTaskStatusMutation.isPending}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
                           >
-                            Failed
+                            Complete
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" title="View Details">

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
-  status: text("status", { enum: ["NEW", "COMPLETED", "FAILED"] }).notNull().default("NEW"),
+  status: text("status", { enum: ["NEW", "READY", "RUNNING", "COMPLETED", "FAILED", "REJECTED"] }).notNull().default("NEW"),
   workerId: integer("worker_id").notNull().references(() => workers.id),
   profileId: integer("profile_id").references(() => profiles.id),
   scriptId: integer("script_id").notNull().references(() => scripts.id),

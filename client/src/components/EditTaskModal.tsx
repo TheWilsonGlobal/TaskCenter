@@ -184,8 +184,12 @@ export default function EditTaskModal({ open, onOpenChange, task }: EditTaskModa
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="NEW">NEW</SelectItem>
+                <SelectItem value="READY">READY</SelectItem>
+                <SelectItem value="RUNNING">RUNNING</SelectItem>
                 <SelectItem value="COMPLETED">COMPLETED</SelectItem>
                 <SelectItem value="FAILED">FAILED</SelectItem>
+                <SelectItem value="CONFIRMED">CONFIRMED</SelectItem>
+                <SelectItem value="REJECTED">REJECTED</SelectItem>
               </SelectContent>
             </Select>
           </div>
