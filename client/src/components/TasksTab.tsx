@@ -33,7 +33,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
   const [isScriptDetailsOpen, setIsScriptDetailsOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: tasks = [], isLoading, refetch, error } = useQuery<Task[]>({
+  const { data: tasks = [], isLoading, refetch } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
 
@@ -205,26 +205,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {error ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
-                    <div className="flex flex-col items-center space-y-3">
-                      <AlertTriangle className="h-8 w-8 text-red-500" />
-                      <div className="text-red-600 font-medium">Cannot fetch tasks from task center</div>
-                      <div className="text-slate-500 text-sm">Please check your connection and try again</div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleRefresh}
-                        className="mt-2"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Retry
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : filteredTasks.length === 0 ? (
+              {filteredTasks.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-slate-500 py-8">
                     {searchTerm || statusFilter !== "all" 

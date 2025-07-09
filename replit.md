@@ -132,7 +132,6 @@ The application uses three main database tables:
 - June 21, 2025. Removed padded format (0000x) from Task ID display in task list - now shows plain numbers instead of zero-padded format
 - June 21, 2025. Fixed Profile update functionality by correcting apiRequest parameter order - resolved "Failed to execute 'fetch'" error that prevented profile updates from working
 - June 23, 2025. Updated task schema to allow nullable profileId for dedicated worker profiles - tasks can now be created without selecting a specific profile, displaying "Dedicated" in italics in the Profile column
-- June 23, 2025. Enhanced error handling in TasksTab to show user-friendly "Cannot fetch tasks from task center" message with retry button when API connection fails, replacing technical error displays
 
 ## User Preferences
 
