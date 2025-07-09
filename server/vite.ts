@@ -16,7 +16,11 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
-  console.log(`${formattedTime} [${source}] ${message}`);
+  if (message.toLowerCase().includes('error')) {
+    console.error(`${formattedTime} [${source}] ${message}`);
+  } else {
+    console.log(`${formattedTime} [${source}] ${message}`);
+  }
 }
 
 export async function setupVite(app: Express, server: Server) {
