@@ -1,4 +1,5 @@
-import { tasks, scripts, profiles, workers, type Task, type InsertTask, type Script, type InsertScript, type Profile, type InsertProfile, type Worker, type InsertWorker } from "@shared/schema";
+import { tasks, scripts, profiles, workers } from "@shared/schema";
+import type { Task, InsertTask, Script, InsertScript, Profile, InsertProfile, Worker, InsertWorker } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
 import { db } from "./db";
@@ -135,7 +136,8 @@ export class MemStorage implements IStorage {
       ...insertTask,
       id,
       status: insertTask.status || "NEW",
-      respond: insertTask.respond || "",
+      respond: insertTask.respond ?? "",
+      profileId: insertTask.profileId ?? null,
       createdAt: new Date().toISOString(),
     };
     this.tasks.set(id, task);
@@ -446,12 +448,23 @@ export class MemStorage implements IStorage {
 export class DatabaseStorage implements IStorage {
   // Task methods
   async getAllTasks(): Promise<Task[]> {
-    return await db.query.tasks.findMany({
+    const results = await db.query.tasks.findMany({
       with: {
         profile: true,
         script: true,
+        worker: true,
       },
     });
+    // Ensure all required fields are present and properly typed
+    return results.map(task => ({
+      ...task,
+      profileId: task.profileId ?? null,
+      respond: task.respond ?? null,
+      status: task.status as Task['status'],
+      profile: task.profile || undefined,
+      script: task.script,
+      worker: task.worker
+    }));
   }
 
   async getTask(id: number): Promise<Task | undefined> {
@@ -460,9 +473,22 @@ export class DatabaseStorage implements IStorage {
       with: {
         profile: true,
         script: true,
+        worker: true,
       },
     });
-    return task || undefined;
+
+    if (!task) return undefined;
+
+    // Ensure all required fields are present and properly typed
+    return {
+      ...task,
+      profileId: task.profileId ?? null,
+      respond: task.respond ?? null,
+      status: task.status as Task['status'],
+      profile: task.profile || undefined,
+      script: task.script,
+      worker: task.worker
+    };
   }
 
   async createTask(insertTask: InsertTask): Promise<Task> {
@@ -470,24 +496,41 @@ export class DatabaseStorage implements IStorage {
       .insert(tasks)
       .values({
         ...insertTask,
+        respond: insertTask.respond ?? null,
+        status: insertTask.status || 'NEW',
         createdAt: new Date().toISOString(),
       })
       .returning();
-    return task;
+    
+    // Fetch the full task with relations
+    const fullTask = await this.getTask(task.id);
+    if (!fullTask) {
+      throw new Error('Failed to fetch created task');
+    }
+    return fullTask;
   }
 
   async updateTask(id: number, updateData: Partial<InsertTask>): Promise<Task | undefined> {
     const [task] = await db
       .update(tasks)
-      .set(updateData)
+      .set({
+        ...updateData,
+        // Ensure optional fields are properly handled
+        respond: updateData.respond ?? undefined,
+        profileId: updateData.profileId ?? undefined,
+      })
       .where(eq(tasks.id, id))
       .returning();
-    return task || undefined;
+      
+    if (!task) return undefined;
+    
+    // Fetch the full task with relations
+    return this.getTask(task.id);
   }
 
   async deleteTask(id: number): Promise<boolean> {
     const result = await db.delete(tasks).where(eq(tasks.id, id));
-    return (result.rowCount ?? 0) > 0;
+    return (result?.rowCount ?? 0) > 0;
   }
 
   // Script methods
