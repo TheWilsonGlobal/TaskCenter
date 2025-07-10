@@ -187,6 +187,10 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
+                <TableHead>Worker ID</TableHead>
+                <TableHead>Profile</TableHead>
+                <TableHead>Script</TableHead>
+                <TableHead>Created</TableHead>
                 <TableHead>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-24 h-8 text-xs border-0 bg-transparent p-0 focus:ring-0">
@@ -203,11 +207,8 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     </SelectContent>
                   </Select>
                 </TableHead>
-                <TableHead>Worker ID</TableHead>
-                <TableHead>Profile</TableHead>
-                <TableHead>Script</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead className="w-12">Actions</TableHead>
+                <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -250,7 +251,6 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                         {task.id}
                       </button>
                     </TableCell>
-                    <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>{task.workerId}</TableCell>
                     <TableCell>
                       {task.profile ? (
@@ -279,6 +279,7 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                     <TableCell className="text-slate-500">
                       {formatDate(task.createdAt)}
                     </TableCell>
+                    <TableCell>{getStatusBadge(task.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         {(task.status === "NEW" || task.status === "READY") ? (
@@ -306,12 +307,12 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                           <Button 
                             variant="default"
                             size="sm" 
-                            title="Mark as Completed (REJECTED → COMPLETED)"
+                            title="Mark as Unrejected (REJECTED → COMPLETED)"
                             onClick={() => updateTaskStatusMutation.mutate({ id: task.id, status: "COMPLETED" })}
                             disabled={updateTaskStatusMutation.isPending}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
                           >
-                            Complete
+                            Unreject
                           </Button>
                         ) : (
                           <Button variant="ghost" size="sm" title="View Details">
@@ -328,6 +329,10 @@ export default function TasksTab({ onCreateTask }: TasksTabProps) {
                             <Edit className="h-4 w-4" />
                           </Button>
                         )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-center">
                         <Button 
                           variant="ghost" 
                           size="sm" 

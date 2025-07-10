@@ -200,12 +200,12 @@ const UserDashboard: React.FC = () => {
                     />
                   </TableHead>
                   <TableHead>ID</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Worker</TableHead>
                   <TableHead>Profile</TableHead>
                   <TableHead>Script</TableHead>
                   <TableHead>Response</TableHead>
                   <TableHead>Created</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -221,7 +221,6 @@ const UserDashboard: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell className="font-medium">{task.id}</TableCell>
-                    <TableCell>{getStatusBadge(tasksState[task.id]?.status || task.status)}</TableCell>
                     <TableCell>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                         {task.worker?.username || `Worker ${task.workerId}`}
@@ -242,6 +241,9 @@ const UserDashboard: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-gray-500">{formatDate(task.createdAt)}</span>
+                    </TableCell>
+                    <TableCell>
+                      {getStatusBadge(tasksState[task.id]?.status || task.status)}
                     </TableCell>
                     <TableCell className="text-right space-x-2">
                       {(tasksState[task.id]?.status === 'RUNNING' || task.status === 'RUNNING') ? (
